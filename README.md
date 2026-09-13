@@ -10,6 +10,18 @@ FCM Guard is intentionally small and does **not** use root, Shizuku, persistent 
 
 It only uses Android's user-grantable **Modify system settings** special access and a foreground watchdog service.
 
+## Important Android compatibility detail
+
+`MILLET_NO_RESTRICT_APP` is a Xiaomi private `Settings.System` key, not a public Android System setting.
+
+Android's SettingsProvider blocks normal apps targeting API 23+ from writing arbitrary private System keys even when the user grants **Modify system settings**. Therefore FCM Guard intentionally targets **API 22**, matching the compatibility approach used by SetEdit.
+
+On Android 14+ the platform may block a fresh install of apps targeting API 22. If your package installer refuses the APK, install it once with:
+
+`adb install --bypass-low-target-sdk-block app-debug.apk`
+
+After installation, USB debugging and Developer options can be turned off again. FCM Guard does not need ADB at runtime.
+
 ## Configure for the tested HyperOS setup
 
 In the app, enter:
@@ -22,9 +34,10 @@ Then:
 1. Tap **Save configuration**.
 2. Tap **Grant Modify system settings** and allow FCM Guard.
 3. Tap **Repair now** once.
-4. Tap **Start automatic protection**.
-5. In HyperOS app settings, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
-6. Keep Developer options, USB debugging, Wireless debugging, Shizuku, root, Accessibility, VPN and overlay permissions disabled unless you independently need them.
+4. Confirm **Required item present: yes**.
+5. Tap **Start automatic protection**.
+6. In HyperOS app settings, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
+7. Keep Developer options, USB debugging, Wireless debugging, Shizuku, root, Accessibility, VPN and overlay permissions disabled unless you independently need them.
 
 ## What it does
 
@@ -65,7 +78,7 @@ A healthy connection normally shows `Server: Connected`. For real validation, le
 
 This project is designed to avoid the mechanisms that commonly trigger mobile-banking warnings: no persistent ADB, Wireless debugging, Shizuku, root, Accessibility service, VPN, screen-sharing or overlay permission is required.
 
-Banking apps use private and changing risk rules, so compatibility can never be guaranteed. If a banking app objects, stop FCM Guard, revoke **Modify system settings**, and uninstall it before troubleshooting the bank app.
+The app intentionally uses a legacy target SDK solely because modern Android blocks ordinary apps from writing Xiaomi's private System key. Banking apps use private and changing risk rules, so compatibility can never be guaranteed. If a banking app objects, stop FCM Guard, revoke **Modify system settings**, and uninstall it before troubleshooting the bank app.
 
 ## License
 
