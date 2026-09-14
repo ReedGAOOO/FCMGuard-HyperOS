@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/bg"
+    android:clipToPadding="false">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingLeft="18dp"
+        android:paddingTop="18dp"
+        android:paddingRight="18dp"
+        android:paddingBottom="34dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:paddingBottom="10dp">
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/app_name"
+                    android:textColor="@color/text_primary"
+                    android:textSize="32sp"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/subtitle"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="15sp"
+                    android:paddingTop="4dp"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="end">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/language"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"/>
+
+                <Spinner
+                    android:id="@+id/languageSpinner"
+                    android:layout_width="150dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/pill_bg"
+                    android:padding="6dp"/>
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/card_bg"
+            android:orientation="vertical"
+            android:layout_marginTop="8dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_key"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold"
+                android:textSize="12sp"/>
+
+            <EditText
+                android:id="@+id/keyEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/default_key"
+                android:textSize="20sp"
+                android:textColor="@color/text_primary"
+                android:background="@null"
+                android:paddingTop="8dp"
+                android:paddingBottom="12dp"/>
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/border"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_item"
+                android:textColor="@color/text_secondary"
+                android:textStyle="bold"
+                android:textSize="12sp"
+                android:paddingTop="12dp"/>
+
+            <EditText
+                android:id="@+id/itemEdit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:singleLine="true"
+                android:text="@string/default_required_item"
+                android:textSize="20sp"
+                android:textColor="@color/text_primary"
+                android:background="@null"
+                android:paddingTop="8dp" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_marginTop="14dp">
+
+            <Button android:id="@+id/saveBtn" android:layout_width="match_parent" android:layout_height="52dp" android:text="@string/save_configuration" android:textAllCaps="false" android:textColor="@android:color/white" android:background="@drawable/primary_button_bg"/>
+            <Button android:id="@+id/permissionBtn" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="10dp" android:text="@string/grant_modify" android:textAllCaps="false" android:textColor="@color/text_primary" android:background="@drawable/secondary_button_bg"/>
+            <Button android:id="@+id/repairBtn" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="10dp" android:text="@string/repair_now" android:textAllCaps="false" android:textColor="@android:color/white" android:background="@drawable/primary_button_bg"/>
+            <Button android:id="@+id/startBtn" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="10dp" android:text="@string/start_protection" android:textAllCaps="false" android:textColor="@color/text_primary" android:background="@drawable/secondary_button_bg"/>
+            <Button android:id="@+id/stopBtn" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="10dp" android:text="@string/stop_protection" android:textAllCaps="false" android:textColor="@color/text_primary" android:background="@drawable/secondary_button_bg"/>
+            <Button android:id="@+id/wakeBtn" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="10dp" android:text="@string/wake_fcm" android:textAllCaps="false" android:textColor="@color/text_primary" android:background="@drawable/secondary_button_bg"/>
+            <Button android:id="@+id/diagBtn" android:layout_width="match_parent" android:layout_height="52dp" android:layout_marginTop="10dp" android:text="@string/open_fcm_diag" android:textAllCaps="false" android:textColor="@color/text_primary" android:background="@drawable/secondary_button_bg"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:layout_marginTop="14dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/status_title"
+                android:textStyle="bold"
+                android:textColor="@color/text_primary"
+                android:textSize="18sp"/>
+
+            <TextView
+                android:id="@+id/statusText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_primary"
+                android:textSize="16sp"
+                android:lineSpacingExtra="2dp"
+                android:paddingTop="10dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/current_value_title"
+                android:textStyle="bold"
+                android:textColor="@color/text_secondary"
+                android:textSize="13sp"
+                android:paddingTop="14dp"/>
+
+            <TextView
+                android:id="@+id/currentValueText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/text_secondary"
+                android:textSize="15sp"
+                android:textIsSelectable="true"
+                android:paddingTop="6dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/helper_text"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp"
+            android:paddingTop="14dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/note_text"
+            android:textColor="@color/text_secondary"
+            android:textSize="14sp"
+            android:lineSpacingExtra="2dp"
+            android:paddingTop="10dp"/>
+
+    </LinearLayout>
+</ScrollView>
