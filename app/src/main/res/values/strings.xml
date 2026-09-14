@@ -1,38 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">HyperOS system-setting watchdog</string>
+    <string name="subtitle">Quiet FCM protection for HyperOS</string>
     <string name="label_key">Settings key</string>
     <string name="label_item">Required item</string>
     <string name="save_configuration">Save configuration</string>
     <string name="grant_modify">Grant Modify system settings</string>
     <string name="repair_now">Repair now</string>
-    <string name="start_protection">Start automatic protection</string>
-    <string name="stop_protection">Stop automatic protection</string>
     <string name="wake_fcm">Wake FCM now</string>
     <string name="open_fcm_diag">Open FCM diagnostics</string>
     <string name="status_title">Status</string>
-    <string name="current_value_title">Current value</string>
+    <string name="current_value_title">Current whitelist value</string>
     <string name="language">Language</string>
     <string name="follow_system">Follow system</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
     <string name="default_key">MILLET_NO_RESTRICT_APP</string>
     <string name="default_required_item">com.google.android.gms</string>
-    <string name="helper_text">FCM Guard preserves all existing comma-separated items and only adds the configured required item when it is missing. It also checks periodically in the background.</string>
-    <string name="note_text">Recommended on HyperOS: give FCM Guard Autostart and No restrictions battery mode. Keep Developer options / USB debugging / Wireless debugging OFF for better bank-app compatibility.</string>
+
+    <string name="protection_title">Protection</string>
+    <string name="automatic_protection">Automatic protection</string>
+    <string name="automatic_protection_summary">Event-driven monitoring of only the FCM whitelist key. A non-waking 30-minute fallback check is used only as insurance.</string>
+    <string name="persistent_notification">Persistent notification</string>
+    <string name="persistent_notification_summary">Recommended ON for maximum reliability. Turn it OFF to remove the ongoing notification and use background-only mode; HyperOS may then stop the service more easily.</string>
+    <string name="actions_title">Tools</string>
+    <string name="advanced_title">Advanced configuration</string>
+
+    <string name="helper_text">Low-power design: the service no longer polls every 30 seconds, no longer watches unrelated system settings, and only sends an FCM reconnect request after an actual whitelist repair.</string>
+    <string name="note_text">Recommended on HyperOS: keep Autostart enabled and battery mode set to No restrictions. Developer options, USB debugging and Wireless debugging are not required.</string>
+
+    <string name="status_protected">Protected</string>
+    <string name="status_ready">Ready</string>
+    <string name="status_attention">Needs attention</string>
     <string name="status_granted">Modify settings: granted</string>
     <string name="status_not_granted">Modify settings: not granted</string>
     <string name="status_enabled">Automatic protection: enabled</string>
     <string name="status_disabled">Automatic protection: disabled</string>
     <string name="present_yes">Required item present: yes</string>
     <string name="present_no">Required item present: no</string>
+    <string name="notification_mode_foreground">Background mode: foreground service</string>
+    <string name="notification_mode_quiet">Background mode: quiet background-only</string>
+
     <string name="saved">Configuration saved</string>
     <string name="repaired">Repaired / protected</string>
+    <string name="already_protected">Already protected</string>
     <string name="missing_current">(missing)</string>
     <string name="permission_missing">Modify system settings permission is not granted</string>
     <string name="service_started">Automatic protection started</string>
     <string name="service_stopped">Automatic protection stopped</string>
     <string name="wake_sent">Heartbeat / reconnect broadcast sent</string>
     <string name="diagnostics_unavailable">FCM diagnostics activity was not found</string>
+    <string name="write_rejected">System rejected the write</string>
+    <string name="write_failed">Write failed: %1$s</string>
+
+    <string name="notification_channel_name">FCM Guard protection</string>
+    <string name="notification_channel_description">Low-priority notification used to keep automatic FCM protection reliable</string>
+    <string name="notification_active">Protection active · event-driven</string>
+    <string name="notification_repaired">Whitelist repaired · FCM protected</string>
 </resources>
