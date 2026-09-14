@@ -49,6 +49,7 @@ Settings.System.MILLET_NO_RESTRICT_APP
 When `com.google.android.gms` is missing from that comma-separated list, Google Play services can be treated like an ordinary background process. After screen-off or idle periods, HyperOS may freeze or restrict it, which can break the long-lived FCM/MCS connection to Google's push servers.
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart TD
     A[HyperOS PowerKeeper / Greezer] --> B[Rebuilds MILLET_NO_RESTRICT_APP]
     B --> C{com.google.android.gms present?}
@@ -56,6 +57,8 @@ flowchart TD
     C -- No --> E[GMS may be frozen / restricted]
     E --> F[MCS / mtalk long connection drops]
     F --> G[Slack / Gmail / other FCM notifications become delayed or stop]
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G bw;
 ```
 
 ## What FCM Guard changes
@@ -63,6 +66,7 @@ flowchart TD
 FCM Guard does not replace Xiaomi's list and does not maintain its own fixed whitelist. It reads the current HyperOS value, preserves every existing package, and appends Google Play services only when necessary.
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart TD
     A[Watch MILLET_NO_RESTRICT_APP] --> B[Read current comma-separated value]
     B --> C{GMS already present?}
@@ -71,6 +75,8 @@ flowchart TD
     E --> F[Append com.google.android.gms]
     F --> G[Write value back through Settings.System]
     G --> H[Send best-effort FCM / MCS reconnect heartbeat]
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G,H bw;
 ```
 
 That distinction matters because PowerKeeper remains the owner of the list. FCM Guard only repairs the missing entry instead of overwriting Xiaomi's current state.
@@ -95,6 +101,7 @@ Because legacy-target apps can otherwise be letterboxed on modern tall displays,
 Early prototypes checked the setting every 30 seconds and sent reconnect broadcasts too often. The current design is event-driven and normally stays idle.
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart LR
     A[Exact ContentObserver on MILLET_NO_RESTRICT_APP] --> B{Setting changed?}
     B -- Yes --> C[Debounce ~400 ms]
@@ -103,8 +110,9 @@ flowchart LR
     E -- No --> F[Return to idle]
     E -- Yes --> G[Write only once]
     G --> H[Reconnect only after actual repair]
-
     I[30-minute in-process fallback] --> D
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G,H,I bw;
 ```
 
 ### Power optimizations
@@ -119,6 +127,7 @@ flowchart LR
 ## Runtime flow
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart TD
     A[Boot / user enables Automatic protection] --> B[Start GuardService]
     B --> C[Register exact ContentObserver]
@@ -129,9 +138,10 @@ flowchart TD
     F -->|Missing| G[Append GMS and write once]
     G --> H[Best-effort reconnect]
     H --> D
-
     D -->|30 min while process already exists| I[Fallback check]
     I --> F
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G,H,I bw;
 ```
 
 ## Permissions and privacy
@@ -149,6 +159,17 @@ It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, scree
 This project depends on Xiaomi's current HyperOS implementation. If Xiaomi changes PowerKeeper / Greezer behavior, the setting name, or the policy around Google Play services, the workaround may need to change.
 
 The reconnect broadcast is best-effort: Android does not expose a public API that guarantees a forced FCM reconnect from a third-party app.
+
+## References & Acknowledgements
+
+The core HyperOS / FCM mechanism behind this project — especially the PowerKeeper / Greezer behavior and the `MILLET_NO_RESTRICT_APP` repair strategy — was originally investigated and documented by **HyperOS FCM Fix**:
+
+- **HyperOS FCM Fix** by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
+- Technical investigation: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
+
+FCM Guard is an independent implementation with a different design goal: no Shizuku/root dependency, minimal privileges, event-driven monitoring, and lower idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
+
+Special thanks to the original author for publishing the mechanism, investigation notes, and reproducible findings that made this lightweight implementation possible.
 
 ## Build
 
