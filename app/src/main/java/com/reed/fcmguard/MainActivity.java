@@ -100,7 +100,7 @@ public class MainActivity extends Activity {
         ((Button)findViewById(R.id.repairBtn)).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
             SettingsGuard.Result result = SettingsGuard.repair(this);
-            if (result.success) HeartbeatHelper.send(this);
+            if (result.success) FcmReconnect.kick(this);
             refreshStatus(result.message);
         });
 
@@ -126,7 +126,7 @@ public class MainActivity extends Activity {
         });
 
         ((Button)findViewById(R.id.wakeBtn)).setOnClickListener(v -> {
-            HeartbeatHelper.send(this);
+            FcmReconnect.kick(this);
             toast(getString(R.string.wake_sent));
             refreshStatus(getString(R.string.wake_sent));
         });
