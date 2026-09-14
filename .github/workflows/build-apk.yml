@@ -2,7 +2,7 @@ name: Build APK
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, 'feature/**' ]
   workflow_dispatch:
 
 permissions:
@@ -85,6 +85,7 @@ jobs:
           retention-days: 30
 
       - name: Publish APKs to GitHub Release
+        if: github.ref == 'refs/heads/main'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
