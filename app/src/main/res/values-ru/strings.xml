@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FCM Guard</string>
+    <string name="subtitle">Энергоэффективная защита FCM для HyperOS</string>
+    <string name="label_key">Ключ настройки</string>
+    <string name="label_item">Обязательный элемент</string>
+    <string name="save_configuration">Сохранить конфигурацию</string>
+    <string name="grant_modify">Разрешить изменение системных настроек</string>
+    <string name="repair_now">Исправить сейчас</string>
+    <string name="wake_fcm">Активировать FCM</string>
+    <string name="open_fcm_diag">Открыть диагностику FCM</string>
+    <string name="status_title">Состояние</string>
+    <string name="current_value_title">Текущее значение списка исключений</string>
+    <string name="language">Язык</string>
+    <string name="follow_system">Как в системе</string>
+    <string name="english">English</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_required_item">com.google.android.gms</string>
+
+    <string name="protection_title">Защита</string>
+    <string name="automatic_protection">Автоматическая защита</string>
+    <string name="automatic_protection_summary">Отслеживается только ключ списка FCM по событиям. Резервная проверка раз в 30 минут специально не будит устройство.</string>
+    <string name="persistent_notification">Постоянное уведомление</string>
+    <string name="persistent_notification_summary">Рекомендуется для максимальной надёжности. Отключите, чтобы скрыть уведомление и использовать только фоновый режим.</string>
+    <string name="actions_title">Инструменты</string>
+    <string name="advanced_title">Расширенные настройки</string>
+
+    <string name="helper_text">Энергоэффективная схема: без опроса каждые 30 секунд, без слежения за посторонними настройками и с переподключением FCM только после реального исправления.</string>
+    <string name="note_text">В HyperOS оставьте автозапуск включённым и установите режим батареи Без ограничений. Параметры разработчика, USB- и беспроводная отладка не требуются.</string>
+
+    <string name="status_protected">Защищено</string>
+    <string name="status_ready">Готово</string>
+    <string name="status_attention">Требуется внимание</string>
+    <string name="status_granted">Изменение настроек: разрешено</string>
+    <string name="status_not_granted">Изменение настроек: не разрешено</string>
+    <string name="status_enabled">Автоматическая защита: включена</string>
+    <string name="status_disabled">Автоматическая защита: выключена</string>
+    <string name="present_yes">Обязательный элемент присутствует: да</string>
+    <string name="present_no">Обязательный элемент присутствует: нет</string>
+    <string name="notification_mode_foreground">Фоновый режим: foreground service</string>
+    <string name="notification_mode_quiet">Фоновый режим: тихий</string>
+
+    <string name="saved">Конфигурация сохранена</string>
+    <string name="repaired">Исправлено / защищено</string>
+    <string name="already_protected">Уже защищено</string>
+    <string name="missing_current">(отсутствует)</string>
+    <string name="permission_missing">Нет разрешения на изменение системных настроек</string>
+    <string name="service_started">Автоматическая защита запущена</string>
+    <string name="service_stopped">Автоматическая защита остановлена</string>
+    <string name="wake_sent">Отправлен heartbeat / запрос переподключения</string>
+    <string name="diagnostics_unavailable">Диагностика FCM не найдена</string>
+    <string name="write_rejected">Система отклонила запись</string>
+    <string name="write_failed">Ошибка записи: %1$s</string>
+
+    <string name="notification_channel_name">Защита FCM Guard</string>
+    <string name="notification_channel_description">Низкоприоритетное уведомление для надёжной автоматической защиты FCM</string>
+    <string name="notification_active">Защита активна · по событиям</string>
+    <string name="notification_repaired">Список исправлен · FCM защищён</string>
+</resources>
