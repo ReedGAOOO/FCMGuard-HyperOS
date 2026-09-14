@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Outline;
 import android.graphics.Paint;
+import android.graphics.PorterDuff;
+import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.view.View;
@@ -18,9 +20,12 @@ import android.widget.LinearLayout;
 public final class CollapsingStatusCard extends LinearLayout {
     private final Paint fillPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final Paint strokePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint maskPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF surfaceRect = new RectF();
+    private final RectF maskRect = new RectF();
 
     private float radiusPx;
+    private float detailsRadiusPx;
     private float strokeWidthPx;
     private float visualBottomPx = Float.NaN;
     private int detailsChildIndex = -1;
@@ -47,6 +52,7 @@ public final class CollapsingStatusCard extends LinearLayout {
         setChildrenDrawingOrderEnabled(true);
 
         radiusPx = getResources().getDimension(R.dimen.status_card_radius);
+        detailsRadiusPx = getResources().getDimension(R.dimen.status_panel_radius);
         strokeWidthPx = getResources().getDisplayMetrics().density;
 
         fillPaint.setStyle(Paint.Style.FILL);
@@ -55,6 +61,12 @@ public final class CollapsingStatusCard extends LinearLayout {
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setStrokeWidth(strokeWidthPx);
         strokePaint.setColor(getResources().getColor(R.color.floating_border));
+
+        // Erase the part of the moving value card that passes behind the white
+        // detailed-status plate. saveLayer() in drawChild keeps this Xfermode local
+        // to the value card instead of punching through the whole status surface.
+        maskPaint.setStyle(Paint.Style.FILL);
+        maskPaint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.DST_OUT));
 
         setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View view, Outline outline) {
@@ -125,25 +137,32 @@ public final class CollapsingStatusCard extends LinearLayout {
     }
 
     /**
-     * Mask the translated whitelist panel at the detailed-status lower edge.
+     * Apply a real rounded mask to the translated whitelist panel.
      *
-     * Drawing order alone leaves the whitelist rendered underneath the rounded,
-     * anti-aliased top edge of the white status plate. At the fully collapsed
-     * position that can show up as a faint tonal arc/strip. Clipping the whitelist
-     * to the area strictly below the status plate makes the plate behave like a
-     * real physical cover: as soon as the whitelist enters it, that portion is no
-     * longer rendered at all. The final aligned position is therefore pixel-clean.
+     * v1.5.9 removed the residual line by clipping everything above the detailed
+     * status panel's lower edge, but that made the cover boundary rectangular.
+     * Here the whitelist is first drawn into a small temporary layer and then the
+     * exact rounded detailed-status shape is erased from that layer. The visible
+     * lower part therefore follows the 14dp rounded corners throughout the motion,
+     * while the fully collapsed state remains pixel-clean with no tonal arc left.
      */
     @Override protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
         if (child == currentValuePanel && detailsPanel != null) {
-            int saveCount = canvas.save();
-            canvas.clipRect(
-                    0f,
-                    detailsPanel.getBottom(),
-                    getWidth(),
-                    resolveVisualBottom()
-            );
+            float visualBottom = resolveVisualBottom();
+            if (getWidth() <= 0 || visualBottom <= 0f) return false;
+
+            int saveCount = canvas.saveLayer(0f, 0f, getWidth(), visualBottom, null);
+            canvas.clipRect(0f, 0f, getWidth(), visualBottom);
+
             boolean result = super.drawChild(canvas, child, drawingTime);
+
+            maskRect.set(
+                    detailsPanel.getLeft(),
+                    detailsPanel.getTop(),
+                    detailsPanel.getRight(),
+                    detailsPanel.getBottom()
+            );
+            canvas.drawRoundRect(maskRect, detailsRadiusPx, detailsRadiusPx, maskPaint);
             canvas.restoreToCount(saveCount);
             return result;
         }

@@ -13,6 +13,7 @@
     <dimen name="status_card_inset">8dp</dimen>
     <dimen name="status_expanded_top">96dp</dimen>
     <dimen name="status_card_radius">20dp</dimen>
+    <dimen name="status_panel_radius">14dp</dimen>
     <dimen name="status_header_overlap">12dp</dimen>
     <dimen name="card_gap">10dp</dimen>
     <dimen name="content_bottom_padding">24dp</dimen>
