@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#F7F9FC</color>
+    <color name="surface">#FFFFFFFF</color>
+    <color name="surface_alt">#EEF3FD</color>
+    <color name="text_primary">#202124</color>
+    <color name="text_secondary">#5F6368</color>
+    <color name="blue">#4285F4</color>
+    <color name="green">#34A853</color>
+    <color name="yellow">#FBBC04</color>
+    <color name="red">#EA4335</color>
+    <color name="border">#D7E3FC</color>
+    <color name="chip_bg">#E8F0FE</color>
+</resources>
