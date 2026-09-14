@@ -3,14 +3,15 @@
     <string name="fcm_apps_title">FCM-App-Assistent</string>
     <string name="fcm_apps_summary">Erkennt installierte Apps mit standardmäßigen FCM/GCM-Empfangskomponenten und hilft bei der HyperOS-Autostart-Konfiguration.</string>
     <string name="scan_fcm_apps">FCM-Apps scannen</string>
+    <string name="collapse_fcm_apps">App-Liste einklappen</string>
     <string name="open_autostart_manager">Alle in HyperOS konfigurieren</string>
     <string name="fcm_apps_not_scanned">Tippe auf „FCM-Apps scannen“, um die lokale Liste zu erstellen.</string>
     <string name="fcm_apps_found">%1$d FCM-fähige Apps erkannt</string>
     <string name="no_fcm_apps">Keine benutzerorientierten FCM-Apps erkannt.</string>
-    <string name="app_settings">Einstellungen</string>
+    <string name="app_settings">Autostart</string>
     <string name="autostart_manager_unavailable">HyperOS-Autostart-Einstellungen konnten nicht geöffnet werden</string>
     <string name="app_settings_unavailable">App-Einstellungen konnten nicht geöffnet werden</string>
-    <string name="fcm_detection_note">Die Erkennung ist bestmöglich und läuft nur nach Tippen auf Scannen. Android erlaubt einer normalen App nicht, Autostart für andere Apps ohne erhöhte Rechte still zu aktivieren. FCM Guard vermeidet solche Methoden bewusst.</string>
+    <string name="fcm_detection_note">Die Erkennung läuft nur nach Tippen auf Scannen; Autostart muss weiterhin manuell in den HyperOS-Einstellungen aktiviert werden.</string>
     <string name="appearance_title">Darstellung</string>
     <string name="appearance_summary">Standardmäßig wird dem System gefolgt. Es ändert nur das UI-Design und fügt keine Hintergrundarbeit hinzu.</string>
     <string name="theme_system">System</string>
