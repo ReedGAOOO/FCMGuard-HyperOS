@@ -1,12 +1,15 @@
 package com.reed.fcmguard;
 
+import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
@@ -16,7 +19,9 @@ import android.os.Looper;
 import android.provider.Settings;
 
 public class GuardService extends Service {
-    private static final String CHANNEL_ID = "fcm_guard";
+    // v2 intentionally uses a new channel id. Android does not allow an app to raise
+    // an existing channel from IMPORTANCE_MIN to IMPORTANCE_LOW after creation.
+    private static final String CHANNEL_ID = "fcm_guard_persistent_v2";
     private static final int NOTIFICATION_ID = 426;
     private static final long FALLBACK_INTERVAL_MS = 30L * 60L * 1000L;
     private final Handler handler = new Handler(Looper.getMainLooper());
@@ -84,7 +89,7 @@ public class GuardService extends Service {
 
     private void applyExecutionMode() {
         if (SettingsGuard.usePersistentNotification(this)) {
-            createChannel();
+            ensureNotificationChannel(this);
             startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.notification_active)));
             foreground = true;
         } else {
@@ -93,6 +98,50 @@ public class GuardService extends Service {
             if (nm != null) nm.cancel(NOTIFICATION_ID);
             foreground = false;
         }
+    }
+
+    /**
+     * Creates the visible-but-silent foreground-service channel. Returns true only
+     * when this call created the channel for the first time.
+     */
+    public static boolean ensureNotificationChannel(Context context) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return false;
+
+        boolean created = nm.getNotificationChannel(CHANNEL_ID) == null;
+        NotificationChannel channel = new NotificationChannel(
+                CHANNEL_ID,
+                context.getString(R.string.notification_channel_name),
+                NotificationManager.IMPORTANCE_LOW
+        );
+        channel.setDescription(context.getString(R.string.notification_channel_description));
+        channel.setShowBadge(false);
+        channel.enableVibration(false);
+        channel.enableLights(false);
+        channel.setSound(null, null);
+        channel.setLockscreenVisibility(Notification.VISIBILITY_PRIVATE);
+        nm.createNotificationChannel(channel);
+        return created;
+    }
+
+    /** True when Android will actually place the foreground notification in the shade. */
+    public static boolean canShowPersistentNotification(Context context) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nm == null) return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !nm.areNotificationsEnabled()) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= 33 &&
+                context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+            return false;
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = nm.getNotificationChannel(CHANNEL_ID);
+            return channel != null && channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+        }
+        return true;
     }
 
     @Override public void onDestroy() {
@@ -104,22 +153,6 @@ public class GuardService extends Service {
     }
 
     @Override public IBinder onBind(Intent intent) { return null; }
-
-    private void createChannel() {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return;
-        NotificationChannel channel = new NotificationChannel(
-                CHANNEL_ID,
-                getString(R.string.notification_channel_name),
-                NotificationManager.IMPORTANCE_MIN
-        );
-        channel.setDescription(getString(R.string.notification_channel_description));
-        channel.setShowBadge(false);
-        channel.enableVibration(false);
-        channel.enableLights(false);
-        channel.setSound(null, null);
-        NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (nm != null) nm.createNotificationChannel(channel);
-    }
 
     private void refreshNotification(String text) {
         if (!foreground) return;
@@ -136,7 +169,7 @@ public class GuardService extends Service {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder = new Notification.Builder(this, CHANNEL_ID);
         } else {
-            builder = new Notification.Builder(this).setPriority(Notification.PRIORITY_MIN);
+            builder = new Notification.Builder(this).setPriority(Notification.PRIORITY_LOW);
         }
 
         return builder
@@ -144,6 +177,8 @@ public class GuardService extends Service {
                 .setContentTitle(getString(R.string.app_name))
                 .setContentText(text)
                 .setContentIntent(pi)
+                .setCategory(Notification.CATEGORY_SERVICE)
+                .setVisibility(Notification.VISIBILITY_PRIVATE)
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setShowWhen(false)
