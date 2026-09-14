@@ -2,7 +2,11 @@
 <resources>
     <string-array name="language_entries">
         <item>@string/follow_system</item>
-        <item>@string/english</item>
-        <item>@string/simplified_chinese</item>
+        <item>English</item>
+        <item>简体中文</item>
+        <item>繁體中文</item>
+        <item>Français</item>
+        <item>日本語</item>
+        <item>한국어</item>
     </string-array>
 </resources>
