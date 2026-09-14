@@ -4,11 +4,15 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowInsets;
+import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -36,7 +40,9 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        configureBottomEdgeToEdge();
         setContentView(R.layout.activity_main);
+        applyNavigationInsetPadding();
         bindViews();
         loadConfigIntoFields();
         setupLanguageSpinner();
@@ -47,7 +53,13 @@ public class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        configureBottomEdgeToEdge();
         refreshStatus(null);
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) configureBottomEdgeToEdge();
     }
 
     private void bindViews() {
@@ -242,6 +254,61 @@ public class MainActivity extends Activity {
                 checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 10);
         }
+    }
+
+    /**
+     * Bottom-only edge-to-edge. The status bar keeps normal fitting, while the app
+     * background extends behind the gesture navigation area so the gesture pill
+     * floats over the page like modern media apps. We do not hide SystemUI itself.
+     */
+    @SuppressWarnings("deprecation")
+    private void configureBottomEdgeToEdge() {
+        Window window = getWindow();
+        final int bg = getResources().getColor(R.color.bg);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(bg);
+            window.setNavigationBarColor(Color.TRANSPARENT);
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.setNavigationBarContrastEnforced(false);
+        }
+
+        int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
+        }
+        window.getDecorView().setSystemUiVisibility(flags);
+    }
+
+    /**
+     * Keep the last content clear of the gesture pill while leaving the ScrollView
+     * background underneath it. This gives true visual immersion without making the
+     * bottom controls hard to reach.
+     */
+    @SuppressWarnings("deprecation")
+    private void applyNavigationInsetPadding() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
+
+        View scroll = findViewById(R.id.scroll);
+        final int baseLeft = scroll.getPaddingLeft();
+        final int baseTop = scroll.getPaddingTop();
+        final int baseRight = scroll.getPaddingRight();
+        final int baseBottom = scroll.getPaddingBottom();
+
+        scroll.setOnApplyWindowInsetsListener((v, insets) -> {
+            int bottom = Math.max(
+                    insets.getSystemWindowInsetBottom(),
+                    insets.getStableInsetBottom()
+            );
+            v.setPadding(baseLeft, baseTop, baseRight, baseBottom + bottom);
+            return insets;
+        });
+        scroll.requestApplyInsets();
     }
 
     private void toast(String text) {
