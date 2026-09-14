@@ -88,13 +88,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:background="@drawable/status_header_bg"
                 android:paddingBottom="10dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold" />
                 <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" />
             </LinearLayout>
 
-            <TextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:lineSpacingExtra="2dp" android:paddingTop="2dp" />
+            <LinearLayout
+                android:id="@+id/statusDetailsPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/status_header_bg"
+                android:paddingTop="2dp"
+                android:paddingBottom="2dp">
+                <TextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:lineSpacingExtra="2dp" />
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/currentValuePanel"
