@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -32,8 +33,8 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        configureSystemBars();
         setContentView(R.layout.activity_main);
+        configureSystemBars();
         bindViews();
         requestNotificationPermissionIfNeeded();
         loadConfigIntoFields();
@@ -44,7 +45,13 @@ public class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
+        configureSystemBars();
         refreshStatus(null);
+    }
+
+    @Override public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        if (hasFocus) configureSystemBars();
     }
 
     private void bindViews() {
@@ -166,27 +173,38 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * HyperOS 3 can render a large black legacy-navigation surface when an app targeting
-     * an old SDK combines transparent bars with LAYOUT_HIDE_NAVIGATION.  We intentionally
-     * keep normal window fitting here and simply tint both system bars to the app surface.
-     * This keeps the gesture pill visually integrated without exposing the black decor
-     * background, and it also prevents the title from sliding under the status bar.
+     * HyperOS 3 may restore a black legacy navigation surface for apps that target an
+     * old SDK.  Apply the app background at all three layers (theme/window/decor), and
+     * re-apply it after resume/focus because the ROM can rewrite navigation-bar state.
+     * We deliberately do not use LAYOUT_HIDE_NAVIGATION: the gesture area stays owned
+     * by SystemUI, but visually matches the app background instead of showing black.
      */
+    @SuppressWarnings("deprecation")
     private void configureSystemBars() {
         Window w = getWindow();
         final int bg = getResources().getColor(R.color.bg);
+
+        w.setBackgroundDrawable(new ColorDrawable(bg));
+        View decor = w.getDecorView();
+        decor.setBackgroundColor(bg);
+
         if (Build.VERSION.SDK_INT >= 21) {
-            w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            w.clearFlags(
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS |
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION |
+                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
             w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             w.setStatusBarColor(bg);
             w.setNavigationBarColor(bg);
+        }
+        if (Build.VERSION.SDK_INT >= 28) {
+            w.setNavigationBarDividerColor(bg);
         }
         if (Build.VERSION.SDK_INT >= 29) {
             w.setNavigationBarContrastEnforced(false);
             w.setStatusBarContrastEnforced(false);
         }
 
-        View decor = w.getDecorView();
         int flags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         if (Build.VERSION.SDK_INT >= 26) flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         decor.setSystemUiVisibility(flags);
