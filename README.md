@@ -8,177 +8,142 @@
 
 # FCM Guard for HyperOS
 
-**A lightweight no-root watchdog that keeps Google Play services in HyperOS 3's no-restrict background list so FCM push notifications stay reliable.**
+**A lightweight, no-root watchdog for HyperOS 3 China ROM that keeps Google Play services in Xiaomi's no-restrict background list so FCM push stays reliable.**
 
-**Designed for:** China-market Xiaomi / Redmi / POCO phones running **HyperOS 3 China ROM**, with Google Play services already installed and working.
+**Designed for:** China-market Xiaomi / Redmi / POCO phones with Google Play services already installed and working.
+
+<p align="center">
+  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>Download latest APK</strong></a>
+  ·
+  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">Latest release</a>
+</p>
 
 ## Highlights
 
-- **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, ADB, Accessibility, VPN, overlay, or device-admin privileges.
-- **Finance-app friendly** — avoids Shizuku, persistent ADB/debugging, and other high-privilege no-root methods; in our testing, those approaches could still trigger remote-access or security controls in DBS, Standard Chartered, and BOC, including access blocks or account-risk actions.
-- **Low background power** — event-driven monitoring is the primary path; the 30-minute fallback does not deliberately wake a sleeping phone.
-- **Reconnects only when needed** — FCM/MCS heartbeat broadcasts are sent only after a real repair or when manually requested.
-- **Optional persistent notification** — foreground mode is available for maximum survival reliability, while quiet background mode keeps the notification shade clean.
-- **Bilingual UI** — follows the system language by default and supports English / 简体中文 switching.
+- **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, persistent ADB, Accessibility, VPN, overlay, or device-admin privileges.
+- **Finance-app friendly** — keeps the implementation deliberately low-privilege for better compatibility with security-sensitive apps.
+- **Low background power** — exact event-driven monitoring is the main path; the 30-minute fallback is in-process and does not deliberately wake a sleeping phone.
+- **Reconnects only when needed** — FCM/MCS reconnect broadcasts are sent only after a real whitelist repair or a manual request.
+- **Optional persistent notification** — foreground mode uses a visible-but-silent notification channel for stronger process survival; quiet background mode remains available.
+- **FCM app assistant** — scans installed user apps for standard Firebase/GCM manifest signals and links to HyperOS autostart management plus per-app settings.
+- **Native dark mode** — System / Light / Dark, with **System** as the default.
+- **10-language UI** — English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian through Android's native per-app language mechanism.
+- **Compact-phone ready** — responsive layout checks cover 320–480dp widths, including a Xiaomi 17-class 393dp profile.
 
 ## Quick setup
 
-1. Install the latest APK from **Actions → Build APK → `FCMGuard-debug-apk`**.
-2. Open **FCM Guard** and grant **Modify system settings**.
+1. Install the latest APK from **GitHub Releases**.
+2. Open FCM Guard and grant **Modify system settings**.
 3. Tap **Repair now** once.
 4. Enable **Automatic protection**.
-5. In HyperOS, enable **Autostart** for FCM Guard and set its battery policy to **No restrictions**.
-6. Keep **Persistent notification** enabled if maximum survival reliability matters; disable it if you prefer quiet background mode.
-7. For banking-app compatibility, keep Developer options / USB debugging / Wireless debugging off unless you explicitly need them.
+5. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
+6. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
+7. Optional: scan **FCM apps** and configure likely FCM clients in HyperOS autostart/per-app settings.
+8. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
 
-> FCM Guard is intended for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer background management can still interrupt FCM delivery. Global ROMs usually do not need this workaround.
+> FCM Guard is mainly for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
 
 ---
 
 # Technical overview
 
-## The underlying problem
+## Core mechanism
 
-On affected HyperOS 3 China-ROM devices, Xiaomi's PowerKeeper / Greezer background manager may rebuild the private system setting:
+Affected HyperOS builds can rebuild the private setting:
 
 ```text
 Settings.System.MILLET_NO_RESTRICT_APP
 ```
 
-When `com.google.android.gms` is missing from that comma-separated list, Google Play services can be treated like an ordinary background process. After screen-off or idle periods, HyperOS may freeze or restrict it, which can break the long-lived FCM/MCS connection to Google's push servers.
+If `com.google.android.gms` is removed, Google Play services can be treated like a normal background process and its long-lived FCM/MCS connection may be interrupted.
+
+FCM Guard reads the current comma-separated value, preserves all existing packages, and appends `com.google.android.gms` only when it is missing.
 
 ```mermaid
-%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','lineColor':'#000000'}}}%%
 flowchart TD
-    A[HyperOS PowerKeeper / Greezer] --> B[Rebuilds MILLET_NO_RESTRICT_APP]
-    B --> C{com.google.android.gms present?}
-    C -- Yes --> D[GMS remains exempt from aggressive background restriction]
-    C -- No --> E[GMS may be frozen / restricted]
-    E --> F[MCS / mtalk long connection drops]
-    F --> G[Slack / Gmail / other FCM notifications become delayed or stop]
-    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
-    class A,B,C,D,E,F,G bw;
-```
-
-## What FCM Guard changes
-
-FCM Guard does not replace Xiaomi's list and does not maintain its own fixed whitelist. It reads the current HyperOS value, preserves every existing package, and appends Google Play services only when necessary.
-
-```mermaid
-%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
-flowchart TD
-    A[Watch MILLET_NO_RESTRICT_APP] --> B[Read current comma-separated value]
-    B --> C{GMS already present?}
+    A[Watch MILLET_NO_RESTRICT_APP] --> B[Read current value]
+    B --> C{GMS present?}
     C -- Yes --> D[Do nothing]
-    C -- No --> E[Preserve all current entries]
+    C -- No --> E[Preserve current packages]
     E --> F[Append com.google.android.gms]
-    F --> G[Write value back through Settings.System]
-    G --> H[Send best-effort FCM / MCS reconnect heartbeat]
+    F --> G[Write once]
+    G --> H[Best-effort FCM reconnect]
     classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
     class A,B,C,D,E,F,G,H bw;
 ```
 
-That distinction matters because PowerKeeper remains the owner of the list. FCM Guard only repairs the missing entry instead of overwriting Xiaomi's current state.
-
 ## Why `targetSdk 22`?
 
-Modern Android versions restrict writes to non-public `Settings.System` keys even when the user grants **Modify system settings**. Xiaomi's `MILLET_NO_RESTRICT_APP` is a vendor-private key, so a normal modern-target app can be rejected by `SettingsProvider`.
+FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission and without root/Shizuku.
 
-FCM Guard therefore deliberately uses:
+## Low-power design
+
+- Exact `ContentObserver` only for `MILLET_NO_RESTRICT_APP`.
+- ~400 ms debounce after an observed change.
+- 30-minute in-process fallback instead of rapid polling.
+- No `AlarmManager`, repeating exact alarm, or WakeLock for the fallback.
+- No write when GMS is already present.
+- No reconnect broadcast unless a repair actually happened or the user requests one.
+
+## Persistent notification
+
+Persistent mode runs `GuardService` as a foreground service. The current implementation uses a dedicated `IMPORTANCE_LOW`, silent notification channel so the notification remains visible without sound or vibration. Because FCM Guard deliberately targets SDK 22, Android 13+ controls the notification-permission prompt timing; if notifications are already blocked, FCM Guard links directly to the app's system notification settings.
+
+## FCM diagnostics
+
+**Open FCM diagnostics** now launches the current Google Play services activity first:
 
 ```text
-compileSdk 35
-targetSdk 22
+com.google.android.gms/com.google.android.gms.gcm.GcmDiagnostics
 ```
 
-The modern compile SDK allows current Android tooling, while the legacy target keeps the compatibility path required to write this Xiaomi setting without root, Shizuku, or shell-level privileges.
+Older `GTalkServiceDiagnostics` is retained as a compatibility fallback, with a final best-effort lookup for a diagnostics activity inside Google Play services.
 
-Because legacy-target apps can otherwise be letterboxed on modern tall displays, the manifest explicitly opts into resizable / tall-screen layouts.
+## FCM app assistant
 
-## Low-power background design
+The scanner looks for standard manifest signals such as:
 
-Early prototypes checked the setting every 30 seconds and sent reconnect broadcasts too often. The current design is event-driven and normally stays idle.
-
-```mermaid
-%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
-flowchart LR
-    A[Exact ContentObserver on MILLET_NO_RESTRICT_APP] --> B{Setting changed?}
-    B -- Yes --> C[Debounce ~400 ms]
-    C --> D[Read current value]
-    D --> E{Repair required?}
-    E -- No --> F[Return to idle]
-    E -- Yes --> G[Write only once]
-    G --> H[Reconnect only after actual repair]
-    I[30-minute in-process fallback] --> D
-    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
-    class A,B,C,D,E,F,G,H,I bw;
+```text
+com.google.firebase.MESSAGING_EVENT
+com.google.android.c2dm.intent.RECEIVE
 ```
 
-### Power optimizations
+A match means the app is a likely FCM/GCM client, not proof that every notification from that app uses FCM. FCM Guard does not silently change another app's autostart state; it opens HyperOS's own management pages for user confirmation. It also does not request `QUERY_ALL_PACKAGES`.
 
-- **Exact URI observer:** listens only to `Settings.System.getUriFor(MILLET_NO_RESTRICT_APP)` instead of the entire System settings table.
-- **No rapid polling:** the fallback interval is 30 minutes rather than 30 seconds.
-- **No deliberate wake-up:** the fallback uses an in-process `Handler`, not `AlarmManager`, WakeLock, or a repeating exact alarm, so it does not intentionally wake a sleeping device.
-- **No redundant writes:** if Google Play services is already present, FCM Guard leaves the setting untouched.
-- **No redundant reconnects:** heartbeat/reconnect broadcasts are sent only after an actual repair or a manual **Wake FCM now** action.
-- **Optional foreground mode:** persistent notification mode improves process survival; quiet mode removes the notification but gives HyperOS more freedom to terminate the service.
+## Appearance, languages, and responsive layout
 
-## Runtime flow
-
-```mermaid
-%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
-flowchart TD
-    A[Boot / user enables Automatic protection] --> B[Start GuardService]
-    B --> C[Register exact ContentObserver]
-    C --> D[Idle]
-    D -->|HyperOS rewrites whitelist| E[Observer fires]
-    E --> F[Check required package]
-    F -->|Present| D
-    F -->|Missing| G[Append GMS and write once]
-    G --> H[Best-effort reconnect]
-    H --> D
-    D -->|30 min while process already exists| I[Fallback check]
-    I --> F
-    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
-    class A,B,C,D,E,F,G,H,I bw;
-```
+- System / Light / Dark appearance modes.
+- 10 native app languages: English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian.
+- Compact and large-width resource profiles.
+- CI geometry checks for 320, 360, 393, 411, 430, and 480dp widths.
 
 ## Permissions and privacy
 
-FCM Guard uses only the minimum Android capabilities needed for this workaround:
+FCM Guard uses `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, foreground-service/notification support, and narrow package visibility for FCM/GCM handlers, Google Play services, and Xiaomi Security Center.
 
-- `WRITE_SETTINGS` — granted explicitly by the user through Android's **Modify system settings** screen.
-- `RECEIVE_BOOT_COMPLETED` — restarts protection after reboot when automatic protection is enabled.
-- `FOREGROUND_SERVICE` / notification support — used only when persistent-notification mode is selected.
-
-It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, screen overlay, device-admin, account access, or network traffic inspection.
+It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overlay, device-admin, account access, or traffic inspection.
 
 ## Limitations
 
-This project depends on Xiaomi's current HyperOS implementation. If Xiaomi changes PowerKeeper / Greezer behavior, the setting name, or the policy around Google Play services, the workaround may need to change.
-
-The reconnect broadcast is best-effort: Android does not expose a public API that guarantees a forced FCM reconnect from a third-party app.
+This project depends on Xiaomi's current HyperOS implementation. Xiaomi can change PowerKeeper / Greezer behavior, the private setting, or app-management pages in future releases. FCM reconnect and FCM-client detection are both best-effort because Android does not expose public APIs that guarantee either operation.
 
 ## References & Acknowledgements
 
-The core HyperOS / FCM mechanism behind this project — especially the PowerKeeper / Greezer behavior and the `MILLET_NO_RESTRICT_APP` repair strategy — was originally investigated and documented by **HyperOS FCM Fix**:
+The PowerKeeper / Greezer investigation and the `MILLET_NO_RESTRICT_APP` repair strategy were originally documented by **HyperOS FCM Fix**:
 
-- **HyperOS FCM Fix** by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
+- HyperOS FCM Fix by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
 - Technical investigation: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard is an independent implementation with a different design goal: no Shizuku/root dependency, minimal privileges, event-driven monitoring, and lower idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
-
-Special thanks to the original author for publishing the mechanism, investigation notes, and reproducible findings that made this lightweight implementation possible.
+FCM Guard is an independent implementation focused on no Shizuku/root dependency, minimal privileges, event-driven monitoring, and low idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
 
 ## Build
 
-GitHub Actions builds a signed debug APK for every push to `main`.
+GitHub Actions checks responsive layout profiles and builds a signed debug APK. Pushes to `main` publish/update the versioned GitHub Release; feature branches can be validated before release.
 
-Open **Actions → Build APK** and download the `FCMGuard-debug-apk` artifact. The workflow reuses a stable signing key cache so repository builds can update one another without signature conflicts.
+For normal phone installation, use:
 
-## Disclaimer
-
-FCM Guard modifies a vendor-specific Android system setting related to HyperOS background restrictions. It is provided as-is; use it at your own risk.
+**https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
 
 ## License
 
