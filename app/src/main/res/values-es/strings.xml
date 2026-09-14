@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FCM Guard</string>
+    <string name="subtitle">Protección FCM de bajo consumo para HyperOS</string>
+    <string name="label_key">Clave de ajustes</string>
+    <string name="label_item">Elemento requerido</string>
+    <string name="save_configuration">Guardar configuración</string>
+    <string name="grant_modify">Permitir modificar ajustes del sistema</string>
+    <string name="repair_now">Reparar ahora</string>
+    <string name="wake_fcm">Activar FCM ahora</string>
+    <string name="open_fcm_diag">Abrir diagnóstico de FCM</string>
+    <string name="status_title">Estado</string>
+    <string name="current_value_title">Valor actual de la lista permitida</string>
+    <string name="language">Idioma</string>
+    <string name="follow_system">Seguir el sistema</string>
+    <string name="english">English</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_required_item">com.google.android.gms</string>
+
+    <string name="protection_title">Protección</string>
+    <string name="automatic_protection">Protección automática</string>
+    <string name="automatic_protection_summary">Supervisa solo la clave de la lista de FCM mediante eventos. La comprobación de respaldo cada 30 minutos no despierta deliberadamente el teléfono.</string>
+    <string name="persistent_notification">Notificación permanente</string>
+    <string name="persistent_notification_summary">Recomendado activado para máxima fiabilidad. Desactívalo para ocultar la notificación y usar solo el modo en segundo plano.</string>
+    <string name="actions_title">Herramientas</string>
+    <string name="advanced_title">Configuración avanzada</string>
+
+    <string name="helper_text">Diseño de bajo consumo: sin sondeo cada 30 segundos, sin observar ajustes no relacionados y con reconexión FCM solo tras una reparación real.</string>
+    <string name="note_text">En HyperOS, mantén el inicio automático activado y la batería en Sin restricciones. No se requieren opciones de desarrollador ni depuración USB o inalámbrica.</string>
+
+    <string name="status_protected">Protegido</string>
+    <string name="status_ready">Listo</string>
+    <string name="status_attention">Requiere atención</string>
+    <string name="status_granted">Modificar ajustes: permitido</string>
+    <string name="status_not_granted">Modificar ajustes: no permitido</string>
+    <string name="status_enabled">Protección automática: activada</string>
+    <string name="status_disabled">Protección automática: desactivada</string>
+    <string name="present_yes">Elemento requerido presente: sí</string>
+    <string name="present_no">Elemento requerido presente: no</string>
+    <string name="notification_mode_foreground">Modo en segundo plano: servicio en primer plano</string>
+    <string name="notification_mode_quiet">Modo en segundo plano: silencioso</string>
+
+    <string name="saved">Configuración guardada</string>
+    <string name="repaired">Reparado / protegido</string>
+    <string name="already_protected">Ya está protegido</string>
+    <string name="missing_current">(ausente)</string>
+    <string name="permission_missing">No se ha concedido el permiso para modificar ajustes del sistema</string>
+    <string name="service_started">Protección automática iniciada</string>
+    <string name="service_stopped">Protección automática detenida</string>
+    <string name="wake_sent">Se envió la señal de latido / reconexión</string>
+    <string name="diagnostics_unavailable">No se encontró el diagnóstico de FCM</string>
+    <string name="write_rejected">El sistema rechazó la escritura</string>
+    <string name="write_failed">Error de escritura: %1$s</string>
+
+    <string name="notification_channel_name">Protección FCM Guard</string>
+    <string name="notification_channel_description">Notificación de baja prioridad para mantener fiable la protección FCM automática</string>
+    <string name="notification_active">Protección activa · basada en eventos</string>
+    <string name="notification_repaired">Lista reparada · FCM protegido</string>
+</resources>
