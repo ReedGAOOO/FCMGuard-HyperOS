@@ -8,5 +8,9 @@
         <item>Français</item>
         <item>日本語</item>
         <item>한국어</item>
+        <item>Español</item>
+        <item>Português</item>
+        <item>Deutsch</item>
+        <item>Русский</item>
     </string-array>
 </resources>
