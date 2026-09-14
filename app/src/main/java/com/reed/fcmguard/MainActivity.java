@@ -25,10 +25,10 @@ import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private static final String[] LANGUAGE_CODES = {
-            "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko"
+            "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
     };
     private static final String[] LANGUAGE_BUTTON_LABELS = {
-            "Language", "语言", "語言", "Langue", "言語", "언어"
+            "Language", "语言", "語言", "Langue", "言語", "언어", "Idioma", "Idioma", "Sprache", "Язык"
     };
     private static final long LANGUAGE_LABEL_INTERVAL_MS = 2200L;
 
