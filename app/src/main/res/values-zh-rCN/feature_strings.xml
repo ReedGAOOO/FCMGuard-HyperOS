@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM 应用助手</string>
-    <string name="fcm_apps_summary">自动检测声明了标准 FCM/GCM 接收组件的已安装应用，并帮助你为它们配置 HyperOS 自启动。</string>
+    <string name="fcm_apps_summary">自动检测声明了标准 FCM/GCM 接收组件的已安装应用，并在 HyperOS 允许读取时验证它们的自启动状态。</string>
     <string name="scan_fcm_apps">扫描 FCM 应用</string>
     <string name="collapse_fcm_apps">收起应用列表</string>
     <string name="open_autostart_manager">在 HyperOS 中统一配置</string>
     <string name="fcm_apps_not_scanned">点击“扫描 FCM 应用”生成本机列表。</string>
     <string name="fcm_apps_found">检测到 %1$d 个支持 FCM 的应用</string>
+    <string name="fcm_apps_status_summary">检测到 %1$d 个 · %2$d 个已开启 · %3$d 个需处理 · %4$d 个未知</string>
+    <string name="fcm_autostart_status_unavailable">检测到 %1$d 个 FCM 应用，但当前 HyperOS 未向普通应用开放可读取的自启动状态。请使用“在 HyperOS 中统一配置”。</string>
     <string name="no_fcm_apps">未检测到面向用户的 FCM 应用。</string>
     <string name="app_settings">自启动</string>
+    <string name="autostart_enabled">已开启</string>
+    <string name="autostart_partial">部分开启</string>
+    <string name="autostart_disabled">未开启</string>
+    <string name="autostart_unknown">未知</string>
     <string name="autostart_manager_unavailable">无法打开 HyperOS 自启动设置</string>
     <string name="app_settings_unavailable">无法打开该应用的设置</string>
-    <string name="fcm_detection_note">检测仅在点击扫描时运行；自启动仍需用户在 HyperOS 设置中手动开启。</string>
+    <string name="fcm_detection_note">自启动状态仅做只读、尽力而为的检测。“未知”表示 HyperOS 阻止或未公开对应的厂商 AppOps 查询；FCM Guard 不会把未知误判为未开启。</string>
 
     <string name="appearance_title">外观</string>
     <string name="appearance_summary">默认跟随系统；仅改变界面主题，不增加任何后台任务。</string>
