@@ -49,6 +49,7 @@ Settings.System.MILLET_NO_RESTRICT_APP
 这是一个逗号分隔的“免限制 App”列表。如果其中没有 `com.google.android.gms`，Google Play 服务可能被当作普通后台进程处理。锁屏或长时间空闲后，HyperOS 可能冻结或限制 GMS，从而导致它与 Google 推送服务器之间长期保持的 FCM/MCS 连接断开。
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart TD
     A[HyperOS PowerKeeper / Greezer] --> B[重建 MILLET_NO_RESTRICT_APP]
     B --> C{是否包含 com.google.android.gms?}
@@ -56,6 +57,8 @@ flowchart TD
     C -- 否 --> E[GMS 可能被限制 / 冻结]
     E --> F[MCS / mtalk 长连接断开]
     F --> G[Slack / Gmail 等 FCM 推送延迟或停止]
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G bw;
 ```
 
 ## FCM Guard 做了什么
@@ -63,6 +66,7 @@ flowchart TD
 FCM Guard 不会用一份固定字符串覆盖小米自己的白名单，也不会接管 PowerKeeper。它只读取 HyperOS 当前生成的值，保留所有已有包名，并在必要时追加 Google Play 服务。
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart TD
     A[监听 MILLET_NO_RESTRICT_APP] --> B[读取当前逗号分隔列表]
     B --> C{GMS 已存在?}
@@ -71,6 +75,8 @@ flowchart TD
     E --> F[追加 com.google.android.gms]
     F --> G[通过 Settings.System 写回]
     G --> H[发送 best-effort FCM / MCS 重连 heartbeat]
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G,H bw;
 ```
 
 这种方式很重要：**白名单真正的所有者仍然是 PowerKeeper**。FCM Guard 只修补“GMS 被删掉”这一件事，而不是覆盖 HyperOS 当前维护的名单。
@@ -95,6 +101,7 @@ targetSdk 22
 早期原型曾每 30 秒主动检查一次，而且会过于频繁地发送 reconnect 广播。当前版本已经改成**事件驱动优先**，健康状态下几乎一直处于空闲。
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart LR
     A[精确 ContentObserver 监听 MILLET_NO_RESTRICT_APP] --> B{目标设置发生变化?}
     B -- 是 --> C[约 400 ms 防抖]
@@ -103,8 +110,9 @@ flowchart LR
     E -- 否 --> F[回到空闲]
     E -- 是 --> G[仅写入一次]
     G --> H[仅在实际修复后重连]
-
     I[30 分钟进程内兜底检查] --> D
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G,H,I bw;
 ```
 
 ### 性能优化点
@@ -119,6 +127,7 @@ flowchart LR
 ## 运行时流程
 
 ```mermaid
+%%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','secondaryColor':'#ffffff','tertiaryColor':'#ffffff','lineColor':'#000000','fontFamily':'Arial'}}}%%
 flowchart TD
     A[开机 / 用户开启自动保护] --> B[启动 GuardService]
     B --> C[注册精确 ContentObserver]
@@ -129,9 +138,10 @@ flowchart TD
     F -->|缺失| G[追加 GMS 并仅写一次]
     G --> H[best-effort FCM 重连]
     H --> D
-
     D -->|进程仍存活时每 30 分钟| I[兜底检查]
     I --> F
+    classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
+    class A,B,C,D,E,F,G,H,I bw;
 ```
 
 ## 权限与隐私
@@ -149,6 +159,17 @@ FCM Guard **不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮�
 本项目依赖小米当前 HyperOS 的实现。如果未来 Xiaomi 改变 PowerKeeper / Greezer 的逻辑、白名单 key 名或针对 Google Play 服务的后台策略，本方案可能需要同步调整。
 
 FCM reconnect 广播属于 best-effort 方案：Android 没有向第三方 App 提供一个可以保证“强制 FCM 立即重连”的公开 API。
+
+## 参考与致谢
+
+本项目的核心 HyperOS / FCM 机制，特别是 **PowerKeeper / Greezer 的行为** 与 `MILLET_NO_RESTRICT_APP` 的修复思路，最初由 **HyperOS FCM Fix** 项目进行了系统性调查与公开记录：
+
+- **HyperOS FCM Fix**（`dingwen07`）：https://github.com/dingwen07/hyperos-fcm-fix
+- 技术调查文档：https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
+
+FCM Guard 是独立实现，设计目标不同：不依赖 Shizuku / Root，尽量减少权限，以事件驱动方式监听系统设置，并进一步降低待机时的后台活动。本仓库没有复制 HyperOS FCM Fix 的源代码。
+
+特别感谢原作者公开机制、调查记录与可复现结论，使得这个更轻量的实现成为可能。
 
 ## 构建
 
