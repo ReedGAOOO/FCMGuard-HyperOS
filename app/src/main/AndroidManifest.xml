@@ -11,13 +11,14 @@
         android:icon="@drawable/app_icon"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
+        android:localeConfig="@xml/locales_config"
         android:supportsRtl="true">
 
         <!--
           FCM Guard intentionally targets SDK 22 so WRITE_SETTINGS can modify Xiaomi's
-          private Settings.System whitelist.  Old-target apps can otherwise be placed
+          private Settings.System whitelist. Old-target apps can otherwise be placed
           into legacy aspect-ratio compatibility mode on tall modern displays, which
-          HyperOS shows as a large black area below the app.  Explicitly opt the main
+          HyperOS shows as a large black area below the app. Explicitly opt the main
           activity into modern tall/resizable layouts while keeping targetSdk 22.
         -->
         <meta-data
@@ -29,7 +30,7 @@
             android:exported="true"
             android:resizeableActivity="true"
             android:maxAspectRatio="3.0"
-            android:configChanges="locale|layoutDirection|screenSize|orientation|keyboardHidden">
+            android:configChanges="screenSize|orientation|keyboardHidden">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
