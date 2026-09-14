@@ -14,6 +14,14 @@
     <color name="info_bg">#EEF4FF</color>
     <color name="divider">#EDF0F3</color>
 
+    <!-- Translucent status/value accents used inside the floating status card. -->
+    <color name="status_value_blue_bg">#244285F4</color>
+    <color name="status_value_green_bg">#2434A853</color>
+    <color name="status_value_yellow_bg">#24FBBC04</color>
+    <color name="status_value_red_bg">#24EA4335</color>
+    <color name="status_value_purple_bg">#247E57C2</color>
+    <color name="status_value_neutral_bg">#181F2328</color>
+
     <color name="hero_start">#EEE9FF</color>
     <color name="hero_center">#F3F0FF</color>
     <color name="hero_end">#EAF4FF</color>
