@@ -84,6 +84,7 @@ jobs:
           path: ${{ steps.version.outputs.apk_name }}
           retention-days: 30
 
+      # Feature branches validate the APK; only main publishes or refreshes Releases.
       - name: Publish APKs to GitHub Release
         if: github.ref == 'refs/heads/main'
         env:
