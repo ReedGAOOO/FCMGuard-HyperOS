@@ -3,14 +3,15 @@
     <string name="fcm_apps_title">FCM 應用程式助手</string>
     <string name="fcm_apps_summary">自動偵測宣告標準 FCM/GCM 接收元件的已安裝應用程式，並協助你為它們設定 HyperOS 自啟動。</string>
     <string name="scan_fcm_apps">掃描 FCM 應用程式</string>
+    <string name="collapse_fcm_apps">收起應用程式清單</string>
     <string name="open_autostart_manager">在 HyperOS 中統一設定</string>
     <string name="fcm_apps_not_scanned">點選「掃描 FCM 應用程式」建立本機清單。</string>
     <string name="fcm_apps_found">偵測到 %1$d 個支援 FCM 的應用程式</string>
     <string name="no_fcm_apps">未偵測到面向使用者的 FCM 應用程式。</string>
-    <string name="app_settings">設定</string>
+    <string name="app_settings">自啟動</string>
     <string name="autostart_manager_unavailable">無法開啟 HyperOS 自啟動設定</string>
     <string name="app_settings_unavailable">無法開啟此應用程式的設定</string>
-    <string name="fcm_detection_note">偵測為盡力而為，且只會在你點選掃描時執行。Android 不允許一般應用程式靜默替其他應用程式開啟自啟動；那需要 FCM Guard 為金融 App 相容性而刻意避免的高權限方法。</string>
+    <string name="fcm_detection_note">偵測只會在點選掃描時執行；自啟動仍需由使用者在 HyperOS 設定中手動開啟。</string>
     <string name="appearance_title">外觀</string>
     <string name="appearance_summary">預設跟隨系統；只改變介面主題，不增加任何背景工作。</string>
     <string name="theme_system">跟隨系統</string>
