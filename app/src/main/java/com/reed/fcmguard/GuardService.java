@@ -23,7 +23,7 @@ public class GuardService extends Service {
     private final Runnable fallbackCheck = new Runnable() {
         @Override public void run() {
             SettingsGuard.Result result = SettingsGuard.repair(GuardService.this);
-            if (result.success) HeartbeatHelper.send(GuardService.this);
+            if (result.success) FcmReconnect.kick(GuardService.this);
             refreshNotification(result.message);
             handler.postDelayed(this, FALLBACK_INTERVAL_MS);
         }
@@ -48,7 +48,7 @@ public class GuardService extends Service {
     private final Runnable repairDebounced = new Runnable() {
         @Override public void run() {
             SettingsGuard.Result result = SettingsGuard.repair(GuardService.this);
-            if (result.success) HeartbeatHelper.send(GuardService.this);
+            if (result.success) FcmReconnect.kick(GuardService.this);
             refreshNotification(result.message);
         }
     };
