@@ -1,7 +1,7 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_pressed="true">
         <shape>
-            <solid android:color="#E6EAF0"/>
+            <solid android:color="@color/secondary_pressed"/>
             <corners android:radius="16dp"/>
         </shape>
     </item>
