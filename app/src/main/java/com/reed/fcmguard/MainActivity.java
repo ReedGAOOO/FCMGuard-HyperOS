@@ -104,9 +104,18 @@ public class MainActivity extends Activity {
             );
             SettingsGuard.Result result = SettingsGuard.repair(this);
             refreshStatus();
-            status.setText(result.success ? "✓ Repaired / protected" : "⚠ " + result.message);
+            status.setText(result.success ? "✓ " + result.message : "⚠ " + result.message);
         });
         box.addView(repair, fullWidth());
+
+        Button reconnect = new Button(this);
+        reconnect.setText("Wake FCM now");
+        reconnect.setOnClickListener(v -> {
+            boolean sent = FcmReconnect.kick(this);
+            refreshStatus();
+            status.setText(sent ? "✓ FCM reconnect request sent" : "⚠ Could not send reconnect request");
+        });
+        box.addView(reconnect, fullWidth());
 
         Button start = new Button(this);
         start.setText("Start automatic protection");
@@ -132,6 +141,8 @@ public class MainActivity extends Activity {
             }
             getSharedPreferences("guard_state", MODE_PRIVATE)
                     .edit().putBoolean("enabled", true).apply();
+            SettingsGuard.repair(this);
+            FcmReconnect.kick(this);
             refreshStatus();
         });
         box.addView(start, fullWidth());
@@ -162,6 +173,7 @@ public class MainActivity extends Activity {
         TextView note = new TextView(this);
         note.setText(
                 "FCM Guard preserves all existing comma-separated items and only adds the configured required item when it is missing. " +
+                "When it repairs the whitelist, it also sends a best-effort heartbeat/reconnect request to Google Play services. " +
                 "The foreground watchdog listens for System-setting changes and also checks every 30 seconds.\n\n" +
                 "No root, Shizuku, persistent ADB, Accessibility, VPN, overlay, or device-admin permission is used."
         );
