@@ -16,8 +16,10 @@ import android.widget.ScrollView;
  *
  * Expanded: the white status card overlaps the lower half of the hero.
  * Scrolling: the status card follows the scroll upward until it docks inside the
- * hero with equal top / left / right inset. After docking, it stays fixed while
- * the lower cards keep scrolling underneath it.
+ * hero with equal top / left / right inset. While that happens, the whitelist
+ * panel also slides upward inside the card and progressively covers the detailed
+ * status rows, leaving the Status / Protected header visible. After docking, the
+ * status card stays fixed while the lower cards keep scrolling underneath it.
  *
  * All motion is driven directly by ScrollView scroll events while the Activity is
  * on screen; there are no timers, alarms, background work, or extra wakeups.
@@ -27,6 +29,8 @@ public final class StickyDashboardLayout extends FrameLayout {
     private View contentRoot;
     private View heroCard;
     private View statusCard;
+    private View statusText;
+    private View currentValuePanel;
     private ScrollView scrollView;
 
     private int stickyBaseLeft;
@@ -56,6 +60,8 @@ public final class StickyDashboardLayout extends FrameLayout {
         contentRoot = findViewById(R.id.contentRoot);
         heroCard = findViewById(R.id.heroCard);
         statusCard = findViewById(R.id.statusCard);
+        statusText = findViewById(R.id.statusText);
+        currentValuePanel = findViewById(R.id.currentValuePanel);
         scrollView = findViewById(R.id.scroll);
         extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
 
@@ -93,7 +99,7 @@ public final class StickyDashboardLayout extends FrameLayout {
 
             stickyHeader.setPadding(
                     stickyBaseLeft,
-                    stickyBaseTop + top + dp(4),
+                    stickyBaseTop + top,
                     stickyBaseRight,
                     stickyBaseBottom
             );
@@ -125,6 +131,9 @@ public final class StickyDashboardLayout extends FrameLayout {
     /**
      * Geometry is derived from the laid-out views. The status card's side inset is
      * reused as the docked top inset, preserving equal top/left/right spacing.
+     * The whitelist panel uses the same collapse progress, moving from its normal
+     * position to the top of the detailed status rows so the cover motion stays
+     * visually locked to the card's upward slide.
      */
     private void syncCollapsingStatusCard() {
         if (scrollView == null || heroCard == null || statusCard == null) return;
@@ -145,9 +154,16 @@ public final class StickyDashboardLayout extends FrameLayout {
         if (statusCard.getTranslationY() != translation) {
             statusCard.setTranslationY(translation);
         }
-    }
 
-    private int dp(int value) {
-        return Math.round(value * getResources().getDisplayMetrics().density);
+        if (statusText != null && currentValuePanel != null) {
+            float progress = collapseDistance == 0
+                    ? 1f
+                    : Math.min(1f, travelled / (float) collapseDistance);
+            int coverDistance = Math.max(0, currentValuePanel.getTop() - statusText.getTop());
+            float panelTranslation = -coverDistance * progress;
+            if (currentValuePanel.getTranslationY() != panelTranslation) {
+                currentValuePanel.setTranslationY(panelTranslation);
+            }
+        }
     }
 }
