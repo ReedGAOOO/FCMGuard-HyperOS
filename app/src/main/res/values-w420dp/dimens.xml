@@ -2,7 +2,7 @@
 <resources>
     <!-- Large phone profile, including the wider Xiaomi 17 Ultra class. -->
     <dimen name="page_horizontal_padding">18dp</dimen>
-    <dimen name="sticky_top_padding">12dp</dimen>
+    <dimen name="sticky_top_padding">8dp</dimen>
     <dimen name="hero_height">176dp</dimen>
     <dimen name="hero_inner_padding">20dp</dimen>
     <dimen name="hero_title_size">29sp</dimen>
