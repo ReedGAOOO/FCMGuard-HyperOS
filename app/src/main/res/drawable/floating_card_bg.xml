@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/surface" />
-    <!-- Hero radius is 28dp and the docked inset is 10dp, so 18dp keeps the two rounded rectangles parallel/concentric. -->
-    <corners android:radius="18dp" />
-    <stroke android:width="1dp" android:color="#EEF2F7" />
+    <corners android:radius="@dimen/status_card_radius" />
+    <stroke android:width="1dp" android:color="@color/floating_border" />
     <padding android:left="16dp" android:top="16dp" android:right="16dp" android:bottom="16dp" />
 </shape>
