@@ -16,6 +16,11 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
+import android.text.Spannable;
+import android.text.SpannableStringBuilder;
+import android.text.style.BackgroundColorSpan;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.StyleSpan;
 import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.View;
@@ -437,11 +442,6 @@ public class MainActivity extends Activity {
             return;
         }
 
-        // targetSdk 22 is deliberate for Xiaomi's private Settings.System write path.
-        // On Android 13+, old-target apps do not control the notification permission
-        // prompt timing: Android shows it when the first channel is created while an
-        // Activity is active. If that prompt is unavailable/denied, fall back to the
-        // app's notification settings page.
         notificationAccessPending = true;
         languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
         if (createdNow) {
@@ -477,8 +477,6 @@ public class MainActivity extends Activity {
     }
 
     private void openFcmDiagnostics() {
-        // Current Google Play services exposes the screen as GcmDiagnostics. Older
-        // builds used GTalkServiceDiagnostics, so keep it as a compatibility fallback.
         String[] knownActivities = {
                 "com.google.android.gms.gcm.GcmDiagnostics",
                 "com.google.android.gms.gtalkservice.diagnostics.GTalkServiceDiagnostics"
@@ -487,8 +485,6 @@ public class MainActivity extends Activity {
             if (startGooglePlayServicesActivity(className)) return;
         }
 
-        // Future-proof fallback: inspect visible Play-services activities and launch a
-        // diagnostics activity if its class name changes but still advertises itself.
         try {
             PackageInfo info = getPackageManager().getPackageInfo(
                     "com.google.android.gms", PackageManager.GET_ACTIVITIES);
@@ -543,21 +539,117 @@ public class MainActivity extends Activity {
             statusHeadline.setTextColor(getResources().getColor(R.color.red));
         }
 
-        StringBuilder sb = new StringBuilder();
+        SpannableStringBuilder status = new SpannableStringBuilder();
         if (firstLine != null && !firstLine.trim().isEmpty()) {
-            sb.append("✓ ").append(firstLine).append("\n");
+            status.append("✓ ").append(firstLine).append("\n");
         }
-        sb.append(canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted)).append("\n");
-        sb.append(enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled)).append("\n");
-        sb.append(present ? getString(R.string.present_yes) : getString(R.string.present_no)).append("\n");
-        if (notification && enabled && GuardService.canShowPersistentNotification(this)) {
-            sb.append(getString(R.string.notification_mode_foreground));
-        } else {
-            sb.append(getString(R.string.notification_mode_quiet));
-        }
-        statusText.setText(sb.toString());
-        currentValueText.setText(current == null ? getString(R.string.missing_current) : current);
+        appendStatusValueLine(
+                status,
+                canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted),
+                canWrite ? R.color.status_value_blue_bg : R.color.status_value_red_bg
+        );
+        status.append('\n');
+        appendStatusValueLine(
+                status,
+                enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled),
+                enabled ? R.color.status_value_green_bg : R.color.status_value_yellow_bg
+        );
+        status.append('\n');
+        appendStatusValueLine(
+                status,
+                present ? getString(R.string.present_yes) : getString(R.string.present_no),
+                present ? R.color.status_value_purple_bg : R.color.status_value_red_bg
+        );
+        status.append('\n');
+        boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
+        appendStatusValueLine(
+                status,
+                visibleForeground
+                        ? getString(R.string.notification_mode_foreground)
+                        : getString(R.string.notification_mode_quiet),
+                visibleForeground ? R.color.status_value_blue_bg : R.color.status_value_yellow_bg
+        );
+        statusText.setText(status);
+        currentValueText.setText(buildWhitelistValue(current));
         permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
+    }
+
+    private void appendStatusValueLine(SpannableStringBuilder out, String text, int backgroundColorRes) {
+        int lineStart = out.length();
+        out.append(text);
+        int lineEnd = out.length();
+
+        int separator = Math.max(text.lastIndexOf(':'), text.lastIndexOf('：'));
+        int valueOffset = separator >= 0 ? separator + 1 : 0;
+        while (valueOffset < text.length() && Character.isWhitespace(text.charAt(valueOffset))) {
+            valueOffset++;
+        }
+        int valueStart = lineStart + valueOffset;
+        if (valueStart >= lineEnd) return;
+
+        out.setSpan(
+                new BackgroundColorSpan(getResources().getColor(backgroundColorRes)),
+                valueStart,
+                lineEnd,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        out.setSpan(
+                new ForegroundColorSpan(getResources().getColor(R.color.text_primary)),
+                valueStart,
+                lineEnd,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+        out.setSpan(
+                new StyleSpan(Typeface.BOLD),
+                valueStart,
+                lineEnd,
+                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+        );
+    }
+
+    private CharSequence buildWhitelistValue(String current) {
+        if (current == null || current.trim().isEmpty()) {
+            SpannableStringBuilder missing = new SpannableStringBuilder(getString(R.string.missing_current));
+            missing.setSpan(
+                    new BackgroundColorSpan(getResources().getColor(R.color.status_value_red_bg)),
+                    0,
+                    missing.length(),
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+            return missing;
+        }
+
+        SpannableStringBuilder out = new SpannableStringBuilder();
+        String[] packages = current.split(",");
+        for (String raw : packages) {
+            String packageName = raw.trim();
+            if (packageName.isEmpty()) continue;
+            if (out.length() > 0) out.append(", ");
+            int start = out.length();
+            out.append(packageName);
+            int end = out.length();
+            out.setSpan(
+                    new BackgroundColorSpan(getResources().getColor(packageChipColor(packageName))),
+                    start,
+                    end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+            out.setSpan(
+                    new StyleSpan(Typeface.BOLD),
+                    start,
+                    end,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+            );
+        }
+        return out;
+    }
+
+    private int packageChipColor(String packageName) {
+        if ("com.google.android.gms".equals(packageName)) return R.color.status_value_blue_bg;
+        if (getPackageName().equals(packageName)) return R.color.status_value_purple_bg;
+        if ("com.android.vending".equals(packageName)) return R.color.status_value_green_bg;
+        if ("com.tencent.mm".equals(packageName)) return R.color.status_value_yellow_bg;
+        return R.color.status_value_neutral_bg;
     }
 
     @SuppressWarnings("deprecation")
