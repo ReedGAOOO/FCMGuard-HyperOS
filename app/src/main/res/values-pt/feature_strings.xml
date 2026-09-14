@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">Assistente de apps FCM</string>
-    <string name="fcm_apps_summary">Deteta apps instaladas que declaram componentes padrão de receção FCM/GCM e ajuda a configurar o arranque automático no HyperOS.</string>
+    <string name="fcm_apps_summary">Deteta apps instaladas que declaram componentes padrão de receção FCM/GCM e verifica o estado de arranque automático quando o HyperOS o expõe.</string>
     <string name="scan_fcm_apps">Procurar apps FCM</string>
     <string name="collapse_fcm_apps">Recolher lista de apps</string>
     <string name="open_autostart_manager">Configurar tudo no HyperOS</string>
     <string name="fcm_apps_not_scanned">Toque em «Procurar apps FCM» para criar a lista local.</string>
     <string name="fcm_apps_found">Foram detetadas %1$d apps compatíveis com FCM</string>
+    <string name="fcm_apps_status_summary">%1$d detetadas · %2$d ativadas · %3$d precisam de atenção · %4$d desconhecidas</string>
+    <string name="fcm_autostart_status_unavailable">Foram detetadas %1$d apps FCM, mas esta versão do HyperOS não expõe um estado de arranque automático legível. Use «Configurar tudo no HyperOS».</string>
     <string name="no_fcm_apps">Nenhuma app FCM voltada para o utilizador foi detetada.</string>
     <string name="app_settings">Arranque automático</string>
+    <string name="autostart_enabled">Ativado</string>
+    <string name="autostart_partial">Parcial</string>
+    <string name="autostart_disabled">Desativado</string>
+    <string name="autostart_unknown">Desconhecido</string>
     <string name="autostart_manager_unavailable">Não foi possível abrir as definições de arranque automático do HyperOS</string>
     <string name="app_settings_unavailable">Não foi possível abrir as definições da app</string>
-    <string name="fcm_detection_note">A deteção só é executada ao tocar em Procurar; o arranque automático deve ser ativado manualmente nas definições do HyperOS.</string>
+    <string name="fcm_detection_note">O estado de arranque automático é consultado apenas em leitura e por melhor esforço. «Desconhecido» significa que o HyperOS bloqueou ou não expôs a consulta AppOps do fabricante; o FCM Guard nunca o interpreta como desativado.</string>
     <string name="appearance_title">Aspeto</string>
     <string name="appearance_summary">Por predefinição segue o sistema. Apenas altera o tema da interface e não adiciona trabalho em segundo plano.</string>
     <string name="theme_system">Sistema</string>
