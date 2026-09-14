@@ -6,6 +6,20 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
+    <!--
+      Narrow package visibility only for the signals FCM Guard needs. This avoids
+      QUERY_ALL_PACKAGES while allowing best-effort discovery of FCM/GCM receivers.
+    -->
+    <queries>
+        <intent>
+            <action android:name="com.google.firebase.MESSAGING_EVENT" />
+        </intent>
+        <intent>
+            <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+        </intent>
+        <package android:name="com.miui.securitycenter" />
+    </queries>
+
     <application
         android:allowBackup="false"
         android:icon="@drawable/app_icon"
