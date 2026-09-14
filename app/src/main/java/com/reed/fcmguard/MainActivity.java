@@ -2,6 +2,7 @@ package com.reed.fcmguard;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -14,10 +15,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,11 +27,10 @@ public class MainActivity extends Activity {
     private TextView statusHeadline;
     private TextView statusText;
     private TextView currentValueText;
-    private Spinner languageSpinner;
+    private Button languageButton;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
     private Button permissionBtn;
-    private boolean initializingSpinner = true;
     private boolean suppressSwitchCallbacks = false;
 
     @Override protected void attachBaseContext(android.content.Context newBase) {
@@ -41,12 +39,13 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        LocaleHelper.migrateLegacyPreference(this);
         configureFullEdgeToEdge();
         setContentView(R.layout.activity_main);
         applySystemBarInsets();
         bindViews();
         loadConfigIntoFields();
-        setupLanguageSpinner();
+        setupLanguagePicker();
         setupSwitches();
         bindActions();
         refreshStatus(null);
@@ -55,6 +54,7 @@ public class MainActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         configureFullEdgeToEdge();
+        if (languageButton != null) updateLanguageButton();
         refreshStatus(null);
     }
 
@@ -69,7 +69,7 @@ public class MainActivity extends Activity {
         statusHeadline = findViewById(R.id.statusHeadline);
         statusText = findViewById(R.id.statusText);
         currentValueText = findViewById(R.id.currentValueText);
-        languageSpinner = findViewById(R.id.languageSpinner);
+        languageButton = findViewById(R.id.languageButton);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
         permissionBtn = findViewById(R.id.permissionBtn);
@@ -80,33 +80,56 @@ public class MainActivity extends Activity {
         itemEdit.setText(SettingsGuard.getConfiguredRequiredItem(this));
     }
 
-    private void setupLanguageSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
-                this,
-                R.array.language_entries,
-                android.R.layout.simple_spinner_item
-        );
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languageSpinner.setAdapter(adapter);
-
-        String lang = LocaleHelper.getLanguage(this);
-        int index = 0;
-        if ("en".equals(lang)) index = 1;
-        else if ("zh-CN".equals(lang)) index = 2;
-        languageSpinner.setSelection(index, false);
-        initializingSpinner = false;
-        languageSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-            @Override public void onItemSelected(android.widget.AdapterView<?> parent, View view, int position, long id) {
-                if (initializingSpinner) return;
-                String code = position == 1 ? "en" : (position == 2 ? "zh-CN" : "system");
-                if (!code.equals(LocaleHelper.getLanguage(MainActivity.this))) {
-                    LocaleHelper.setLanguage(MainActivity.this, code);
-                    recreate();
+    /**
+     * Android 13+ uses the platform's per-app language settings screen. The selected
+     * locale is owned by LocaleManager and stays synchronized with system Settings.
+     * Older Android releases keep a small compatibility dialog.
+     */
+    private void setupLanguagePicker() {
+        updateLanguageButton();
+        languageButton.setOnClickListener(v -> {
+            if (Build.VERSION.SDK_INT >= 33) {
+                try {
+                    Intent intent = new Intent(
+                            Settings.ACTION_APP_LOCALE_SETTINGS,
+                            Uri.parse("package:" + getPackageName())
+                    );
+                    startActivity(intent);
+                    return;
+                } catch (Throwable ignored) {
+                    // Fall through to the compatibility picker if the OEM removed it.
                 }
             }
-
-            @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+            showLegacyLanguagePicker();
         });
+    }
+
+    private void updateLanguageButton() {
+        String lang = LocaleHelper.getLanguage(this);
+        if ("zh-CN".equals(lang)) {
+            languageButton.setText(R.string.simplified_chinese);
+        } else if ("en".equals(lang)) {
+            languageButton.setText(R.string.english);
+        } else {
+            languageButton.setText(R.string.follow_system);
+        }
+    }
+
+    private void showLegacyLanguagePicker() {
+        String lang = LocaleHelper.getLanguage(this);
+        int checked = "en".equals(lang) ? 1 : ("zh-CN".equals(lang) ? 2 : 0);
+
+        AlertDialog dialog = new AlertDialog.Builder(this)
+                .setTitle(R.string.language)
+                .setSingleChoiceItems(R.array.language_entries, checked, (d, which) -> {
+                    String code = which == 1 ? "en" : (which == 2 ? "zh-CN" : "system");
+                    LocaleHelper.setLanguage(this, code);
+                    d.dismiss();
+                    if (Build.VERSION.SDK_INT < 33) recreate();
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .create();
+        dialog.show();
     }
 
     private void setupSwitches() {
