@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fcm_apps_title">Assistant d’apps FCM</string>
+    <string name="fcm_apps_summary">Détecte les apps installées qui déclarent les composants FCM/GCM standard et aide à configurer leur démarrage automatique HyperOS.</string>
+    <string name="scan_fcm_apps">Analyser les apps FCM</string>
+    <string name="open_autostart_manager">Tout configurer dans HyperOS</string>
+    <string name="fcm_apps_not_scanned">Touchez « Analyser les apps FCM » pour créer la liste locale.</string>
+    <string name="fcm_apps_found">%1$d apps compatibles FCM détectées</string>
+    <string name="no_fcm_apps">Aucune app FCM destinée à l’utilisateur n’a été détectée.</string>
+    <string name="app_settings">Réglages</string>
+    <string name="autostart_manager_unavailable">Impossible d’ouvrir les réglages de démarrage automatique HyperOS</string>
+    <string name="app_settings_unavailable">Impossible d’ouvrir les réglages de l’app</string>
+    <string name="fcm_detection_note">La détection est indicative et ne s’exécute que lorsque vous lancez l’analyse. Android n’autorise pas une app normale à activer silencieusement le démarrage automatique d’autres apps sans privilèges élevés, que FCM Guard évite volontairement.</string>
+    <string name="appearance_title">Apparence</string>
+    <string name="appearance_summary">Par défaut, suit le système. Cela ne change que le thème de l’interface et n’ajoute aucune tâche en arrière-plan.</string>
+    <string name="theme_system">Système</string>
+    <string name="theme_light">Clair</string>
+    <string name="theme_dark">Sombre</string>
+</resources>
