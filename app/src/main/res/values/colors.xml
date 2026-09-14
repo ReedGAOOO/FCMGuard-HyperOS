@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#F7F9FC</color>
+    <color name="bg">#F4F6F8</color>
     <color name="surface">#FFFFFFFF</color>
-    <color name="surface_alt">#EEF3FD</color>
-    <color name="text_primary">#202124</color>
-    <color name="text_secondary">#5F6368</color>
-    <color name="blue">#4285F4</color>
-    <color name="green">#34A853</color>
-    <color name="yellow">#FBBC04</color>
-    <color name="red">#EA4335</color>
-    <color name="border">#D7E3FC</color>
+    <color name="surface_alt">#F0F3F7</color>
+    <color name="text_primary">#1F2328</color>
+    <color name="text_secondary">#68707D</color>
+    <color name="blue">#0B57D0</color>
+    <color name="green">#188038</color>
+    <color name="yellow">#F9AB00</color>
+    <color name="red">#D93025</color>
+    <color name="border">#E2E6EC</color>
     <color name="chip_bg">#E8F0FE</color>
+    <color name="info_bg">#EEF4FF</color>
+    <color name="divider">#EDF0F3</color>
 </resources>
