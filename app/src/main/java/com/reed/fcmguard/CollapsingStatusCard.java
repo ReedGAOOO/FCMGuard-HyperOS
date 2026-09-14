@@ -24,6 +24,8 @@ public final class CollapsingStatusCard extends LinearLayout {
     private float strokeWidthPx;
     private float visualBottomPx = Float.NaN;
     private int detailsChildIndex = -1;
+    private View detailsPanel;
+    private View currentValuePanel;
 
     public CollapsingStatusCard(Context context) {
         super(context);
@@ -69,8 +71,9 @@ public final class CollapsingStatusCard extends LinearLayout {
 
     @Override protected void onFinishInflate() {
         super.onFinishInflate();
-        View details = findViewById(R.id.statusDetailsPanel);
-        detailsChildIndex = details == null ? -1 : indexOfChild(details);
+        detailsPanel = findViewById(R.id.statusDetailsPanel);
+        currentValuePanel = findViewById(R.id.currentValuePanel);
+        detailsChildIndex = detailsPanel == null ? -1 : indexOfChild(detailsPanel);
     }
 
     /**
@@ -119,6 +122,32 @@ public final class CollapsingStatusCard extends LinearLayout {
             canvas.drawRoundRect(surfaceRect, radiusPx, radiusPx, strokePaint);
         }
         super.onDraw(canvas);
+    }
+
+    /**
+     * Mask the translated whitelist panel at the detailed-status lower edge.
+     *
+     * Drawing order alone leaves the whitelist rendered underneath the rounded,
+     * anti-aliased top edge of the white status plate. At the fully collapsed
+     * position that can show up as a faint tonal arc/strip. Clipping the whitelist
+     * to the area strictly below the status plate makes the plate behave like a
+     * real physical cover: as soon as the whitelist enters it, that portion is no
+     * longer rendered at all. The final aligned position is therefore pixel-clean.
+     */
+    @Override protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
+        if (child == currentValuePanel && detailsPanel != null) {
+            int saveCount = canvas.save();
+            canvas.clipRect(
+                    0f,
+                    detailsPanel.getBottom(),
+                    getWidth(),
+                    resolveVisualBottom()
+            );
+            boolean result = super.drawChild(canvas, child, drawingTime);
+            canvas.restoreToCount(saveCount);
+            return result;
+        }
+        return super.drawChild(canvas, child, drawingTime);
     }
 
     /** Draw the white detailed-status panel last so the whitelist slides underneath it. */
