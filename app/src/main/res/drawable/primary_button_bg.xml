@@ -13,7 +13,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="@color/blue"/>
+            <solid android:color="@color/primary_fill"/>
             <corners android:radius="16dp"/>
         </shape>
     </item>
