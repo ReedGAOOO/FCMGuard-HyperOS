@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -53,6 +55,7 @@ public class MainActivity extends Activity {
     private RadioGroup appearanceGroup;
     private boolean suppressSwitchCallbacks = false;
     private boolean suppressAppearanceCallbacks = false;
+    private boolean notificationAccessPending = false;
 
     private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
     private int languageLabelIndex = 0;
@@ -62,6 +65,18 @@ public class MainActivity extends Activity {
             if (!languageAnimationRunning || languageButton == null) return;
             animateToNextLanguageLabel();
             languageAnimationHandler.postDelayed(this, LANGUAGE_LABEL_INTERVAL_MS);
+        }
+    };
+    private final Runnable notificationAccessFollowUp = new Runnable() {
+        @Override public void run() {
+            if (!notificationAccessPending || !hasWindowFocus()) return;
+            if (SettingsGuard.usePersistentNotification(MainActivity.this) &&
+                    !GuardService.canShowPersistentNotification(MainActivity.this)) {
+                notificationAccessPending = false;
+                openNotificationSettings();
+            } else {
+                notificationAccessPending = false;
+            }
         }
     };
 
@@ -89,6 +104,11 @@ public class MainActivity extends Activity {
         super.onResume();
         configureFullEdgeToEdge();
         startLanguageButtonAnimation();
+        if (SettingsGuard.isProtectionEnabled(this) &&
+                SettingsGuard.usePersistentNotification(this) &&
+                GuardService.canShowPersistentNotification(this)) {
+            startProtectionService();
+        }
         refreshStatus(null);
     }
 
@@ -99,7 +119,13 @@ public class MainActivity extends Activity {
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) configureFullEdgeToEdge();
+        if (hasFocus) {
+            configureFullEdgeToEdge();
+            if (notificationAccessPending) {
+                languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
+                languageAnimationHandler.postDelayed(notificationAccessFollowUp, 250L);
+            }
+        }
     }
 
     private void bindViews() {
@@ -251,6 +277,9 @@ public class MainActivity extends Activity {
                 }
 
                 SettingsGuard.setProtectionEnabled(this, true);
+                if (SettingsGuard.usePersistentNotification(this)) {
+                    ensurePersistentNotificationAccess();
+                }
                 startProtectionService();
                 SettingsGuard.Result result = SettingsGuard.repair(this);
                 if (result.changed) FcmReconnect.kick(this);
@@ -266,6 +295,12 @@ public class MainActivity extends Activity {
         notificationSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
             if (suppressSwitchCallbacks) return;
             SettingsGuard.setPersistentNotification(this, checked);
+            if (checked) {
+                ensurePersistentNotificationAccess();
+            } else {
+                notificationAccessPending = false;
+                languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
+            }
             if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
             refreshStatus(null);
         });
@@ -383,7 +418,7 @@ public class MainActivity extends Activity {
         Intent service = new Intent(this, GuardService.class);
         try {
             boolean persistent = SettingsGuard.usePersistentNotification(this);
-            if (persistent) requestNotificationPermissionIfNeeded();
+            if (persistent) GuardService.ensureNotificationChannel(this);
 
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && persistent) {
                 startForegroundService(service);
@@ -395,6 +430,44 @@ public class MainActivity extends Activity {
         }
     }
 
+    private void ensurePersistentNotificationAccess() {
+        boolean createdNow = GuardService.ensureNotificationChannel(this);
+        if (GuardService.canShowPersistentNotification(this)) {
+            notificationAccessPending = false;
+            return;
+        }
+
+        // targetSdk 22 is deliberate for Xiaomi's private Settings.System write path.
+        // On Android 13+, old-target apps do not control the notification permission
+        // prompt timing: Android shows it when the first channel is created while an
+        // Activity is active. If that prompt is unavailable/denied, fall back to the
+        // app's notification settings page.
+        notificationAccessPending = true;
+        languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
+        if (createdNow) {
+            languageAnimationHandler.postDelayed(notificationAccessFollowUp, 900L);
+        } else {
+            notificationAccessPending = false;
+            openNotificationSettings();
+        }
+    }
+
+    private void openNotificationSettings() {
+        try {
+            Intent intent;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                intent = new Intent(Settings.ACTION_APP_NOTIFICATION_SETTINGS);
+                intent.putExtra(Settings.EXTRA_APP_PACKAGE, getPackageName());
+            } else {
+                intent = new Intent(
+                        Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                        Uri.parse("package:" + getPackageName())
+                );
+            }
+            startActivity(intent);
+        } catch (Throwable ignored) {}
+    }
+
     private void openWriteSettings() {
         Intent intent = new Intent(
                 Settings.ACTION_MANAGE_WRITE_SETTINGS,
@@ -404,15 +477,46 @@ public class MainActivity extends Activity {
     }
 
     private void openFcmDiagnostics() {
+        // Current Google Play services exposes the screen as GcmDiagnostics. Older
+        // builds used GTalkServiceDiagnostics, so keep it as a compatibility fallback.
+        String[] knownActivities = {
+                "com.google.android.gms.gcm.GcmDiagnostics",
+                "com.google.android.gms.gtalkservice.diagnostics.GTalkServiceDiagnostics"
+        };
+        for (String className : knownActivities) {
+            if (startGooglePlayServicesActivity(className)) return;
+        }
+
+        // Future-proof fallback: inspect visible Play-services activities and launch a
+        // diagnostics activity if its class name changes but still advertises itself.
         try {
-            Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setClassName(
-                    "com.google.android.gms",
-                    "com.google.android.gms.gtalkservice.diagnostics.GTalkServiceDiagnostics"
-            );
+            PackageInfo info = getPackageManager().getPackageInfo(
+                    "com.google.android.gms", PackageManager.GET_ACTIVITIES);
+            if (info.activities != null) {
+                for (ActivityInfo activity : info.activities) {
+                    String name = activity.name;
+                    if (name == null) continue;
+                    String lower = name.toLowerCase(java.util.Locale.ROOT);
+                    if ((lower.contains("gcm") || lower.contains("fcm") || lower.contains("gtalk")) &&
+                            lower.contains("diagnostic")) {
+                        if (startGooglePlayServicesActivity(name)) return;
+                    }
+                }
+            }
+        } catch (Throwable ignored) {}
+
+        toast(getString(R.string.diagnostics_unavailable));
+    }
+
+    private boolean startGooglePlayServicesActivity(String className) {
+        try {
+            Intent intent = new Intent();
+            intent.setClassName("com.google.android.gms", className);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
-        } catch (Throwable t) {
-            toast(getString(R.string.diagnostics_unavailable));
+            return true;
+        } catch (Throwable ignored) {
+            return false;
         }
     }
 
@@ -446,17 +550,14 @@ public class MainActivity extends Activity {
         sb.append(canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted)).append("\n");
         sb.append(enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled)).append("\n");
         sb.append(present ? getString(R.string.present_yes) : getString(R.string.present_no)).append("\n");
-        sb.append(notification ? getString(R.string.notification_mode_foreground) : getString(R.string.notification_mode_quiet));
+        if (notification && enabled && GuardService.canShowPersistentNotification(this)) {
+            sb.append(getString(R.string.notification_mode_foreground));
+        } else {
+            sb.append(getString(R.string.notification_mode_quiet));
+        }
         statusText.setText(sb.toString());
         currentValueText.setText(current == null ? getString(R.string.missing_current) : current);
         permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
-    }
-
-    private void requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= 33 &&
-                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 10);
-        }
     }
 
     @SuppressWarnings("deprecation")
