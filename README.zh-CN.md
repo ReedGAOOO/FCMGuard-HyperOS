@@ -25,7 +25,7 @@
 - **低后台耗电** — 主要采用精确事件监听，30 分钟兜底检查仅在进程内运行，不会主动唤醒休眠手机。
 - **只在必要时重连** — 仅在真正执行白名单修复后，或用户手动点击时发送 FCM/MCS 重连请求。
 - **常驻通知可选** — 前台模式使用可见但静音的通知渠道提升进程存活率，也可切换为静默纯后台模式。
-- **FCM App 助手** — 扫描已安装用户 App 中标准 Firebase/GCM manifest 信号，并提供 HyperOS 自启动管理和逐个 App 设置入口。
+- **FCM App 助手** — 扫描可能依赖 Firebase/GCM 的 App；当 HyperOS 允许读取厂商 AppOps 时，会只读显示自启动状态，并在用户从系统设置返回后自动复查。
 - **原生深色模式** — 支持 跟随系统 / 浅色 / 深色，默认 **跟随系统**。
 - **10 种主流语言** — 英语、简体中文、繁体中文、法语、日语、韩语、西班牙语、葡萄牙语、德语、俄语，接入 Android 原生应用语言机制。
 - **小屏适配** — 响应式布局自动检查 320–480dp 宽度，包含 Xiaomi 17 级别的 393dp profile。
@@ -38,7 +38,7 @@
 4. 开启 **自动保护**。
 5. 在 HyperOS 中为 FCM Guard 开启 **自启动**，并将电池策略设为 **无限制**。
 6. 如果最看重后台可靠性，建议保持 **常驻通知** 开启。如果 Android / HyperOS 禁用了 FCM Guard 通知，App 会引导进入系统通知设置，使前台通知真正可见。
-7. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App，再进入 HyperOS 自启动管理或逐个 App 设置页面。
+7. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App。若当前 HyperOS 允许读取自启动状态，列表会标记 已开启 / 部分开启 / 未开启 / 未知，并在你从 **在 HyperOS 中统一配置** 返回后自动重新检查；若 ROM 不允许读取，FCM Guard 会明确显示“未知 / 不可读取”，而不是猜测。
 8. 可选：点击 **打开 FCM 诊断**，进入 Google Play 服务诊断界面，检查 `mtalk.google.com:5228` 连接状态。
 9. 为减少金融 App 的兼容风险，除非确有需要，建议保持开发者选项 / USB 调试 / 无线调试关闭。
 
@@ -112,9 +112,18 @@ com.google.firebase.MESSAGING_EVENT
 com.google.android.c2dm.intent.RECEIVE
 ```
 
-匹配意味着该 App **很可能** 使用 FCM/GCM，但不代表它的每一条通知都一定来自 FCM。FCM Guard 不会静默修改其他 App 的自启动状态，因为这通常需要 Xiaomi 私有高权限接口、shell / Shizuku 或 Root，不符合本项目的低权限目标。App 会改为打开 HyperOS 官方管理页面，由用户确认设置。
+匹配意味着该 App **很可能** 使用 FCM/GCM，但不代表它的每一条通知都一定来自 FCM。
 
-同时，FCM Guard 不申请 `QUERY_ALL_PACKAGES`。
+对于检测到的 App，FCM Guard 会尝试**只读**查询 Xiaomi 自启动相关的厂商 AppOps（`10008` 与 `10053`）。如果系统允许可靠读取，界面会显示：
+
+- **已开启** — 两个自启动 AppOps 都是 allow。
+- **部分开启** — 一个 allow，另一个明确为 ignore。
+- **未开启** — 两个都明确为 ignore。
+- **未知** — HyperOS 阻止了查询、返回了无法安全解释的默认 / 厂商状态，或没有暴露可靠结果。
+
+FCM Guard **不会把“未知”当成“未开启”**。如果所有检测到的 App 都只能得到未知状态，逐 App 列表会自动隐藏，只保留检测数量和 **在 HyperOS 中统一配置** 入口，避免展示没有实际帮助的伪状态。用户从 HyperOS 设置页返回后，如果扫描结果仍展开，状态会自动重新读取。
+
+整个过程不会程序化修改任何其他 App 的自启动状态，也不会引入 Shizuku / Root / ADB 权限。
 
 ## 外观、语言与屏幕适配
 
@@ -131,7 +140,7 @@ FCM Guard **不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮�
 
 ## 局限性
 
-本项目依赖 Xiaomi 当前 HyperOS 的具体实现。未来如果 PowerKeeper / Greezer、私有设置 key 或 App 管理页面发生变化，本方案可能需要同步调整。FCM 重连与 FCM App 识别也都是 best-effort，因为 Android 没有向普通第三方 App 提供保证这两类行为的公开 API。
+本项目依赖 Xiaomi 当前 HyperOS 的具体实现。未来如果 PowerKeeper / Greezer、私有设置 key、App 管理页面或厂商 AppOps 行为发生变化，本方案可能需要同步调整。FCM 重连、FCM App 识别和自启动状态读取都属于 best-effort，因为 Android 没有向普通第三方 App 提供保证这些厂商私有行为的公开 API。
 
 ## 参考与致谢
 
