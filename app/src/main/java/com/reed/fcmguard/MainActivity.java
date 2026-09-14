@@ -54,6 +54,7 @@ public class MainActivity extends Activity {
     private TextView fcmAppsStatusText;
     private LinearLayout fcmAppsContainer;
     private Button languageButton;
+    private Button scanFcmAppsBtn;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
     private Button permissionBtn;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity {
     private boolean suppressSwitchCallbacks = false;
     private boolean suppressAppearanceCallbacks = false;
     private boolean notificationAccessPending = false;
+    private boolean fcmListExpanded = false;
 
     private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
     private int languageLabelIndex = 0;
@@ -142,6 +144,7 @@ public class MainActivity extends Activity {
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
         languageButton = findViewById(R.id.languageButton);
+        scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
         permissionBtn = findViewById(R.id.permissionBtn);
@@ -336,7 +339,7 @@ public class MainActivity extends Activity {
         });
 
         findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
-        findViewById(R.id.scanFcmAppsBtn).setOnClickListener(v -> scanFcmApps());
+        scanFcmAppsBtn.setOnClickListener(v -> toggleFcmAppsList());
         findViewById(R.id.openAutostartBtn).setOnClickListener(v -> {
             if (!HyperOsSettings.openAutoStartManager(this)) {
                 toast(getString(R.string.autostart_manager_unavailable));
@@ -344,18 +347,48 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void toggleFcmAppsList() {
+        if (fcmListExpanded) {
+            fcmListExpanded = false;
+            fcmAppsContainer.setVisibility(View.GONE);
+            fcmAppsStatusText.setVisibility(View.GONE);
+            updateScanButton(false);
+            return;
+        }
+        scanFcmApps();
+    }
+
     private void scanFcmApps() {
         List<FcmAppScanner.AppEntry> apps = FcmAppScanner.scan(this);
         fcmAppsContainer.removeAllViews();
+        fcmAppsContainer.setVisibility(View.VISIBLE);
+        fcmAppsStatusText.setVisibility(View.VISIBLE);
 
         if (apps.isEmpty()) {
             fcmAppsStatusText.setText(R.string.no_fcm_apps);
+            fcmListExpanded = false;
+            updateScanButton(false);
             return;
         }
 
         fcmAppsStatusText.setText(getString(R.string.fcm_apps_found, apps.size()));
         for (FcmAppScanner.AppEntry app : apps) {
             addFcmAppRow(app);
+        }
+        fcmListExpanded = true;
+        updateScanButton(true);
+    }
+
+    private void updateScanButton(boolean expanded) {
+        if (scanFcmAppsBtn == null) return;
+        if (expanded) {
+            scanFcmAppsBtn.setText(R.string.collapse_fcm_apps);
+            scanFcmAppsBtn.setTextColor(getResources().getColor(R.color.blue));
+            scanFcmAppsBtn.setBackgroundResource(R.drawable.secondary_button_bg);
+        } else {
+            scanFcmAppsBtn.setText(R.string.scan_fcm_apps);
+            scanFcmAppsBtn.setTextColor(Color.WHITE);
+            scanFcmAppsBtn.setBackgroundResource(R.drawable.primary_button_bg);
         }
     }
 
@@ -405,8 +438,8 @@ public class MainActivity extends Activity {
         }
         LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(dp(88), dp(42));
         settingsButton.setOnClickListener(v -> {
-            if (!HyperOsSettings.openAppPermissionEditor(this, app.packageName)) {
-                toast(getString(R.string.app_settings_unavailable));
+            if (!HyperOsSettings.openAutoStartManager(this)) {
+                toast(getString(R.string.autostart_manager_unavailable));
             }
         });
         row.addView(settingsButton, buttonParams);
