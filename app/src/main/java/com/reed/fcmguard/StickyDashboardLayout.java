@@ -5,26 +5,38 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.DisplayCutout;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
 import android.widget.FrameLayout;
+import android.widget.ScrollView;
 
 /**
- * Root dashboard container for a true fixed hero/status overlay above scrolling cards.
+ * Dashboard root with a fixed hero and a scroll-linked status card.
  *
- * The header is measured independently from the ScrollView. The scroll content receives
- * a dynamic top spacer equal to the real measured sticky-header height, so it starts
- * below the overlay but can subsequently scroll underneath it. This avoids hard-coded
- * offsets and stays correct across translations, font metrics, cutouts, and status bars.
+ * Expanded: the white status card overlaps the lower half of the purple hero.
+ * Scrolling: the status card follows the scroll upward until it docks inside the
+ * hero with the same top / left / right inset. After docking, it stays fixed while
+ * the lower cards keep scrolling underneath it.
+ *
+ * All motion is driven directly by ScrollView scroll events while the Activity is
+ * on screen; there are no timers, alarms, background work, or extra wakeups.
  */
 public final class StickyDashboardLayout extends FrameLayout {
     private View stickyHeader;
     private View contentRoot;
+    private View heroCard;
+    private View statusCard;
+    private ScrollView scrollView;
 
     private int stickyBaseLeft;
     private int stickyBaseTop;
     private int stickyBaseRight;
     private int stickyBaseBottom;
     private int extraGapPx;
+
+    private final ViewTreeObserver.OnScrollChangedListener scrollChangedListener =
+            this::syncCollapsingStatusCard;
 
     public StickyDashboardLayout(Context context) {
         super(context);
@@ -42,6 +54,9 @@ public final class StickyDashboardLayout extends FrameLayout {
         super.onFinishInflate();
         stickyHeader = findViewById(R.id.stickyHeader);
         contentRoot = findViewById(R.id.contentRoot);
+        heroCard = findViewById(R.id.heroCard);
+        statusCard = findViewById(R.id.statusCard);
+        scrollView = findViewById(R.id.scroll);
         extraGapPx = dp(10);
 
         if (stickyHeader != null) {
@@ -50,6 +65,22 @@ public final class StickyDashboardLayout extends FrameLayout {
             stickyBaseRight = stickyHeader.getPaddingRight();
             stickyBaseBottom = stickyHeader.getPaddingBottom();
         }
+    }
+
+    @Override protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        if (scrollView != null) {
+            ViewTreeObserver observer = scrollView.getViewTreeObserver();
+            if (observer.isAlive()) observer.addOnScrollChangedListener(scrollChangedListener);
+        }
+    }
+
+    @Override protected void onDetachedFromWindow() {
+        if (scrollView != null) {
+            ViewTreeObserver observer = scrollView.getViewTreeObserver();
+            if (observer.isAlive()) observer.removeOnScrollChangedListener(scrollChangedListener);
+        }
+        super.onDetachedFromWindow();
     }
 
     @Override public WindowInsets onApplyWindowInsets(WindowInsets insets) {
@@ -75,8 +106,16 @@ public final class StickyDashboardLayout extends FrameLayout {
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         syncScrollableTopOffset();
+        syncCollapsingStatusCard();
     }
 
+    /**
+     * The first scrolling card starts below the fully expanded status card. The
+     * expanded header height intentionally stays constant while scrolling: after the
+     * status card has moved upward by the collapse distance, the first lower card has
+     * moved upward by exactly the same amount and sits just below the docked status
+     * card. Further scrolling then passes underneath the fixed overlay.
+     */
     private void syncScrollableTopOffset() {
         if (stickyHeader == null || contentRoot == null) return;
         int desiredTop = stickyHeader.getHeight() + extraGapPx;
@@ -88,6 +127,32 @@ public final class StickyDashboardLayout extends FrameLayout {
                 contentRoot.getPaddingRight(),
                 contentRoot.getPaddingBottom()
         );
+    }
+
+    /**
+     * Collapse geometry is derived from the actual laid-out views rather than a
+     * hard-coded travel distance. The status card's left margin is also used as the
+     * docked top inset, guaranteeing equal top/left/right spacing relative to the hero.
+     */
+    private void syncCollapsingStatusCard() {
+        if (scrollView == null || heroCard == null || statusCard == null) return;
+        if (heroCard.getHeight() <= 0 || statusCard.getHeight() <= 0) return;
+
+        ViewGroup.LayoutParams rawParams = statusCard.getLayoutParams();
+        if (!(rawParams instanceof ViewGroup.MarginLayoutParams)) return;
+        ViewGroup.MarginLayoutParams margins = (ViewGroup.MarginLayoutParams) rawParams;
+
+        int sideInset = Math.max(0, margins.leftMargin);
+        int expandedTop = statusCard.getTop();
+        int collapsedTop = heroCard.getTop() + sideInset;
+        int collapseDistance = Math.max(0, expandedTop - collapsedTop);
+        int scrollY = Math.max(0, scrollView.getScrollY());
+        int travelled = Math.min(scrollY, collapseDistance);
+        float translation = -travelled;
+
+        if (statusCard.getTranslationY() != translation) {
+            statusCard.setTranslationY(translation);
+        }
     }
 
     private int dp(int value) {
