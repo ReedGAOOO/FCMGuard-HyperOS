@@ -16,27 +16,18 @@ public final class LocaleHelper {
 
     private LocaleHelper() {}
 
-    /**
-     * Android 13+ owns app-language configuration through LocaleManager. Older
-     * versions keep the lightweight legacy fallback so the APK remains usable on
-     * pre-33 devices even though HyperOS 3 is the primary target.
-     */
+    /** Android 13+ uses LocaleManager; older Android keeps a small compatibility path. */
     public static Context apply(Context context) {
         if (Build.VERSION.SDK_INT >= 33) return context;
 
         String code = getLegacyLanguage(context);
         if ("system".equals(code)) return context;
 
-        Locale locale = "zh-CN".equals(code) ? Locale.SIMPLIFIED_CHINESE : Locale.ENGLISH;
+        Locale locale = Locale.forLanguageTag(code);
         Locale.setDefault(locale);
         Configuration config = new Configuration(context.getResources().getConfiguration());
-        config.locale = locale;
-        if (Build.VERSION.SDK_INT >= 17) {
-            config.setLocale(locale);
-            return context.createConfigurationContext(config);
-        }
-        context.getResources().updateConfiguration(config, context.getResources().getDisplayMetrics());
-        return context;
+        config.setLocale(locale);
+        return context.createConfigurationContext(config);
     }
 
     public static String getLanguage(Context context) {
@@ -45,8 +36,7 @@ public final class LocaleHelper {
             if (localeManager == null) return "system";
             LocaleList locales = localeManager.getApplicationLocales();
             if (locales == null || locales.isEmpty()) return "system";
-            String tag = locales.get(0).toLanguageTag();
-            return tag != null && tag.toLowerCase(Locale.ROOT).startsWith("zh") ? "zh-CN" : "en";
+            return normalize(locales.get(0).toLanguageTag());
         }
         return getLegacyLanguage(context);
     }
@@ -69,11 +59,7 @@ public final class LocaleHelper {
                 .apply();
     }
 
-    /**
-     * One-time bridge for users upgrading from the old custom locale preference.
-     * The migration runs before the UI is shown; after that Android's LocaleManager
-     * is the single source of truth and stays synchronized with system Settings.
-     */
+    /** One-time bridge from the pre-v1.4.4 custom language preference. */
     public static void migrateLegacyPreference(Context context) {
         if (Build.VERSION.SDK_INT < 33) return;
 
@@ -97,9 +83,20 @@ public final class LocaleHelper {
     }
 
     private static String normalize(String code) {
-        if (code == null) return "system";
-        if (code.toLowerCase(Locale.ROOT).startsWith("zh")) return "zh-CN";
-        if (code.toLowerCase(Locale.ROOT).startsWith("en")) return "en";
+        if (code == null || code.trim().isEmpty() || "system".equalsIgnoreCase(code)) {
+            return "system";
+        }
+
+        String lower = code.toLowerCase(Locale.ROOT);
+        if (lower.startsWith("zh-tw") || lower.startsWith("zh-hk") ||
+                lower.startsWith("zh-mo") || lower.contains("hant")) {
+            return "zh-TW";
+        }
+        if (lower.startsWith("zh")) return "zh-CN";
+        if (lower.startsWith("fr")) return "fr";
+        if (lower.startsWith("ja")) return "ja";
+        if (lower.startsWith("ko")) return "ko";
+        if (lower.startsWith("en")) return "en";
         return "system";
     }
 }
