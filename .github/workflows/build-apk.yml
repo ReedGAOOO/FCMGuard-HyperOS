@@ -23,11 +23,26 @@ jobs:
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Restore persistent debug signing key
+      - name: Restore stable CI signing key
         uses: actions/cache@v4
         with:
-          path: ~/.android/debug.keystore
-          key: fcmguard-debug-keystore-v1
+          path: ci-signing
+          key: fcmguard-stable-ci-signing-v1
+
+      - name: Create stable CI signing key if missing
+        run: |
+          mkdir -p ci-signing
+          if [ ! -f ci-signing/fcmguard-debug.keystore ]; then
+            keytool -genkeypair \
+              -keystore ci-signing/fcmguard-debug.keystore \
+              -storepass android \
+              -keypass android \
+              -alias fcmguarddebug \
+              -keyalg RSA \
+              -keysize 2048 \
+              -validity 10000 \
+              -dname "CN=FCM Guard Debug,O=ReedGAOOO,C=SG"
+          fi
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
