@@ -4,14 +4,11 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -33,8 +30,14 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // Deliberately use normal Android window fitting here.  FCM Guard must target
+        // SDK 22 so it can write Xiaomi's private Settings.System key.  On HyperOS,
+        // combining that legacy target with custom edge-to-edge/system-bar flags can
+        // trigger a large black compatibility surface at the bottom of the screen.
+        // The first working build did not touch those flags, so keep SystemUI in charge.
         setContentView(R.layout.activity_main);
-        configureSystemBars();
+
         bindViews();
         requestNotificationPermissionIfNeeded();
         loadConfigIntoFields();
@@ -45,13 +48,7 @@ public class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
-        configureSystemBars();
         refreshStatus(null);
-    }
-
-    @Override public void onWindowFocusChanged(boolean hasFocus) {
-        super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) configureSystemBars();
     }
 
     private void bindViews() {
@@ -170,44 +167,6 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 10);
         }
-    }
-
-    /**
-     * HyperOS 3 may restore a black legacy navigation surface for apps that target an
-     * old SDK.  Apply the app background at all three layers (theme/window/decor), and
-     * re-apply it after resume/focus because the ROM can rewrite navigation-bar state.
-     * We deliberately do not use LAYOUT_HIDE_NAVIGATION: the gesture area stays owned
-     * by SystemUI, but visually matches the app background instead of showing black.
-     */
-    @SuppressWarnings("deprecation")
-    private void configureSystemBars() {
-        Window w = getWindow();
-        final int bg = getResources().getColor(R.color.bg);
-
-        w.setBackgroundDrawable(new ColorDrawable(bg));
-        View decor = w.getDecorView();
-        decor.setBackgroundColor(bg);
-
-        if (Build.VERSION.SDK_INT >= 21) {
-            w.clearFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS |
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION |
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
-            w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            w.setStatusBarColor(bg);
-            w.setNavigationBarColor(bg);
-        }
-        if (Build.VERSION.SDK_INT >= 28) {
-            w.setNavigationBarDividerColor(bg);
-        }
-        if (Build.VERSION.SDK_INT >= 29) {
-            w.setNavigationBarContrastEnforced(false);
-            w.setStatusBarContrastEnforced(false);
-        }
-
-        int flags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        if (Build.VERSION.SDK_INT >= 26) flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
-        decor.setSystemUiVisibility(flags);
     }
 
     private void toast(String text) {
