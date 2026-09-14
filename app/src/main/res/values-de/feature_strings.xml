@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM-App-Assistent</string>
-    <string name="fcm_apps_summary">Erkennt installierte Apps mit standardmäßigen FCM/GCM-Empfangskomponenten und hilft bei der HyperOS-Autostart-Konfiguration.</string>
+    <string name="fcm_apps_summary">Erkennt installierte Apps mit standardmäßigen FCM/GCM-Empfangskomponenten und prüft ihren Autostart-Status, wenn HyperOS ihn bereitstellt.</string>
     <string name="scan_fcm_apps">FCM-Apps scannen</string>
     <string name="collapse_fcm_apps">App-Liste einklappen</string>
     <string name="open_autostart_manager">Alle in HyperOS konfigurieren</string>
     <string name="fcm_apps_not_scanned">Tippe auf „FCM-Apps scannen“, um die lokale Liste zu erstellen.</string>
     <string name="fcm_apps_found">%1$d FCM-fähige Apps erkannt</string>
+    <string name="fcm_apps_status_summary">%1$d erkannt · %2$d aktiviert · %3$d prüfen · %4$d unbekannt</string>
+    <string name="fcm_autostart_status_unavailable">%1$d FCM-Apps erkannt. Dieser HyperOS-Build stellt normalen Apps keinen lesbaren Autostart-Status bereit. Verwende „Alle in HyperOS konfigurieren“.</string>
     <string name="no_fcm_apps">Keine benutzerorientierten FCM-Apps erkannt.</string>
     <string name="app_settings">Autostart</string>
+    <string name="autostart_enabled">Aktiviert</string>
+    <string name="autostart_partial">Teilweise</string>
+    <string name="autostart_disabled">Deaktiviert</string>
+    <string name="autostart_unknown">Unbekannt</string>
     <string name="autostart_manager_unavailable">HyperOS-Autostart-Einstellungen konnten nicht geöffnet werden</string>
     <string name="app_settings_unavailable">App-Einstellungen konnten nicht geöffnet werden</string>
-    <string name="fcm_detection_note">Die Erkennung läuft nur nach Tippen auf Scannen; Autostart muss weiterhin manuell in den HyperOS-Einstellungen aktiviert werden.</string>
+    <string name="fcm_detection_note">Der Autostart-Status wird nur lesend und nach bestem Bemühen geprüft. „Unbekannt“ bedeutet, dass HyperOS die herstellerspezifische AppOps-Abfrage blockiert oder nicht bereitstellt; FCM Guard wertet dies nie als deaktiviert.</string>
     <string name="appearance_title">Darstellung</string>
     <string name="appearance_summary">Standardmäßig wird dem System gefolgt. Es ändert nur das UI-Design und fügt keine Hintergrundarbeit hinzu.</string>
     <string name="theme_system">System</string>
