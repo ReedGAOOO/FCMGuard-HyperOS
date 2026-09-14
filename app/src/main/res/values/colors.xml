@@ -19,6 +19,7 @@
     <color name="hero_end">#EAF4FF</color>
     <color name="hero_pill">#F2FFFFFF</color>
     <color name="floating_border">#EEF2F7</color>
+    <color name="primary_fill">#0B57D0</color>
     <color name="primary_pressed">#0849B8</color>
     <color name="primary_disabled">#AFC7F2</color>
     <color name="secondary_pressed">#E6EAF0</color>
