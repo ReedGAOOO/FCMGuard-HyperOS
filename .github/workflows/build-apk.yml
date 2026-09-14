@@ -55,7 +55,7 @@ jobs:
       - name: Build debug APK
         run: gradle :app:assembleDebug --stacktrace
 
-      - name: Read version and prepare release APK
+      - name: Read version and prepare release APKs
         id: version
         shell: bash
         run: |
@@ -66,10 +66,13 @@ jobs:
           fi
           TAG="v${VERSION}"
           APK_NAME="FCMGuard-HyperOS-${TAG}.apk"
+          LATEST_APK_NAME="FCMGuard-HyperOS.apk"
           cp app/build/outputs/apk/debug/app-debug.apk "$APK_NAME"
+          cp app/build/outputs/apk/debug/app-debug.apk "$LATEST_APK_NAME"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
+          echo "latest_apk_name=$LATEST_APK_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Upload Actions artifact
         uses: actions/upload-artifact@v4
@@ -78,18 +81,19 @@ jobs:
           path: ${{ steps.version.outputs.apk_name }}
           retention-days: 30
 
-      - name: Publish APK to GitHub Release
+      - name: Publish APKs to GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
           VERSION: ${{ steps.version.outputs.version }}
           APK_NAME: ${{ steps.version.outputs.apk_name }}
+          LATEST_APK_NAME: ${{ steps.version.outputs.latest_apk_name }}
         shell: bash
         run: |
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$APK_NAME" --clobber
+            gh release upload "$TAG" "$APK_NAME" "$LATEST_APK_NAME" --clobber
           else
-            gh release create "$TAG" "$APK_NAME" \
+            gh release create "$TAG" "$APK_NAME" "$LATEST_APK_NAME" \
               --target "$GITHUB_SHA" \
               --title "FCM Guard v${VERSION}" \
               --notes "FCM Guard v${VERSION} for China-ROM HyperOS 3. Download the APK below and install it directly on your phone."
