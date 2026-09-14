@@ -15,11 +15,10 @@
 ## Highlights
 
 - **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, ADB, Accessibility, VPN, overlay, or device-admin privileges.
-- **Preserves HyperOS state** — keeps every existing package in `MILLET_NO_RESTRICT_APP` and only restores `com.google.android.gms` when it is missing.
+- **Finance-app friendly** — avoids Shizuku, persistent ADB/debugging, and other high-privilege no-root methods; in our testing, those approaches could still trigger remote-access or security controls in DBS, Standard Chartered, and BOC, including access blocks or account-risk actions.
 - **Low background power** — event-driven monitoring is the primary path; the 30-minute fallback does not deliberately wake a sleeping phone.
 - **Reconnects only when needed** — FCM/MCS heartbeat broadcasts are sent only after a real repair or when manually requested.
 - **Optional persistent notification** — foreground mode is available for maximum survival reliability, while quiet background mode keeps the notification shade clean.
-- **Bank-app friendly design** — the app does not require persistent debugging, Shizuku, root, Accessibility, or remote-control style permissions.
 - **Bilingual UI** — follows the system language by default and supports English / 简体中文 switching.
 
 ## Quick setup
