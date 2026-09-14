@@ -103,3 +103,15 @@ jobs:
               --title "FCM Guard v${VERSION}" \
               --notes "FCM Guard v${VERSION} for China-ROM HyperOS 3. Download the APK below and install it directly on your phone."
           fi
+
+      - name: Mark v1.5.10 as reference
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          RELEASE_ID=$(gh api "repos/${GITHUB_REPOSITORY}/releases/tags/v1.5.10" --jq '.id')
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/releases/${RELEASE_ID}" \
+            -F prerelease=true \
+            -f name='FCM Guard v1.5.10 (Reference)' \
+            -f body='Reference build retained for comparison only. Stable release: v1.5.9.'
