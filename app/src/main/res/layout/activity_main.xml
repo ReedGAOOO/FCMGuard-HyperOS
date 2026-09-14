@@ -192,7 +192,9 @@
                 android:text="@string/repair_now"
                 android:textAllCaps="false"
                 android:textColor="@android:color/white"
-                android:background="@drawable/primary_button_bg" />
+                android:background="@drawable/primary_button_bg"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
 
             <Button
                 android:id="@+id/wakeBtn"
@@ -202,7 +204,9 @@
                 android:text="@string/wake_fcm"
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
-                android:background="@drawable/secondary_button_bg" />
+                android:background="@drawable/secondary_button_bg"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
 
             <Button
                 android:id="@+id/diagBtn"
@@ -212,7 +216,9 @@
                 android:text="@string/open_fcm_diag"
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
-                android:background="@drawable/secondary_button_bg" />
+                android:background="@drawable/secondary_button_bg"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
 
             <Button
                 android:id="@+id/permissionBtn"
@@ -222,7 +228,9 @@
                 android:text="@string/grant_modify"
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
-                android:background="@drawable/secondary_button_bg" />
+                android:background="@drawable/secondary_button_bg"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
         </LinearLayout>
 
         <LinearLayout
@@ -295,7 +303,9 @@
                 android:text="@string/save_configuration"
                 android:textAllCaps="false"
                 android:textColor="@color/text_primary"
-                android:background="@drawable/secondary_button_bg" />
+                android:background="@drawable/secondary_button_bg"
+                android:elevation="0dp"
+                android:stateListAnimator="@null" />
         </LinearLayout>
 
         <TextView
