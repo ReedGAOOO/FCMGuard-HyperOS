@@ -579,7 +579,7 @@ public class MainActivity extends Activity {
         appendStatusValueLine(
                 status,
                 canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted),
-                canWrite ? R.color.status_value_blue_bg : R.color.status_value_red_bg
+                canWrite ? R.color.status_value_green_bg : R.color.status_value_red_bg
         );
         status.append('\n');
         appendStatusValueLine(
@@ -591,7 +591,7 @@ public class MainActivity extends Activity {
         appendStatusValueLine(
                 status,
                 present ? getString(R.string.present_yes) : getString(R.string.present_no),
-                present ? R.color.status_value_purple_bg : R.color.status_value_red_bg
+                present ? R.color.status_value_green_bg : R.color.status_value_red_bg
         );
         status.append('\n');
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
@@ -600,7 +600,7 @@ public class MainActivity extends Activity {
                 visibleForeground
                         ? getString(R.string.notification_mode_foreground)
                         : getString(R.string.notification_mode_quiet),
-                visibleForeground ? R.color.status_value_blue_bg : R.color.status_value_yellow_bg
+                visibleForeground ? R.color.status_value_green_bg : R.color.status_value_yellow_bg
         );
         statusText.setText(status);
         currentValueText.setText(buildWhitelistValue(current));
@@ -661,18 +661,22 @@ public class MainActivity extends Activity {
             int start = out.length();
             out.append(packageName);
             int end = out.length();
-            out.setSpan(
-                    new BackgroundColorSpan(getResources().getColor(packageChipColor(packageName))),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
-            out.setSpan(
-                    new StyleSpan(Typeface.BOLD),
-                    start,
-                    end,
-                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            );
+
+            int colorRes = packageChipColor(packageName);
+            if (colorRes != 0) {
+                out.setSpan(
+                        new BackgroundColorSpan(getResources().getColor(colorRes)),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+                out.setSpan(
+                        new StyleSpan(Typeface.BOLD),
+                        start,
+                        end,
+                        Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                );
+            }
         }
         return out;
     }
@@ -680,9 +684,7 @@ public class MainActivity extends Activity {
     private int packageChipColor(String packageName) {
         if ("com.google.android.gms".equals(packageName)) return R.color.status_value_blue_bg;
         if (getPackageName().equals(packageName)) return R.color.status_value_purple_bg;
-        if ("com.android.vending".equals(packageName)) return R.color.status_value_green_bg;
-        if ("com.tencent.mm".equals(packageName)) return R.color.status_value_yellow_bg;
-        return R.color.status_value_neutral_bg;
+        return 0;
     }
 
     @SuppressWarnings("deprecation")
