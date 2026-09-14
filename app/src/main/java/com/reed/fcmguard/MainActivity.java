@@ -3,9 +3,11 @@ package com.reed.fcmguard;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,15 +15,20 @@ import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
 import android.view.DisplayCutout;
+import android.view.Gravity;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.RadioGroup;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.util.List;
 
 public class MainActivity extends Activity {
     private static final String[] LANGUAGE_CODES = {
@@ -37,11 +44,15 @@ public class MainActivity extends Activity {
     private TextView statusHeadline;
     private TextView statusText;
     private TextView currentValueText;
+    private TextView fcmAppsStatusText;
+    private LinearLayout fcmAppsContainer;
     private Button languageButton;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
     private Button permissionBtn;
+    private RadioGroup appearanceGroup;
     private boolean suppressSwitchCallbacks = false;
+    private boolean suppressAppearanceCallbacks = false;
 
     private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
     private int languageLabelIndex = 0;
@@ -54,8 +65,9 @@ public class MainActivity extends Activity {
         }
     };
 
-    @Override protected void attachBaseContext(android.content.Context newBase) {
-        super.attachBaseContext(LocaleHelper.apply(newBase));
+    @Override protected void attachBaseContext(Context newBase) {
+        Context localized = LocaleHelper.apply(newBase);
+        super.attachBaseContext(ThemeHelper.apply(localized));
     }
 
     @Override protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +79,7 @@ public class MainActivity extends Activity {
         bindViews();
         loadConfigIntoFields();
         setupLanguagePicker();
+        setupAppearance();
         setupSwitches();
         bindActions();
         refreshStatus(null);
@@ -95,10 +108,13 @@ public class MainActivity extends Activity {
         statusHeadline = findViewById(R.id.statusHeadline);
         statusText = findViewById(R.id.statusText);
         currentValueText = findViewById(R.id.currentValueText);
+        fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
+        fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
         languageButton = findViewById(R.id.languageButton);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
         permissionBtn = findViewById(R.id.permissionBtn);
+        appearanceGroup = findViewById(R.id.appearanceGroup);
     }
 
     private void loadConfigIntoFields() {
@@ -106,11 +122,6 @@ public class MainActivity extends Activity {
         itemEdit.setText(SettingsGuard.getConfiguredRequiredItem(this));
     }
 
-    /**
-     * Android 13+ uses the platform per-app language screen. The button deliberately
-     * does not display the currently selected locale; it cycles through the word
-     * "Language" in every supported language as a visual affordance.
-     */
     private void setupLanguagePicker() {
         languageButton.setText(LANGUAGE_BUTTON_LABELS[0]);
         languageButton.setOnClickListener(v -> {
@@ -122,9 +133,7 @@ public class MainActivity extends Activity {
                     );
                     startActivity(intent);
                     return;
-                } catch (Throwable ignored) {
-                    // Fall through if an OEM removed the standard language screen.
-                }
+                } catch (Throwable ignored) {}
             }
             showLegacyLanguagePicker();
         });
@@ -150,7 +159,6 @@ public class MainActivity extends Activity {
     private void animateToNextLanguageLabel() {
         if (languageButton == null) return;
         languageLabelIndex = (languageLabelIndex + 1) % LANGUAGE_BUTTON_LABELS.length;
-
         languageButton.animate().cancel();
         languageButton.animate()
                 .alpha(0f)
@@ -192,6 +200,32 @@ public class MainActivity extends Activity {
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
         dialog.show();
+    }
+
+    private void setupAppearance() {
+        String mode = ThemeHelper.getMode(this);
+        suppressAppearanceCallbacks = true;
+        if (ThemeHelper.MODE_DARK.equals(mode)) {
+            appearanceGroup.check(R.id.themeDark);
+        } else if (ThemeHelper.MODE_LIGHT.equals(mode)) {
+            appearanceGroup.check(R.id.themeLight);
+        } else {
+            appearanceGroup.check(R.id.themeSystem);
+        }
+        suppressAppearanceCallbacks = false;
+
+        appearanceGroup.setOnCheckedChangeListener((group, checkedId) -> {
+            if (suppressAppearanceCallbacks) return;
+            String next;
+            if (checkedId == R.id.themeDark) next = ThemeHelper.MODE_DARK;
+            else if (checkedId == R.id.themeLight) next = ThemeHelper.MODE_LIGHT;
+            else next = ThemeHelper.MODE_SYSTEM;
+
+            if (!next.equals(ThemeHelper.getMode(this))) {
+                ThemeHelper.setMode(this, next);
+                recreate();
+            }
+        });
     }
 
     private void setupSwitches() {
@@ -262,6 +296,87 @@ public class MainActivity extends Activity {
         });
 
         findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
+        findViewById(R.id.scanFcmAppsBtn).setOnClickListener(v -> scanFcmApps());
+        findViewById(R.id.openAutostartBtn).setOnClickListener(v -> {
+            if (!HyperOsSettings.openAutoStartManager(this)) {
+                toast(getString(R.string.autostart_manager_unavailable));
+            }
+        });
+    }
+
+    private void scanFcmApps() {
+        List<FcmAppScanner.AppEntry> apps = FcmAppScanner.scan(this);
+        fcmAppsContainer.removeAllViews();
+
+        if (apps.isEmpty()) {
+            fcmAppsStatusText.setText(R.string.no_fcm_apps);
+            return;
+        }
+
+        fcmAppsStatusText.setText(getString(R.string.fcm_apps_found, apps.size()));
+        for (FcmAppScanner.AppEntry app : apps) {
+            addFcmAppRow(app);
+        }
+    }
+
+    private void addFcmAppRow(FcmAppScanner.AppEntry app) {
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(0, dp(7), 0, dp(7));
+
+        LinearLayout labels = new LinearLayout(this);
+        labels.setOrientation(LinearLayout.VERTICAL);
+        LinearLayout.LayoutParams labelsParams = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+
+        TextView label = new TextView(this);
+        label.setText(app.label);
+        label.setTextColor(getResources().getColor(R.color.text_primary));
+        label.setTextSize(14f);
+        label.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        label.setMaxLines(1);
+        label.setEllipsize(android.text.TextUtils.TruncateAt.END);
+
+        TextView packageName = new TextView(this);
+        packageName.setText(app.packageName);
+        packageName.setTextColor(getResources().getColor(R.color.text_secondary));
+        packageName.setTextSize(10.5f);
+        packageName.setMaxLines(1);
+        packageName.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+        packageName.setPadding(0, dp(2), dp(8), 0);
+
+        labels.addView(label);
+        labels.addView(packageName);
+        row.addView(labels, labelsParams);
+
+        Button settingsButton = new Button(this);
+        settingsButton.setText(R.string.app_settings);
+        settingsButton.setTextAllCaps(false);
+        settingsButton.setTextSize(12f);
+        settingsButton.setTextColor(getResources().getColor(R.color.blue));
+        settingsButton.setBackground(getResources().getDrawable(R.drawable.secondary_button_bg));
+        settingsButton.setMinWidth(0);
+        settingsButton.setMinHeight(0);
+        settingsButton.setPadding(dp(10), 0, dp(10), 0);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            settingsButton.setStateListAnimator(null);
+            settingsButton.setElevation(0f);
+        }
+        LinearLayout.LayoutParams buttonParams = new LinearLayout.LayoutParams(dp(88), dp(42));
+        settingsButton.setOnClickListener(v -> {
+            if (!HyperOsSettings.openAppPermissionEditor(this, app.packageName)) {
+                toast(getString(R.string.app_settings_unavailable));
+            }
+        });
+        row.addView(settingsButton, buttonParams);
+
+        fcmAppsContainer.addView(row);
+
+        View divider = new View(this);
+        divider.setBackgroundColor(getResources().getColor(R.color.divider));
+        fcmAppsContainer.addView(divider, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(1)));
     }
 
     private void startProtectionService() {
@@ -325,7 +440,9 @@ public class MainActivity extends Activity {
         }
 
         StringBuilder sb = new StringBuilder();
-        if (firstLine != null && !firstLine.trim().isEmpty()) sb.append("✓ ").append(firstLine).append("\n");
+        if (firstLine != null && !firstLine.trim().isEmpty()) {
+            sb.append("✓ ").append(firstLine).append("\n");
+        }
         sb.append(canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted)).append("\n");
         sb.append(enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled)).append("\n");
         sb.append(present ? getString(R.string.present_yes) : getString(R.string.present_no)).append("\n");
@@ -360,11 +477,14 @@ public class MainActivity extends Activity {
             window.setNavigationBarContrastEnforced(false);
         }
 
+        boolean dark = ThemeHelper.isDark(this);
         int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
                 | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
-                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+        if (!dark && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        }
+        if (!dark && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         }
         window.getDecorView().setSystemUiVisibility(flags);
@@ -374,42 +494,33 @@ public class MainActivity extends Activity {
     private void applySystemBarInsets() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
 
+        final View root = findViewById(R.id.root);
         final View scroll = findViewById(R.id.scroll);
         final View content = findViewById(R.id.contentRoot);
         final int baseLeft = content.getPaddingLeft();
-        final int baseTop = content.getPaddingTop();
         final int baseRight = content.getPaddingRight();
         final int baseBottom = content.getPaddingBottom();
-        final int extraTop = dp(4);
         final int extraBottom = dp(8);
 
         scroll.setOnApplyWindowInsetsListener((v, insets) -> {
-            int top = Math.max(
-                    insets.getSystemWindowInsetTop(),
-                    insets.getStableInsetTop()
-            );
             int bottom = Math.max(
                     insets.getSystemWindowInsetBottom(),
                     insets.getStableInsetBottom()
             );
-
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 DisplayCutout cutout = insets.getDisplayCutout();
-                if (cutout != null) {
-                    top = Math.max(top, cutout.getSafeInsetTop());
-                    bottom = Math.max(bottom, cutout.getSafeInsetBottom());
-                }
+                if (cutout != null) bottom = Math.max(bottom, cutout.getSafeInsetBottom());
             }
 
             content.setPadding(
                     baseLeft,
-                    baseTop + top + extraTop,
+                    content.getPaddingTop(),
                     baseRight,
                     baseBottom + bottom + extraBottom
             );
             return insets;
         });
-        scroll.requestApplyInsets();
+        root.requestApplyInsets();
     }
 
     private int dp(int value) {
