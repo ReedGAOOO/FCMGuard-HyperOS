@@ -3,13 +3,41 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <path android:fillColor="#FFFFFF" android:pathData="M0,0h108v108h-108z"/>
-    <path android:fillColor="#4285F4" android:pathData="M54,13 L82,25 L82,50 C82,69 70,83 54,92 C38,83 26,69 26,50 L26,25 Z"/>
-    <path android:fillColor="#34A853" android:pathData="M54,18 L77,28 L77,49 C77,65 68,76 54,85 Z"/>
-    <path android:fillColor="#FBBC04" android:pathData="M54,18 L31,28 L31,49 C31,65 40,76 54,85 Z"/>
-    <path android:fillColor="#EA4335" android:pathData="M54,18 L77,28 L77,37 L54,28 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M54,33 C47,33 42,39 42,46 V56 L38,61 V64 H70 V61 L66,56 V46 C66,39 61,33 54,33 Z"/>
-    <path android:fillColor="#FFFFFF" android:pathData="M50,67 C51,71 53,73 54,73 C55,73 57,71 58,67 Z"/>
-    <path android:fillColor="#1A73E8" android:pathData="M36,42 C32,46 32,54 36,58 L39,55 C37,52 37,48 39,45 Z"/>
-    <path android:fillColor="#1A73E8" android:pathData="M72,42 L69,45 C71,48 71,52 69,55 L72,58 C76,54 76,46 72,42 Z"/>
+
+    <!-- Square source artwork. Launcher masking/cropping is handled by the OS. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M0,0h108v108h-108z" />
+
+    <!-- Centered shield with a wider blue protective rim. -->
+    <path
+        android:fillColor="#4285F4"
+        android:pathData="M54,14 L86,29 L86,51 C86,71 74,84 54,94 C34,84 22,71 22,51 L22,29 Z" />
+
+    <!-- Inner Google-inspired color fields. -->
+    <path
+        android:fillColor="#FBBC04"
+        android:pathData="M54,22 L31,33 L31,50 C31,66 40,76 54,85 Z" />
+    <path
+        android:fillColor="#EA4335"
+        android:pathData="M54,22 L77,33 L77,45 L54,37 Z" />
+    <path
+        android:fillColor="#34A853"
+        android:pathData="M54,37 L77,45 L77,50 C77,66 68,76 54,85 Z" />
+
+    <!-- Bell, slightly above geometric center so the whole symbol reads optically centered. -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M54,37 C46.2,37 41.2,43.1 41.2,50.8 L41.2,58.2 L36.8,63.7 C36.2,64.5 36.8,65.7 37.9,65.7 L70.1,65.7 C71.2,65.7 71.8,64.5 71.2,63.7 L66.8,58.2 L66.8,50.8 C66.8,43.1 61.8,37 54,37 Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M49.2,69 C49.9,73 51.8,75.2 54,75.2 C56.2,75.2 58.1,73 58.8,69 Z" />
+
+    <!-- Symmetric FCM signal arcs. -->
+    <path
+        android:fillColor="#4285F4"
+        android:pathData="M34.9,45.7 C31.8,49.9 31.8,55.6 34.9,59.8 L38.8,56.9 C37,54.4 37,51.1 38.8,48.6 Z" />
+    <path
+        android:fillColor="#4285F4"
+        android:pathData="M73.1,45.7 L69.2,48.6 C71,51.1 71,54.4 69.2,56.9 L73.1,59.8 C76.2,55.6 76.2,49.9 73.1,45.7 Z" />
 </vector>
