@@ -270,6 +270,7 @@
         android:clipToPadding="false">
 
         <LinearLayout
+            android:id="@+id/heroCard"
             android:layout_width="match_parent"
             android:layout_height="176dp"
             android:orientation="vertical"
@@ -325,6 +326,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/statusCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
