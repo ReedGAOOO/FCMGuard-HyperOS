@@ -3,14 +3,15 @@
     <string name="fcm_apps_title">FCM アプリ アシスタント</string>
     <string name="fcm_apps_summary">標準の FCM/GCM 受信コンポーネントを宣言するインストール済みアプリを検出し、HyperOS の自動起動設定を補助します。</string>
     <string name="scan_fcm_apps">FCM アプリをスキャン</string>
+    <string name="collapse_fcm_apps">アプリ一覧を閉じる</string>
     <string name="open_autostart_manager">HyperOS でまとめて設定</string>
     <string name="fcm_apps_not_scanned">「FCM アプリをスキャン」をタップして端末内リストを作成します。</string>
     <string name="fcm_apps_found">FCM 対応アプリを %1$d 個検出</string>
     <string name="no_fcm_apps">ユーザー向けの FCM アプリは検出されませんでした。</string>
-    <string name="app_settings">設定</string>
+    <string name="app_settings">自動起動</string>
     <string name="autostart_manager_unavailable">HyperOS の自動起動設定を開けませんでした</string>
     <string name="app_settings_unavailable">アプリ設定を開けませんでした</string>
-    <string name="fcm_detection_note">検出はベストエフォートで、スキャンをタップしたときだけ実行されます。通常の Android アプリは、他のアプリの自動起動を高権限なしで静かに有効化できません。FCM Guard は金融アプリとの互換性のため、そのような方法を意図的に使用しません。</string>
+    <string name="fcm_detection_note">検出はスキャンをタップしたときだけ実行されます。自動起動は HyperOS の設定でユーザーが手動で有効にする必要があります。</string>
     <string name="appearance_title">外観</string>
     <string name="appearance_summary">既定ではシステムに従います。UI テーマだけを変更し、バックグラウンド処理は追加しません。</string>
     <string name="theme_system">システム</string>
