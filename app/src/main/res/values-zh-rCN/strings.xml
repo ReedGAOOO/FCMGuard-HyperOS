@@ -1,38 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">HyperOS 系统设置看门狗</string>
+    <string name="subtitle">HyperOS 低功耗 FCM 保护</string>
     <string name="label_key">设置项 Key</string>
     <string name="label_item">必需项</string>
     <string name="save_configuration">保存配置</string>
     <string name="grant_modify">授予“修改系统设置”</string>
     <string name="repair_now">立即修复</string>
-    <string name="start_protection">启动自动保护</string>
-    <string name="stop_protection">停止自动保护</string>
     <string name="wake_fcm">立即唤醒 FCM</string>
     <string name="open_fcm_diag">打开 FCM 诊断</string>
     <string name="status_title">状态</string>
-    <string name="current_value_title">当前值</string>
+    <string name="current_value_title">当前白名单值</string>
     <string name="language">语言</string>
     <string name="follow_system">跟随系统</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
     <string name="default_key">MILLET_NO_RESTRICT_APP</string>
     <string name="default_required_item">com.google.android.gms</string>
-    <string name="helper_text">FCM Guard 会保留现有逗号分隔列表中的所有项，仅在缺少配置的必需项时追加；同时会在后台周期性检查。</string>
-    <string name="note_text">建议在 HyperOS 中给予 FCM Guard：自启动开启、电池无限制。为兼容银行 App，尽量保持开发者选项 / USB 调试 / 无线调试关闭。</string>
+
+    <string name="protection_title">保护设置</string>
+    <string name="automatic_protection">自动保护</string>
+    <string name="automatic_protection_summary">仅监听 FCM 白名单这一项的变化，主要采用事件触发；30 分钟兜底检查不会主动唤醒休眠中的手机。</string>
+    <string name="persistent_notification">常驻通知</string>
+    <string name="persistent_notification_summary">建议开启以获得最高可靠性。关闭后会移除通知并切换为纯后台模式，但 HyperOS 更容易终止该服务。</string>
+    <string name="actions_title">工具</string>
+    <string name="advanced_title">高级配置</string>
+
+    <string name="helper_text">低功耗优化：不再每 30 秒轮询，不再监听无关系统设置，仅在真正修复白名单后才发送一次 FCM 重连请求。</string>
+    <string name="note_text">建议在 HyperOS 中保持“自启动”开启，并将电池模式设为“无限制”。不需要开发者选项、USB 调试或无线调试。</string>
+
+    <string name="status_protected">保护正常</string>
+    <string name="status_ready">已就绪</string>
+    <string name="status_attention">需要处理</string>
     <string name="status_granted">修改系统设置：已授权</string>
     <string name="status_not_granted">修改系统设置：未授权</string>
     <string name="status_enabled">自动保护：已开启</string>
     <string name="status_disabled">自动保护：未开启</string>
     <string name="present_yes">必需项存在：是</string>
     <string name="present_no">必需项存在：否</string>
+    <string name="notification_mode_foreground">后台模式：前台服务</string>
+    <string name="notification_mode_quiet">后台模式：静默纯后台</string>
+
     <string name="saved">配置已保存</string>
     <string name="repaired">已修复 / 已保护</string>
+    <string name="already_protected">当前已处于保护状态</string>
     <string name="missing_current">（缺失）</string>
     <string name="permission_missing">尚未授予“修改系统设置”权限</string>
     <string name="service_started">自动保护已启动</string>
     <string name="service_stopped">自动保护已停止</string>
     <string name="wake_sent">已发送心跳 / 重连广播</string>
     <string name="diagnostics_unavailable">未找到 FCM 诊断界面</string>
+    <string name="write_rejected">系统拒绝写入</string>
+    <string name="write_failed">写入失败：%1$s</string>
+
+    <string name="notification_channel_name">FCM Guard 保护</string>
+    <string name="notification_channel_description">用于维持自动 FCM 保护可靠性的低优先级通知</string>
+    <string name="notification_active">保护已启动 · 事件驱动</string>
+    <string name="notification_repaired">白名单已修复 · FCM 已保护</string>
 </resources>
