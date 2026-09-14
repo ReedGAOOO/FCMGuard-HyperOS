@@ -9,6 +9,8 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.provider.Settings;
 import android.view.DisplayCutout;
 import android.view.View;
@@ -22,6 +24,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
+    private static final String[] LANGUAGE_CODES = {
+            "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko"
+    };
+    private static final String[] LANGUAGE_BUTTON_LABELS = {
+            "Language", "语言", "語言", "Langue", "言語", "언어"
+    };
+    private static final long LANGUAGE_LABEL_INTERVAL_MS = 2200L;
+
     private EditText keyEdit;
     private EditText itemEdit;
     private TextView statusHeadline;
@@ -32,6 +42,17 @@ public class MainActivity extends Activity {
     private Switch notificationSwitch;
     private Button permissionBtn;
     private boolean suppressSwitchCallbacks = false;
+
+    private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
+    private int languageLabelIndex = 0;
+    private boolean languageAnimationRunning = false;
+    private final Runnable languageLabelTicker = new Runnable() {
+        @Override public void run() {
+            if (!languageAnimationRunning || languageButton == null) return;
+            animateToNextLanguageLabel();
+            languageAnimationHandler.postDelayed(this, LANGUAGE_LABEL_INTERVAL_MS);
+        }
+    };
 
     @Override protected void attachBaseContext(android.content.Context newBase) {
         super.attachBaseContext(LocaleHelper.apply(newBase));
@@ -54,8 +75,13 @@ public class MainActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         configureFullEdgeToEdge();
-        if (languageButton != null) updateLanguageButton();
+        startLanguageButtonAnimation();
         refreshStatus(null);
+    }
+
+    @Override protected void onPause() {
+        stopLanguageButtonAnimation();
+        super.onPause();
     }
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
@@ -81,12 +107,12 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Android 13+ uses the platform's per-app language settings screen. The selected
-     * locale is owned by LocaleManager and stays synchronized with system Settings.
-     * Older Android releases keep a small compatibility dialog.
+     * Android 13+ uses the platform per-app language screen. The button deliberately
+     * does not display the currently selected locale; it cycles through the word
+     * "Language" in every supported language as a visual affordance.
      */
     private void setupLanguagePicker() {
-        updateLanguageButton();
+        languageButton.setText(LANGUAGE_BUTTON_LABELS[0]);
         languageButton.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= 33) {
                 try {
@@ -97,33 +123,69 @@ public class MainActivity extends Activity {
                     startActivity(intent);
                     return;
                 } catch (Throwable ignored) {
-                    // Fall through to the compatibility picker if the OEM removed it.
+                    // Fall through if an OEM removed the standard language screen.
                 }
             }
             showLegacyLanguagePicker();
         });
     }
 
-    private void updateLanguageButton() {
-        String lang = LocaleHelper.getLanguage(this);
-        if ("zh-CN".equals(lang)) {
-            languageButton.setText(R.string.simplified_chinese);
-        } else if ("en".equals(lang)) {
-            languageButton.setText(R.string.english);
-        } else {
-            languageButton.setText(R.string.follow_system);
+    private void startLanguageButtonAnimation() {
+        if (languageButton == null || languageAnimationRunning) return;
+        languageAnimationRunning = true;
+        languageAnimationHandler.removeCallbacks(languageLabelTicker);
+        languageAnimationHandler.postDelayed(languageLabelTicker, LANGUAGE_LABEL_INTERVAL_MS);
+    }
+
+    private void stopLanguageButtonAnimation() {
+        languageAnimationRunning = false;
+        languageAnimationHandler.removeCallbacks(languageLabelTicker);
+        if (languageButton != null) {
+            languageButton.animate().cancel();
+            languageButton.setAlpha(1f);
+            languageButton.setTranslationY(0f);
         }
+    }
+
+    private void animateToNextLanguageLabel() {
+        if (languageButton == null) return;
+        languageLabelIndex = (languageLabelIndex + 1) % LANGUAGE_BUTTON_LABELS.length;
+
+        languageButton.animate().cancel();
+        languageButton.animate()
+                .alpha(0f)
+                .translationY(-dp(3))
+                .setDuration(140L)
+                .withEndAction(() -> {
+                    if (!languageAnimationRunning || languageButton == null) return;
+                    languageButton.setText(LANGUAGE_BUTTON_LABELS[languageLabelIndex]);
+                    languageButton.setAlpha(0f);
+                    languageButton.setTranslationY(dp(3));
+                    languageButton.animate()
+                            .alpha(1f)
+                            .translationY(0f)
+                            .setDuration(180L)
+                            .start();
+                })
+                .start();
     }
 
     private void showLegacyLanguagePicker() {
         String lang = LocaleHelper.getLanguage(this);
-        int checked = "en".equals(lang) ? 1 : ("zh-CN".equals(lang) ? 2 : 0);
+        int checked = 0;
+        for (int i = 0; i < LANGUAGE_CODES.length; i++) {
+            if (LANGUAGE_CODES[i].equals(lang)) {
+                checked = i;
+                break;
+            }
+        }
 
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.language)
                 .setSingleChoiceItems(R.array.language_entries, checked, (d, which) -> {
-                    String code = which == 1 ? "en" : (which == 2 ? "zh-CN" : "system");
-                    LocaleHelper.setLanguage(this, code);
+                    if (which >= 0 && which < LANGUAGE_CODES.length) {
+                        LocaleHelper.setLanguage(this, LANGUAGE_CODES[which]);
+                    }
                     d.dismiss();
                     if (Build.VERSION.SDK_INT < 33) recreate();
                 })
@@ -280,12 +342,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    /**
-     * Full edge-to-edge presentation: both status and gesture-navigation surfaces are
-     * transparent, while content receives explicit safe insets. This gives the same
-     * visual model used by modern media apps without letting text sit under the
-     * status icons or display cutout.
-     */
     @SuppressWarnings("deprecation")
     private void configureFullEdgeToEdge() {
         Window window = getWindow();
@@ -314,11 +370,6 @@ public class MainActivity extends Activity {
         window.getDecorView().setSystemUiVisibility(flags);
     }
 
-    /**
-     * Keep the app background behind both system bars, but pad the actual content by
-     * the real status/cutout and gesture-navigation insets. Baseline design padding is
-     * preserved and a few extra dp provide visual breathing room at both ends.
-     */
     @SuppressWarnings("deprecation")
     private void applySystemBarInsets() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
