@@ -96,6 +96,10 @@ public final class LocaleHelper {
         if (lower.startsWith("fr")) return "fr";
         if (lower.startsWith("ja")) return "ja";
         if (lower.startsWith("ko")) return "ko";
+        if (lower.startsWith("es")) return "es";
+        if (lower.startsWith("pt")) return "pt";
+        if (lower.startsWith("de")) return "de";
+        if (lower.startsWith("ru")) return "ru";
         if (lower.startsWith("en")) return "en";
         return "system";
     }
