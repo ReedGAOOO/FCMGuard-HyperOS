@@ -23,7 +23,7 @@ public final class CollapsingStatusCard extends LinearLayout {
     private float radiusPx;
     private float strokeWidthPx;
     private float visualBottomPx = Float.NaN;
-    private int headerChildIndex = -1;
+    private int detailsChildIndex = -1;
 
     public CollapsingStatusCard(Context context) {
         super(context);
@@ -69,8 +69,8 @@ public final class CollapsingStatusCard extends LinearLayout {
 
     @Override protected void onFinishInflate() {
         super.onFinishInflate();
-        View header = findViewById(R.id.statusHeaderPanel);
-        headerChildIndex = header == null ? -1 : indexOfChild(header);
+        View details = findViewById(R.id.statusDetailsPanel);
+        detailsChildIndex = details == null ? -1 : indexOfChild(details);
     }
 
     /**
@@ -121,15 +121,15 @@ public final class CollapsingStatusCard extends LinearLayout {
         super.onDraw(canvas);
     }
 
-    /** Draw the white Status/Protected cap last so the whitelist panel can slide underneath it. */
+    /** Draw the white detailed-status panel last so the whitelist slides underneath it. */
     @Override protected int getChildDrawingOrder(int childCount, int drawingPosition) {
-        if (headerChildIndex < 0 || headerChildIndex >= childCount) {
+        if (detailsChildIndex < 0 || detailsChildIndex >= childCount) {
             return super.getChildDrawingOrder(childCount, drawingPosition);
         }
-        if (drawingPosition == childCount - 1) return headerChildIndex;
+        if (drawingPosition == childCount - 1) return detailsChildIndex;
 
         int childIndex = drawingPosition;
-        if (childIndex >= headerChildIndex) childIndex++;
+        if (childIndex >= detailsChildIndex) childIndex++;
         return childIndex;
     }
 }
