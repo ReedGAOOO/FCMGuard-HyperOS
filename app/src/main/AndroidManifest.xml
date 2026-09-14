@@ -8,7 +8,8 @@
 
     <!--
       Narrow package visibility only for the signals FCM Guard needs. This avoids
-      QUERY_ALL_PACKAGES while allowing best-effort discovery of FCM/GCM receivers.
+      QUERY_ALL_PACKAGES while allowing best-effort discovery of FCM/GCM receivers
+      and the Google Play services diagnostics activity.
     -->
     <queries>
         <intent>
@@ -17,6 +18,7 @@
         <intent>
             <action android:name="com.google.android.c2dm.intent.RECEIVE" />
         </intent>
+        <package android:name="com.google.android.gms" />
         <package android:name="com.miui.securitycenter" />
     </queries>
 
