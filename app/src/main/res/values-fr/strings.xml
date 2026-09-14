@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FCM Guard</string>
+    <string name="subtitle">Protection FCM discrète pour HyperOS</string>
+    <string name="label_key">Clé de paramètre</string>
+    <string name="label_item">Élément requis</string>
+    <string name="save_configuration">Enregistrer la configuration</string>
+    <string name="grant_modify">Autoriser la modification des paramètres système</string>
+    <string name="repair_now">Réparer maintenant</string>
+    <string name="wake_fcm">Réveiller FCM</string>
+    <string name="open_fcm_diag">Ouvrir le diagnostic FCM</string>
+    <string name="status_title">État</string>
+    <string name="current_value_title">Valeur actuelle de la liste d’exclusion</string>
+    <string name="language">Langue</string>
+    <string name="follow_system">Suivre le système</string>
+    <string name="english">English</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_required_item">com.google.android.gms</string>
+
+    <string name="protection_title">Protection</string>
+    <string name="automatic_protection">Protection automatique</string>
+    <string name="automatic_protection_summary">Surveillance événementielle uniquement de la clé FCM. Une vérification de secours toutes les 30 minutes ne réveille pas volontairement un téléphone en veille.</string>
+    <string name="persistent_notification">Notification persistante</string>
+    <string name="persistent_notification_summary">Recommandé pour une fiabilité maximale. Désactivez-la pour supprimer la notification et utiliser le mode arrière-plan silencieux ; HyperOS pourra alors arrêter le service plus facilement.</string>
+    <string name="actions_title">Outils</string>
+    <string name="advanced_title">Configuration avancée</string>
+
+    <string name="helper_text">Conception basse consommation : plus de scrutation toutes les 30 secondes, aucune surveillance de paramètres système sans rapport, et une demande de reconnexion FCM uniquement après une réparation réelle de la liste.</string>
+    <string name="note_text">Sur HyperOS, gardez le démarrage automatique activé et le mode batterie sur Sans restrictions. Les options développeur, le débogage USB et le débogage sans fil ne sont pas nécessaires.</string>
+
+    <string name="status_protected">Protégé</string>
+    <string name="status_ready">Prêt</string>
+    <string name="status_attention">Action requise</string>
+    <string name="status_granted">Modifier les paramètres : autorisé</string>
+    <string name="status_not_granted">Modifier les paramètres : non autorisé</string>
+    <string name="status_enabled">Protection automatique : activée</string>
+    <string name="status_disabled">Protection automatique : désactivée</string>
+    <string name="present_yes">Élément requis présent : oui</string>
+    <string name="present_no">Élément requis présent : non</string>
+    <string name="notification_mode_foreground">Mode arrière-plan : service au premier plan</string>
+    <string name="notification_mode_quiet">Mode arrière-plan : silencieux</string>
+
+    <string name="saved">Configuration enregistrée</string>
+    <string name="repaired">Réparé / protégé</string>
+    <string name="already_protected">Déjà protégé</string>
+    <string name="missing_current">(absent)</string>
+    <string name="permission_missing">L’autorisation de modifier les paramètres système n’est pas accordée</string>
+    <string name="service_started">Protection automatique démarrée</string>
+    <string name="service_stopped">Protection automatique arrêtée</string>
+    <string name="wake_sent">Heartbeat / diffusion de reconnexion envoyée</string>
+    <string name="diagnostics_unavailable">L’écran de diagnostic FCM est introuvable</string>
+    <string name="write_rejected">Le système a refusé l’écriture</string>
+    <string name="write_failed">Échec de l’écriture : %1$s</string>
+
+    <string name="notification_channel_name">Protection FCM Guard</string>
+    <string name="notification_channel_description">Notification de faible priorité utilisée pour maintenir la protection FCM automatique</string>
+    <string name="notification_active">Protection active · événementielle</string>
+    <string name="notification_repaired">Liste réparée · FCM protégé</string>
+</resources>
