@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM app assistant</string>
-    <string name="fcm_apps_summary">Detect installed apps that declare standard FCM/GCM receive components, then configure HyperOS Autostart for them.</string>
+    <string name="fcm_apps_summary">Detect installed apps that declare standard FCM/GCM receive components, then verify their HyperOS Autostart state when the ROM exposes it.</string>
     <string name="scan_fcm_apps">Scan FCM apps</string>
     <string name="collapse_fcm_apps">Collapse app list</string>
     <string name="open_autostart_manager">Configure all in HyperOS</string>
     <string name="fcm_apps_not_scanned">Tap Scan FCM apps to build the local list.</string>
     <string name="fcm_apps_found">%1$d FCM-capable apps detected</string>
+    <string name="fcm_apps_status_summary">%1$d detected · %2$d enabled · %3$d need attention · %4$d unknown</string>
+    <string name="fcm_autostart_status_unavailable">%1$d FCM apps detected. HyperOS did not expose readable Autostart state on this build. Use Configure all in HyperOS.</string>
     <string name="no_fcm_apps">No user-facing FCM apps were detected.</string>
     <string name="app_settings">Autostart</string>
+    <string name="autostart_enabled">Enabled</string>
+    <string name="autostart_partial">Partial</string>
+    <string name="autostart_disabled">Disabled</string>
+    <string name="autostart_unknown">Unknown</string>
     <string name="autostart_manager_unavailable">HyperOS Autostart settings could not be opened</string>
     <string name="app_settings_unavailable">App settings could not be opened</string>
-    <string name="fcm_detection_note">Detection is best-effort and runs only when you tap Scan. Android does not let a normal app silently enable Autostart for other apps; doing that would require privileged methods that FCM Guard intentionally avoids.</string>
+    <string name="fcm_detection_note">Autostart status is read-only and best-effort. Unknown means HyperOS blocked or did not expose the vendor AppOps query; FCM Guard never treats Unknown as Disabled.</string>
 
     <string name="appearance_title">Appearance</string>
     <string name="appearance_summary">Default: follow the system. This changes only the UI theme and adds no background work.</string>
