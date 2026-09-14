@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FCM Guard</string>
+    <string name="subtitle">HyperOS system-setting watchdog</string>
+    <string name="label_key">Settings key</string>
+    <string name="label_item">Required item</string>
+    <string name="save_configuration">Save configuration</string>
+    <string name="grant_modify">Grant Modify system settings</string>
+    <string name="repair_now">Repair now</string>
+    <string name="start_protection">Start automatic protection</string>
+    <string name="stop_protection">Stop automatic protection</string>
+    <string name="wake_fcm">Wake FCM now</string>
+    <string name="open_fcm_diag">Open FCM diagnostics</string>
+    <string name="status_title">Status</string>
+    <string name="current_value_title">Current value</string>
+    <string name="language">Language</string>
+    <string name="follow_system">Follow system</string>
+    <string name="english">English</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_required_item">com.google.android.gms</string>
+    <string name="helper_text">FCM Guard preserves all existing comma-separated items and only adds the configured required item when it is missing. It also checks periodically in the background.</string>
+    <string name="note_text">Recommended on HyperOS: give FCM Guard Autostart and No restrictions battery mode. Keep Developer options / USB debugging / Wireless debugging OFF for better bank-app compatibility.</string>
+    <string name="status_granted">Modify settings: granted</string>
+    <string name="status_not_granted">Modify settings: not granted</string>
+    <string name="status_enabled">Automatic protection: enabled</string>
+    <string name="status_disabled">Automatic protection: disabled</string>
+    <string name="present_yes">Required item present: yes</string>
+    <string name="present_no">Required item present: no</string>
+    <string name="saved">Configuration saved</string>
+    <string name="repaired">Repaired / protected</string>
+    <string name="missing_current">(missing)</string>
+    <string name="permission_missing">Modify system settings permission is not granted</string>
+    <string name="service_started">Automatic protection started</string>
+    <string name="service_stopped">Automatic protection stopped</string>
+    <string name="wake_sent">Heartbeat / reconnect broadcast sent</string>
+    <string name="diagnostics_unavailable">FCM diagnostics activity was not found</string>
+</resources>
