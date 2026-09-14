@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -13,16 +14,22 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 public class MainActivity extends Activity {
     private EditText keyEdit;
     private EditText itemEdit;
+    private TextView statusHeadline;
     private TextView statusText;
     private TextView currentValueText;
     private Spinner languageSpinner;
+    private Switch protectionSwitch;
+    private Switch notificationSwitch;
+    private Button permissionBtn;
     private boolean initializingSpinner = true;
+    private boolean suppressSwitchCallbacks = false;
 
     @Override protected void attachBaseContext(android.content.Context newBase) {
         super.attachBaseContext(LocaleHelper.apply(newBase));
@@ -30,18 +37,12 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
-        // Deliberately use normal Android window fitting here.  FCM Guard must target
-        // SDK 22 so it can write Xiaomi's private Settings.System key.  On HyperOS,
-        // combining that legacy target with custom edge-to-edge/system-bar flags can
-        // trigger a large black compatibility surface at the bottom of the screen.
-        // The first working build did not touch those flags, so keep SystemUI in charge.
         setContentView(R.layout.activity_main);
-
         bindViews();
         requestNotificationPermissionIfNeeded();
         loadConfigIntoFields();
         setupLanguageSpinner();
+        setupSwitches();
         bindActions();
         refreshStatus(null);
     }
@@ -54,9 +55,13 @@ public class MainActivity extends Activity {
     private void bindViews() {
         keyEdit = findViewById(R.id.keyEdit);
         itemEdit = findViewById(R.id.itemEdit);
+        statusHeadline = findViewById(R.id.statusHeadline);
         statusText = findViewById(R.id.statusText);
         currentValueText = findViewById(R.id.currentValueText);
         languageSpinner = findViewById(R.id.languageSpinner);
+        protectionSwitch = findViewById(R.id.protectionSwitch);
+        notificationSwitch = findViewById(R.id.notificationSwitch);
+        permissionBtn = findViewById(R.id.permissionBtn);
     }
 
     private void loadConfigIntoFields() {
@@ -65,7 +70,11 @@ public class MainActivity extends Activity {
     }
 
     private void setupLanguageSpinner() {
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.language_entries, android.R.layout.simple_spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
+                this,
+                R.array.language_entries,
+                android.R.layout.simple_spinner_item
+        );
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
 
@@ -84,64 +93,112 @@ public class MainActivity extends Activity {
                     recreate();
                 }
             }
+
             @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
         });
     }
 
+    private void setupSwitches() {
+        suppressSwitchCallbacks = true;
+        protectionSwitch.setChecked(SettingsGuard.isProtectionEnabled(this));
+        notificationSwitch.setChecked(SettingsGuard.usePersistentNotification(this));
+        suppressSwitchCallbacks = false;
+
+        protectionSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (suppressSwitchCallbacks) return;
+
+            if (checked) {
+                SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
+                if (!Settings.System.canWrite(this)) {
+                    SettingsGuard.setProtectionEnabled(this, false);
+                    suppressSwitchCallbacks = true;
+                    protectionSwitch.setChecked(false);
+                    suppressSwitchCallbacks = false;
+                    toast(getString(R.string.permission_missing));
+                    openWriteSettings();
+                    refreshStatus(null);
+                    return;
+                }
+
+                SettingsGuard.setProtectionEnabled(this, true);
+                startProtectionService();
+                SettingsGuard.Result result = SettingsGuard.repair(this);
+                if (result.changed) FcmReconnect.kick(this);
+                toast(getString(R.string.service_started));
+            } else {
+                stopService(new Intent(this, GuardService.class));
+                SettingsGuard.setProtectionEnabled(this, false);
+                toast(getString(R.string.service_stopped));
+            }
+            refreshStatus(null);
+        });
+
+        notificationSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (suppressSwitchCallbacks) return;
+            SettingsGuard.setPersistentNotification(this, checked);
+            if (SettingsGuard.isProtectionEnabled(this)) {
+                startProtectionService();
+            }
+            refreshStatus(null);
+        });
+    }
+
     private void bindActions() {
-        ((Button)findViewById(R.id.saveBtn)).setOnClickListener(v -> {
+        findViewById(R.id.saveBtn).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
             loadConfigIntoFields();
+            if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
             toast(getString(R.string.saved));
             refreshStatus(getString(R.string.saved));
         });
 
-        ((Button)findViewById(R.id.permissionBtn)).setOnClickListener(v -> {
-            Intent intent = new Intent(Settings.ACTION_MANAGE_WRITE_SETTINGS, Uri.parse("package:" + getPackageName()));
-            startActivity(intent);
-        });
+        permissionBtn.setOnClickListener(v -> openWriteSettings());
 
-        ((Button)findViewById(R.id.repairBtn)).setOnClickListener(v -> {
+        findViewById(R.id.repairBtn).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
             SettingsGuard.Result result = SettingsGuard.repair(this);
-            if (result.success) FcmReconnect.kick(this);
+            if (result.changed) FcmReconnect.kick(this);
             refreshStatus(result.message);
         });
 
-        ((Button)findViewById(R.id.startBtn)).setOnClickListener(v -> {
-            SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
-            if (!Settings.System.canWrite(this)) {
-                toast(getString(R.string.permission_missing));
-                return;
-            }
-            Intent service = new Intent(this, GuardService.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) startForegroundService(service);
-            else startService(service);
-            getSharedPreferences("guard_state", MODE_PRIVATE).edit().putBoolean("enabled", true).apply();
-            toast(getString(R.string.service_started));
-            refreshStatus(getString(R.string.service_started));
-        });
-
-        ((Button)findViewById(R.id.stopBtn)).setOnClickListener(v -> {
-            stopService(new Intent(this, GuardService.class));
-            getSharedPreferences("guard_state", MODE_PRIVATE).edit().putBoolean("enabled", false).apply();
-            toast(getString(R.string.service_stopped));
-            refreshStatus(getString(R.string.service_stopped));
-        });
-
-        ((Button)findViewById(R.id.wakeBtn)).setOnClickListener(v -> {
+        findViewById(R.id.wakeBtn).setOnClickListener(v -> {
             FcmReconnect.kick(this);
             toast(getString(R.string.wake_sent));
             refreshStatus(getString(R.string.wake_sent));
         });
 
-        ((Button)findViewById(R.id.diagBtn)).setOnClickListener(v -> openFcmDiagnostics());
+        findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
+    }
+
+    private void startProtectionService() {
+        Intent service = new Intent(this, GuardService.class);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                    SettingsGuard.usePersistentNotification(this)) {
+                startForegroundService(service);
+            } else {
+                startService(service);
+            }
+        } catch (Throwable t) {
+            toast(t.getClass().getSimpleName());
+        }
+    }
+
+    private void openWriteSettings() {
+        Intent intent = new Intent(
+                Settings.ACTION_MANAGE_WRITE_SETTINGS,
+                Uri.parse("package:" + getPackageName())
+        );
+        startActivity(intent);
     }
 
     private void openFcmDiagnostics() {
         try {
             Intent intent = new Intent(Intent.ACTION_MAIN);
-            intent.setClassName("com.google.android.gms", "com.google.android.gms.gtalkservice.diagnostics.GTalkServiceDiagnostics");
+            intent.setClassName(
+                    "com.google.android.gms",
+                    "com.google.android.gms.gtalkservice.diagnostics.GTalkServiceDiagnostics"
+            );
             startActivity(intent);
         } catch (Throwable t) {
             toast(getString(R.string.diagnostics_unavailable));
@@ -150,21 +207,43 @@ public class MainActivity extends Activity {
 
     private void refreshStatus(String firstLine) {
         boolean canWrite = Settings.System.canWrite(this);
-        boolean enabled = getSharedPreferences("guard_state", MODE_PRIVATE).getBoolean("enabled", false);
+        boolean enabled = SettingsGuard.isProtectionEnabled(this);
+        boolean notification = SettingsGuard.usePersistentNotification(this);
         String current = SettingsGuard.read(this);
         boolean present = SettingsGuard.hasRequiredItem(this, current);
 
+        suppressSwitchCallbacks = true;
+        protectionSwitch.setChecked(enabled);
+        notificationSwitch.setChecked(notification);
+        suppressSwitchCallbacks = false;
+
+        if (enabled && canWrite && present) {
+            statusHeadline.setText(R.string.status_protected);
+            statusHeadline.setTextColor(getResources().getColor(R.color.green));
+        } else if (canWrite && present) {
+            statusHeadline.setText(R.string.status_ready);
+            statusHeadline.setTextColor(getResources().getColor(R.color.blue));
+        } else {
+            statusHeadline.setText(R.string.status_attention);
+            statusHeadline.setTextColor(getResources().getColor(R.color.red));
+        }
+
         StringBuilder sb = new StringBuilder();
-        if (firstLine != null && !firstLine.trim().isEmpty()) sb.append("✓ ").append(firstLine).append("\n\n");
+        if (firstLine != null && !firstLine.trim().isEmpty()) {
+            sb.append("✓ ").append(firstLine).append("\n");
+        }
         sb.append(canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted)).append("\n");
         sb.append(enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled)).append("\n");
-        sb.append(present ? getString(R.string.present_yes) : getString(R.string.present_no));
+        sb.append(present ? getString(R.string.present_yes) : getString(R.string.present_no)).append("\n");
+        sb.append(notification ? getString(R.string.notification_mode_foreground) : getString(R.string.notification_mode_quiet));
         statusText.setText(sb.toString());
         currentValueText.setText(current == null ? getString(R.string.missing_current) : current);
+        permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
     }
 
     private void requestNotificationPermissionIfNeeded() {
-        if (Build.VERSION.SDK_INT >= 33 && checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
+        if (Build.VERSION.SDK_INT >= 33 &&
+                checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
             requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 10);
         }
     }
