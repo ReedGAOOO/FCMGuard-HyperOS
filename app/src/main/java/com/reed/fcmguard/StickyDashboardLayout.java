@@ -15,10 +15,10 @@ import android.widget.ScrollView;
  * Dashboard root with a fixed hero and a scroll-linked status card.
  *
  * The outer status card moves first and docks inside the hero. The whitelist panel
- * deliberately lags behind on a geometry-aware smootherstep curve, then finishes
- * collapsing after the outer card has docked. Its lower edge and the status-card
- * surface move together, while a white Status/Protected cap stays readable above
- * the sliding panel.
+ * deliberately lags behind on a geometry-aware smootherstep curve, then slides
+ * underneath the detailed four-line status panel. The detailed status panel has
+ * its own white rounded surface and is drawn above the whitelist panel, so the
+ * status text remains readable while the whitelist disappears beneath it.
  *
  * All motion is driven directly by ScrollView scroll events while the Activity is
  * on screen; there are no timers, alarms, background work, or extra wakeups.
@@ -28,8 +28,7 @@ public final class StickyDashboardLayout extends FrameLayout {
     private View contentRoot;
     private View heroCard;
     private CollapsingStatusCard statusCard;
-    private View statusHeaderPanel;
-    private View statusText;
+    private View statusDetailsPanel;
     private View currentValuePanel;
     private ScrollView scrollView;
 
@@ -38,7 +37,6 @@ public final class StickyDashboardLayout extends FrameLayout {
     private int stickyBaseRight;
     private int stickyBaseBottom;
     private int extraGapPx;
-    private int headerOverlapPx;
 
     private final ViewTreeObserver.OnScrollChangedListener scrollChangedListener =
             this::syncCollapsingStatusCard;
@@ -61,12 +59,10 @@ public final class StickyDashboardLayout extends FrameLayout {
         contentRoot = findViewById(R.id.contentRoot);
         heroCard = findViewById(R.id.heroCard);
         statusCard = findViewById(R.id.statusCard);
-        statusHeaderPanel = findViewById(R.id.statusHeaderPanel);
-        statusText = findViewById(R.id.statusText);
+        statusDetailsPanel = findViewById(R.id.statusDetailsPanel);
         currentValuePanel = findViewById(R.id.currentValuePanel);
         scrollView = findViewById(R.id.scroll);
         extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
-        headerOverlapPx = getResources().getDimensionPixelSize(R.dimen.status_header_overlap);
 
         if (stickyHeader != null) {
             stickyBaseLeft = stickyHeader.getPaddingLeft();
@@ -134,8 +130,13 @@ public final class StickyDashboardLayout extends FrameLayout {
     /**
      * The outer card uses direct scroll travel so it feels attached to the finger.
      * Internal collapse starts only after 38% of that travel and finishes after the
-     * card docks plus roughly one panel-height of additional scroll. A quintic
+     * card docks plus roughly one cover-distance of additional scroll. A quintic
      * smootherstep gives zero velocity at both ends, avoiding a visible snap.
+     *
+     * The final translation is defined by the two lower edges: the whitelist panel
+     * stops exactly when its bottom reaches the bottom of the detailed status panel.
+     * Because both panels are the same width and use the same 14dp corner radius,
+     * the whitelist is then fully hidden under the white detailed-status surface.
      */
     private void syncCollapsingStatusCard() {
         if (scrollView == null || heroCard == null || statusCard == null) return;
@@ -157,14 +158,12 @@ public final class StickyDashboardLayout extends FrameLayout {
             statusCard.setTranslationY(translation);
         }
 
-        if (statusText == null || currentValuePanel == null) return;
+        if (statusDetailsPanel == null || currentValuePanel == null) return;
 
-        int collapsedPanelTop = statusText.getTop();
-        if (statusHeaderPanel != null) {
-            collapsedPanelTop = Math.max(0, statusHeaderPanel.getBottom() - headerOverlapPx);
-        }
-
-        int coverDistance = Math.max(0, currentValuePanel.getTop() - collapsedPanelTop);
+        int coverDistance = Math.max(
+                0,
+                currentValuePanel.getBottom() - statusDetailsPanel.getBottom()
+        );
         float panelProgress = computePanelProgress(scrollY, collapseDistance, coverDistance);
         float panelTranslation = -coverDistance * panelProgress;
 
