@@ -2,7 +2,7 @@
 <resources>
     <!-- Compact phone defaults: tuned for ~320-419dp logical widths. -->
     <dimen name="page_horizontal_padding">14dp</dimen>
-    <dimen name="sticky_top_padding">10dp</dimen>
+    <dimen name="sticky_top_padding">6dp</dimen>
     <dimen name="hero_height">166dp</dimen>
     <dimen name="hero_inner_padding">16dp</dimen>
     <dimen name="hero_title_size">27sp</dimen>
