@@ -10,8 +10,8 @@ android {
         applicationId "com.reed.fcmguard"
         minSdk 21
         targetSdk 22
-        versionCode 16
-        versionName "1.4.7"
+        versionCode 17
+        versionName "1.4.8"
     }
 
     signingConfigs {
