@@ -9,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.DisplayCutout;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowInsets;
@@ -40,9 +41,9 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        configureBottomEdgeToEdge();
+        configureFullEdgeToEdge();
         setContentView(R.layout.activity_main);
-        applyNavigationInsetPadding();
+        applySystemBarInsets();
         bindViews();
         loadConfigIntoFields();
         setupLanguageSpinner();
@@ -53,13 +54,13 @@ public class MainActivity extends Activity {
 
     @Override protected void onResume() {
         super.onResume();
-        configureBottomEdgeToEdge();
+        configureFullEdgeToEdge();
         refreshStatus(null);
     }
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
         super.onWindowFocusChanged(hasFocus);
-        if (hasFocus) configureBottomEdgeToEdge();
+        if (hasFocus) configureFullEdgeToEdge();
     }
 
     private void bindViews() {
@@ -257,26 +258,31 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Bottom-only edge-to-edge. The status bar keeps normal fitting, while the app
-     * background extends behind the gesture navigation area so the gesture pill
-     * floats over the page like modern media apps. We do not hide SystemUI itself.
+     * Full edge-to-edge presentation: both status and gesture-navigation surfaces are
+     * transparent, while content receives explicit safe insets. This gives the same
+     * visual model used by modern media apps without letting text sit under the
+     * status icons or display cutout.
      */
     @SuppressWarnings("deprecation")
-    private void configureBottomEdgeToEdge() {
+    private void configureFullEdgeToEdge() {
         Window window = getWindow();
-        final int bg = getResources().getColor(R.color.bg);
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.clearFlags(
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS |
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
+            );
             window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(bg);
+            window.setStatusBarColor(Color.TRANSPARENT);
             window.setNavigationBarColor(Color.TRANSPARENT);
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            window.setStatusBarContrastEnforced(false);
             window.setNavigationBarContrastEnforced(false);
         }
 
         int flags = View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
                 | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
                 | View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -286,29 +292,54 @@ public class MainActivity extends Activity {
     }
 
     /**
-     * Keep the last content clear of the gesture pill while leaving the ScrollView
-     * background underneath it. This gives true visual immersion without making the
-     * bottom controls hard to reach.
+     * Keep the app background behind both system bars, but pad the actual content by
+     * the real status/cutout and gesture-navigation insets. Baseline design padding is
+     * preserved and a few extra dp provide visual breathing room at both ends.
      */
     @SuppressWarnings("deprecation")
-    private void applyNavigationInsetPadding() {
+    private void applySystemBarInsets() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return;
 
-        View scroll = findViewById(R.id.scroll);
-        final int baseLeft = scroll.getPaddingLeft();
-        final int baseTop = scroll.getPaddingTop();
-        final int baseRight = scroll.getPaddingRight();
-        final int baseBottom = scroll.getPaddingBottom();
+        final View scroll = findViewById(R.id.scroll);
+        final View content = findViewById(R.id.contentRoot);
+        final int baseLeft = content.getPaddingLeft();
+        final int baseTop = content.getPaddingTop();
+        final int baseRight = content.getPaddingRight();
+        final int baseBottom = content.getPaddingBottom();
+        final int extraTop = dp(4);
+        final int extraBottom = dp(8);
 
         scroll.setOnApplyWindowInsetsListener((v, insets) -> {
+            int top = Math.max(
+                    insets.getSystemWindowInsetTop(),
+                    insets.getStableInsetTop()
+            );
             int bottom = Math.max(
                     insets.getSystemWindowInsetBottom(),
                     insets.getStableInsetBottom()
             );
-            v.setPadding(baseLeft, baseTop, baseRight, baseBottom + bottom);
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                DisplayCutout cutout = insets.getDisplayCutout();
+                if (cutout != null) {
+                    top = Math.max(top, cutout.getSafeInsetTop());
+                    bottom = Math.max(bottom, cutout.getSafeInsetBottom());
+                }
+            }
+
+            content.setPadding(
+                    baseLeft,
+                    baseTop + top + extraTop,
+                    baseRight,
+                    baseBottom + bottom + extraBottom
+            );
             return insets;
         });
         scroll.requestApplyInsets();
+    }
+
+    private int dp(int value) {
+        return Math.round(value * getResources().getDisplayMetrics().density);
     }
 
     private void toast(String text) {
