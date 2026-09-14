@@ -352,7 +352,7 @@ public class MainActivity extends Activity {
 
         Button settingsButton = new Button(this);
         settingsButton.setText(R.string.app_settings);
-        settingsButton.setTextAllCaps(false);
+        settingsButton.setAllCaps(false);
         settingsButton.setTextSize(12f);
         settingsButton.setTextColor(getResources().getColor(R.color.blue));
         settingsButton.setBackground(getResources().getDrawable(R.drawable.secondary_button_bg));
