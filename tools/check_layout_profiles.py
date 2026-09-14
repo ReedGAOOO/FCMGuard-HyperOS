@@ -51,12 +51,27 @@ for name, width in profiles:
     assert d["status_expanded_top"] < d["hero_height"], (
         f"{name}: floating status card no longer overlaps the hero"
     )
+    assert 0 < d["status_header_overlap"] < d["status_card_radius"], (
+        f"{name}: status header overlap should stay inside the rounded cap"
+    )
 
 layout = ET.parse(ROOT / "app/src/main/res/layout/activity_main.xml").getroot()
 android_id = "{http://schemas.android.com/apk/res/android}id"
 ids = {node.attrib.get(android_id) for node in layout.iter()}
-for required in ("@+id/stickyHeader", "@+id/heroCard", "@+id/statusCard", "@+id/scroll"):
+for required in (
+    "@+id/stickyHeader",
+    "@+id/heroCard",
+    "@+id/statusCard",
+    "@+id/statusHeaderPanel",
+    "@+id/currentValuePanel",
+    "@+id/scroll",
+):
     assert required in ids, f"missing required dashboard id: {required}"
+
+status_card = next(node for node in layout.iter() if node.attrib.get(android_id) == "@+id/statusCard")
+assert status_card.tag == "com.reed.fcmguard.CollapsingStatusCard", (
+    "statusCard must keep its custom visual-bottom implementation"
+)
 
 print("Responsive layout checks passed for:")
 for name, width in profiles:

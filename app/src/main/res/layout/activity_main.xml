@@ -69,7 +69,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <LinearLayout
+        <com.reed.fcmguard.CollapsingStatusCard
             android:id="@+id/statusCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -77,23 +77,36 @@
             android:layout_marginTop="@dimen/status_expanded_top"
             android:layout_marginRight="@dimen/status_card_inset"
             android:orientation="vertical"
-            android:background="@drawable/floating_card_bg"
+            android:paddingLeft="16dp"
+            android:paddingTop="16dp"
+            android:paddingRight="16dp"
+            android:paddingBottom="16dp"
             android:elevation="8dp">
-            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold" />
-            <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" />
-            <TextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:lineSpacingExtra="2dp" android:paddingTop="6dp" />
+
+            <LinearLayout
+                android:id="@+id/statusHeaderPanel"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@drawable/status_header_bg"
+                android:paddingBottom="10dp">
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" />
+            </LinearLayout>
+
+            <TextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:lineSpacingExtra="2dp" android:paddingTop="2dp" />
+
             <LinearLayout
                 android:id="@+id/currentValuePanel"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/tonal_bg"
-                android:layout_marginTop="13dp"
-                android:elevation="1dp">
+                android:layout_marginTop="13dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/current_value_title" android:textColor="@color/text_secondary" android:textSize="10sp" android:textStyle="bold" />
                 <TextView android:id="@+id/currentValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="12sp" android:fontFamily="monospace" android:textIsSelectable="true" android:paddingTop="4dp" />
             </LinearLayout>
-        </LinearLayout>
+        </com.reed.fcmguard.CollapsingStatusCard>
     </FrameLayout>
 
 </com.reed.fcmguard.StickyDashboardLayout>
