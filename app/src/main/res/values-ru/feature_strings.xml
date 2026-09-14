@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">Помощник приложений FCM</string>
-    <string name="fcm_apps_summary">Находит установленные приложения со стандартными компонентами приёма FCM/GCM и помогает настроить автозапуск в HyperOS.</string>
+    <string name="fcm_apps_summary">Находит установленные приложения со стандартными компонентами приёма FCM/GCM и проверяет их статус автозапуска, если HyperOS его предоставляет.</string>
     <string name="scan_fcm_apps">Сканировать FCM-приложения</string>
     <string name="collapse_fcm_apps">Свернуть список приложений</string>
     <string name="open_autostart_manager">Настроить всё в HyperOS</string>
     <string name="fcm_apps_not_scanned">Нажмите «Сканировать FCM-приложения», чтобы создать локальный список.</string>
     <string name="fcm_apps_found">Обнаружено FCM-приложений: %1$d</string>
+    <string name="fcm_apps_status_summary">Обнаружено: %1$d · включено: %2$d · требуют внимания: %3$d · неизвестно: %4$d</string>
+    <string name="fcm_autostart_status_unavailable">Обнаружено FCM-приложений: %1$d. Эта сборка HyperOS не предоставляет обычным приложениям читаемый статус автозапуска. Используйте «Настроить всё в HyperOS».</string>
     <string name="no_fcm_apps">Пользовательские FCM-приложения не обнаружены.</string>
     <string name="app_settings">Автозапуск</string>
+    <string name="autostart_enabled">Включён</string>
+    <string name="autostart_partial">Частично</string>
+    <string name="autostart_disabled">Выключен</string>
+    <string name="autostart_unknown">Неизвестно</string>
     <string name="autostart_manager_unavailable">Не удалось открыть настройки автозапуска HyperOS</string>
     <string name="app_settings_unavailable">Не удалось открыть настройки приложения</string>
-    <string name="fcm_detection_note">Обнаружение выполняется только после нажатия кнопки сканирования; автозапуск по-прежнему нужно включать вручную в настройках HyperOS.</string>
+    <string name="fcm_detection_note">Статус автозапуска проверяется только для чтения и по возможности. «Неизвестно» означает, что HyperOS блокирует или не предоставляет фирменный запрос AppOps; FCM Guard никогда не считает неизвестный статус выключенным.</string>
     <string name="appearance_title">Оформление</string>
     <string name="appearance_summary">По умолчанию используется системная тема. Меняется только интерфейс, без дополнительных фоновых задач.</string>
     <string name="theme_system">Система</string>
