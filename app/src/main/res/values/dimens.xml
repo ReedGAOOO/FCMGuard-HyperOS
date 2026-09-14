@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Compact phone defaults: tuned for ~320-419dp logical widths. -->
+    <dimen name="page_horizontal_padding">14dp</dimen>
+    <dimen name="sticky_top_padding">10dp</dimen>
+    <dimen name="hero_height">166dp</dimen>
+    <dimen name="hero_inner_padding">16dp</dimen>
+    <dimen name="hero_title_size">27sp</dimen>
+    <dimen name="hero_subtitle_size">12sp</dimen>
+    <dimen name="language_button_width">100dp</dimen>
+    <dimen name="language_button_height">40dp</dimen>
+    <dimen name="language_button_margin_start">8dp</dimen>
+    <dimen name="status_card_inset">8dp</dimen>
+    <dimen name="status_expanded_top">96dp</dimen>
+    <dimen name="status_card_radius">20dp</dimen>
+    <dimen name="card_gap">10dp</dimen>
+    <dimen name="content_bottom_padding">24dp</dimen>
+</resources>
