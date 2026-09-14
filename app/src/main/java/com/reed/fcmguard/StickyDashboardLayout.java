@@ -14,9 +14,9 @@ import android.widget.ScrollView;
 /**
  * Dashboard root with a fixed hero and a scroll-linked status card.
  *
- * Expanded: the white status card overlaps the lower half of the purple hero.
+ * Expanded: the white status card overlaps the lower half of the hero.
  * Scrolling: the status card follows the scroll upward until it docks inside the
- * hero with the same top / left / right inset. After docking, it stays fixed while
+ * hero with equal top / left / right inset. After docking, it stays fixed while
  * the lower cards keep scrolling underneath it.
  *
  * All motion is driven directly by ScrollView scroll events while the Activity is
@@ -57,7 +57,7 @@ public final class StickyDashboardLayout extends FrameLayout {
         heroCard = findViewById(R.id.heroCard);
         statusCard = findViewById(R.id.statusCard);
         scrollView = findViewById(R.id.scroll);
-        extraGapPx = dp(10);
+        extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
 
         if (stickyHeader != null) {
             stickyBaseLeft = stickyHeader.getPaddingLeft();
@@ -109,13 +109,6 @@ public final class StickyDashboardLayout extends FrameLayout {
         syncCollapsingStatusCard();
     }
 
-    /**
-     * The first scrolling card starts below the fully expanded status card. The
-     * expanded header height intentionally stays constant while scrolling: after the
-     * status card has moved upward by the collapse distance, the first lower card has
-     * moved upward by exactly the same amount and sits just below the docked status
-     * card. Further scrolling then passes underneath the fixed overlay.
-     */
     private void syncScrollableTopOffset() {
         if (stickyHeader == null || contentRoot == null) return;
         int desiredTop = stickyHeader.getHeight() + extraGapPx;
@@ -130,9 +123,8 @@ public final class StickyDashboardLayout extends FrameLayout {
     }
 
     /**
-     * Collapse geometry is derived from the actual laid-out views rather than a
-     * hard-coded travel distance. The status card's left margin is also used as the
-     * docked top inset, guaranteeing equal top/left/right spacing relative to the hero.
+     * Geometry is derived from the laid-out views. The status card's side inset is
+     * reused as the docked top inset, preserving equal top/left/right spacing.
      */
     private void syncCollapsingStatusCard() {
         if (scrollView == null || heroCard == null || statusCard == null) return;
