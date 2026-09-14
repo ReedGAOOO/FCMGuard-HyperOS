@@ -61,13 +61,17 @@
                     android:textSize="11sp"
                     android:layout_gravity="end" />
 
-                <Spinner
-                    android:id="@+id/languageSpinner"
+                <Button
+                    android:id="@+id/languageButton"
                     android:layout_width="match_parent"
                     android:layout_height="42dp"
                     android:background="@drawable/pill_bg"
-                    android:paddingLeft="10dp"
-                    android:paddingRight="8dp" />
+                    android:text="@string/follow_system"
+                    android:textAllCaps="false"
+                    android:textColor="@color/text_primary"
+                    android:textSize="14sp"
+                    android:elevation="0dp"
+                    android:stateListAnimator="@null" />
             </LinearLayout>
         </LinearLayout>
 
