@@ -25,7 +25,7 @@
 - **Low background power** — exact event-driven monitoring is the main path; the 30-minute fallback is in-process and does not deliberately wake a sleeping phone.
 - **Reconnects only when needed** — FCM/MCS reconnect broadcasts are sent only after a real whitelist repair or a manual request.
 - **Optional persistent notification** — foreground mode uses a visible-but-silent notification channel for stronger process survival; quiet background mode remains available.
-- **FCM app assistant** — scans installed user apps for standard Firebase/GCM manifest signals and links to HyperOS autostart management plus per-app settings.
+- **FCM app assistant** — scans likely Firebase/GCM clients and, when HyperOS exposes the vendor AppOps state, shows read-only Autostart status with automatic re-check after returning from system settings.
 - **Native dark mode** — System / Light / Dark, with **System** as the default.
 - **10-language UI** — English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian through Android's native per-app language mechanism.
 - **Compact-phone ready** — responsive layout checks cover 320–480dp widths, including a Xiaomi 17-class 393dp profile.
@@ -38,7 +38,7 @@
 4. Enable **Automatic protection**.
 5. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
 6. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
-7. Optional: scan **FCM apps** and configure likely FCM clients in HyperOS autostart/per-app settings.
+7. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, FCM Guard shows a clear Unknown/unavailable fallback instead of guessing.
 8. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
 
 > FCM Guard is mainly for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
@@ -109,7 +109,18 @@ com.google.firebase.MESSAGING_EVENT
 com.google.android.c2dm.intent.RECEIVE
 ```
 
-A match means the app is a likely FCM/GCM client, not proof that every notification from that app uses FCM. FCM Guard does not silently change another app's autostart state; it opens HyperOS's own management pages for user confirmation. It also does not request `QUERY_ALL_PACKAGES`.
+A match means the app is a likely FCM/GCM client, not proof that every notification from that app uses FCM.
+
+For detected apps, FCM Guard performs a **read-only, best-effort** check of Xiaomi's vendor Autostart AppOps (`10008` and `10053`). When both are readable, the UI reports:
+
+- **Enabled** — both Autostart AppOps are allowed.
+- **Partial** — one is allowed and the other is explicitly ignored.
+- **Disabled** — both are explicitly ignored.
+- **Unknown** — HyperOS blocked the query, returned a vendor/default state that cannot be interpreted safely, or otherwise did not expose a reliable result.
+
+FCM Guard never treats **Unknown** as **Disabled**. If every detected app is Unknown, the per-app list is hidden and the assistant falls back to the detected count plus the single **Configure all in HyperOS** action. After returning from HyperOS settings, an expanded result is checked again automatically.
+
+No Autostart state is modified programmatically, and no Shizuku/root/ADB privilege is introduced.
 
 ## Appearance, languages, and responsive layout
 
@@ -126,7 +137,7 @@ It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overl
 
 ## Limitations
 
-This project depends on Xiaomi's current HyperOS implementation. Xiaomi can change PowerKeeper / Greezer behavior, the private setting, or app-management pages in future releases. FCM reconnect and FCM-client detection are both best-effort because Android does not expose public APIs that guarantee either operation.
+This project depends on Xiaomi's current HyperOS implementation. Xiaomi can change PowerKeeper / Greezer behavior, the private setting, app-management pages, or vendor AppOps behavior in future releases. FCM reconnect, FCM-client detection, and Autostart-status reading are all best-effort because Android does not expose public APIs that guarantee these vendor-specific operations.
 
 ## References & Acknowledgements
 
