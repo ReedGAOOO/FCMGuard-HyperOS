@@ -59,6 +59,16 @@ public final class SettingsGuard {
 
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         String current = Settings.System.getString(context.getContentResolver(), key);
+
+        // If HyperOS has not removed the required item, do not rewrite the setting.
+        // Rewriting the same value repeatedly can itself create unnecessary policy churn.
+        if (containsToken(context, current)) {
+            if (current != null && !current.trim().isEmpty()) {
+                prefs.edit().putString(LAST_GOOD, current).apply();
+            }
+            return new Result(true, current, "Already protected");
+        }
+
         LinkedHashSet<String> items = parse(current);
         if (items.isEmpty()) items.addAll(parse(prefs.getString(LAST_GOOD, null)));
         items.add(token);
@@ -68,7 +78,10 @@ public final class SettingsGuard {
             boolean ok = Settings.System.putString(context.getContentResolver(), key, repaired);
             if (ok) {
                 prefs.edit().putString(LAST_GOOD, repaired).apply();
-                return new Result(true, repaired, "Protected");
+                // The whitelist change prevents another freeze, but an already-dead MCS
+                // connection may need a nudge to reconnect.
+                FcmReconnect.kick(context);
+                return new Result(true, repaired, "Repaired and reconnect requested");
             }
             return new Result(false, current, "System rejected the write");
         } catch (Throwable t) {
