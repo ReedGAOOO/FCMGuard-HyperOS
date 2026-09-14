@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="bg">#0F1115</color>
+    <color name="surface">#181B20</color>
+    <color name="surface_alt">#22262D</color>
+    <color name="text_primary">#F1F3F4</color>
+    <color name="text_secondary">#AAB0B8</color>
+    <color name="blue">#8AB4F8</color>
+    <color name="green">#81C995</color>
+    <color name="yellow">#FDD663</color>
+    <color name="red">#F28B82</color>
+    <color name="border">#30353D</color>
+    <color name="chip_bg">#1E2B40</color>
+    <color name="info_bg">#172236</color>
+    <color name="divider">#2B3037</color>
+
+    <color name="hero_start">#272337</color>
+    <color name="hero_center">#242435</color>
+    <color name="hero_end">#1B2838</color>
+    <color name="hero_pill">#D92B2F36</color>
+    <color name="floating_border">#30353D</color>
+    <color name="primary_pressed">#A8C7FA</color>
+    <color name="primary_disabled">#45556E</color>
+    <color name="secondary_pressed">#303640</color>
+</resources>
