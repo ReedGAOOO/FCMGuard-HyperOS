@@ -32,7 +32,7 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        makeEdgeToEdge();
+        configureSystemBars();
         setContentView(R.layout.activity_main);
         bindViews();
         requestNotificationPermissionIfNeeded();
@@ -165,24 +165,29 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void makeEdgeToEdge() {
+    /**
+     * HyperOS 3 can render a large black legacy-navigation surface when an app targeting
+     * an old SDK combines transparent bars with LAYOUT_HIDE_NAVIGATION.  We intentionally
+     * keep normal window fitting here and simply tint both system bars to the app surface.
+     * This keeps the gesture pill visually integrated without exposing the black decor
+     * background, and it also prevents the title from sliding under the status bar.
+     */
+    private void configureSystemBars() {
         Window w = getWindow();
+        final int bg = getResources().getColor(R.color.bg);
         if (Build.VERSION.SDK_INT >= 21) {
             w.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
             w.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            w.setStatusBarColor(0x00000000);
-            w.setNavigationBarColor(0x00000000);
+            w.setStatusBarColor(bg);
+            w.setNavigationBarColor(bg);
         }
         if (Build.VERSION.SDK_INT >= 29) {
             w.setNavigationBarContrastEnforced(false);
             w.setStatusBarContrastEnforced(false);
         }
+
         View decor = w.getDecorView();
-        int flags = decor.getSystemUiVisibility();
-        flags |= View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
-        flags |= View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-        flags |= View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
-        flags |= View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
+        int flags = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR;
         if (Build.VERSION.SDK_INT >= 26) flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         decor.setSystemUiVisibility(flags);
     }
