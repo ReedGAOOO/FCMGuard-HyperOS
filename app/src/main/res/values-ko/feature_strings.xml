@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM 앱 도우미</string>
-    <string name="fcm_apps_summary">표준 FCM/GCM 수신 구성요소를 선언한 설치 앱을 감지하고 HyperOS 자동 시작 설정을 도와줍니다.</string>
+    <string name="fcm_apps_summary">표준 FCM/GCM 수신 구성요소를 선언한 설치 앱을 감지하고 HyperOS가 허용하는 경우 자동 시작 상태도 확인합니다.</string>
     <string name="scan_fcm_apps">FCM 앱 검색</string>
     <string name="collapse_fcm_apps">앱 목록 접기</string>
     <string name="open_autostart_manager">HyperOS에서 일괄 설정</string>
     <string name="fcm_apps_not_scanned">‘FCM 앱 검색’을 눌러 로컬 목록을 만드세요.</string>
     <string name="fcm_apps_found">FCM 지원 앱 %1$d개 감지됨</string>
+    <string name="fcm_apps_status_summary">%1$d개 감지 · %2$d개 활성 · %3$d개 확인 필요 · %4$d개 알 수 없음</string>
+    <string name="fcm_autostart_status_unavailable">FCM 앱 %1$d개를 감지했지만 이 HyperOS 빌드에서는 일반 앱이 자동 시작 상태를 읽을 수 없습니다. ‘HyperOS에서 일괄 설정’을 사용하세요.</string>
     <string name="no_fcm_apps">사용자용 FCM 앱이 감지되지 않았습니다.</string>
     <string name="app_settings">자동 시작</string>
+    <string name="autostart_enabled">활성</string>
+    <string name="autostart_partial">부분 활성</string>
+    <string name="autostart_disabled">비활성</string>
+    <string name="autostart_unknown">알 수 없음</string>
     <string name="autostart_manager_unavailable">HyperOS 자동 시작 설정을 열 수 없습니다</string>
     <string name="app_settings_unavailable">앱 설정을 열 수 없습니다</string>
-    <string name="fcm_detection_note">감지는 검색 버튼을 눌렀을 때만 실행됩니다. 자동 시작은 HyperOS 설정에서 사용자가 직접 활성화해야 합니다.</string>
+    <string name="fcm_detection_note">자동 시작 상태는 읽기 전용의 최선형 확인입니다. ‘알 수 없음’은 HyperOS가 제조사 AppOps 조회를 차단했거나 공개하지 않았다는 뜻이며, FCM Guard는 이를 비활성으로 간주하지 않습니다.</string>
     <string name="appearance_title">화면 모드</string>
     <string name="appearance_summary">기본값은 시스템 설정을 따릅니다. UI 테마만 변경하며 백그라운드 작업을 추가하지 않습니다.</string>
     <string name="theme_system">시스템</string>
