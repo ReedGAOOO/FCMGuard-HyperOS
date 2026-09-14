@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -39,7 +38,6 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         bindViews();
-        requestNotificationPermissionIfNeeded();
         loadConfigIntoFields();
         setupLanguageSpinner();
         setupSwitches();
@@ -136,9 +134,7 @@ public class MainActivity extends Activity {
         notificationSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
             if (suppressSwitchCallbacks) return;
             SettingsGuard.setPersistentNotification(this, checked);
-            if (SettingsGuard.isProtectionEnabled(this)) {
-                startProtectionService();
-            }
+            if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
             refreshStatus(null);
         });
     }
@@ -173,8 +169,10 @@ public class MainActivity extends Activity {
     private void startProtectionService() {
         Intent service = new Intent(this, GuardService.class);
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
-                    SettingsGuard.usePersistentNotification(this)) {
+            boolean persistent = SettingsGuard.usePersistentNotification(this);
+            if (persistent) requestNotificationPermissionIfNeeded();
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && persistent) {
                 startForegroundService(service);
             } else {
                 startService(service);
@@ -229,9 +227,7 @@ public class MainActivity extends Activity {
         }
 
         StringBuilder sb = new StringBuilder();
-        if (firstLine != null && !firstLine.trim().isEmpty()) {
-            sb.append("✓ ").append(firstLine).append("\n");
-        }
+        if (firstLine != null && !firstLine.trim().isEmpty()) sb.append("✓ ").append(firstLine).append("\n");
         sb.append(canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted)).append("\n");
         sb.append(enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled)).append("\n");
         sb.append(present ? getString(R.string.present_yes) : getString(R.string.present_no)).append("\n");
