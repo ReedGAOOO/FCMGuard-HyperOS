@@ -10,6 +10,7 @@ public final class SettingsGuard {
     public static final String PREFS = "guard_state";
     public static final String PREF_ENABLED = "enabled";
     public static final String PREF_PERSISTENT_NOTIFICATION = "persistent_notification";
+    public static final String PREF_HIDE_FROM_RECENTS = "hide_from_recents";
     private static final String LAST_GOOD_PREFIX = "last_good_";
 
     private SettingsGuard() {}
@@ -37,6 +38,16 @@ public final class SettingsGuard {
     public static void setProtectionEnabled(Context context, boolean enabled) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit().putBoolean(PREF_ENABLED, enabled).apply();
+    }
+
+    public static boolean hideFromRecents(Context context) {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getBoolean(PREF_HIDE_FROM_RECENTS, false);
+    }
+
+    public static void setHideFromRecents(Context context, boolean hidden) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit().putBoolean(PREF_HIDE_FROM_RECENTS, hidden).apply();
     }
 
     public static void setPersistentNotification(Context context, boolean enabled) {

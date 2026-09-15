@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">Überwacht ereignisgesteuert nur den FCM-Listenwert. Die 30-minütige Sicherheitsprüfung weckt das Telefon nicht absichtlich auf.</string>
     <string name="persistent_notification">Dauerhafte Benachrichtigung</string>
     <string name="persistent_notification_summary">Für maximale Zuverlässigkeit empfohlen. Ausschalten, um die Benachrichtigung zu entfernen und nur den Hintergrundmodus zu verwenden.</string>
+    <string name="hide_from_recents">Aus Übersicht ausblenden</string>
+    <string name="hide_from_recents_summary">Blendet die App-Karte aus der Übersicht aus, ohne den automatischen Schutz zu stoppen. Die App bleibt über Symbol oder Benachrichtigung erreichbar.</string>
+    <string name="hide_from_recents_failed">Die Sichtbarkeit in der Übersicht konnte nicht geändert werden. Bitte erneut versuchen.</string>
     <string name="actions_title">Werkzeuge</string>
     <string name="advanced_title">Erweiterte Konfiguration</string>
 

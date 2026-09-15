@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">Supervisa solo la clave de la lista de FCM mediante eventos. La comprobación de respaldo cada 30 minutos no despierta deliberadamente el teléfono.</string>
     <string name="persistent_notification">Notificación permanente</string>
     <string name="persistent_notification_summary">Recomendado activado para máxima fiabilidad. Desactívalo para ocultar la notificación y usar solo el modo en segundo plano.</string>
+    <string name="hide_from_recents">Ocultar de Recientes</string>
+    <string name="hide_from_recents_summary">Oculta la tarjeta de la app en Recientes sin detener la protección automática. Abre la app desde su icono o notificación.</string>
+    <string name="hide_from_recents_failed">No se pudo cambiar la visibilidad en Recientes. Inténtalo de nuevo.</string>
     <string name="actions_title">Herramientas</string>
     <string name="advanced_title">Configuración avanzada</string>
 
