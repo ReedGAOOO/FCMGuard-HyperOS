@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">Surveillance événementielle uniquement de la clé FCM. Une vérification de secours toutes les 30 minutes ne réveille pas volontairement un téléphone en veille.</string>
     <string name="persistent_notification">Notification persistante</string>
     <string name="persistent_notification_summary">Recommandé pour une fiabilité maximale. Désactivez-la pour supprimer la notification et utiliser le mode arrière-plan silencieux ; HyperOS pourra alors arrêter le service plus facilement.</string>
+    <string name="hide_from_recents">Masquer des apps récentes</string>
+    <string name="hide_from_recents_summary">Masque la carte dans les applications récentes sans arrêter la protection automatique. Accès possible via son icône ou sa notification.</string>
+    <string name="hide_from_recents_failed">Impossible de modifier la visibilité dans les applications récentes. Veuillez réessayer.</string>
     <string name="actions_title">Outils</string>
     <string name="advanced_title">Configuration avancée</string>
 

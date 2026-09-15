@@ -20,6 +20,9 @@
         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="12dp" android:layout_marginBottom="4dp" />
         <Switch android:id="@+id/notificationSwitch" android:layout_width="match_parent" android:layout_height="48dp" android:text="@string/persistent_notification" android:textColor="@color/text_primary" android:textSize="15sp" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/persistent_notification_summary" android:textColor="@color/text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="12dp" android:layout_marginBottom="4dp" />
+        <Switch android:id="@+id/hideRecentsSwitch" android:layout_width="match_parent" android:layout_height="wrap_content" android:minHeight="48dp" android:switchPadding="12dp" android:text="@string/hide_from_recents" android:textColor="@color/text_primary" android:textSize="15sp" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/hide_from_recents_summary" android:textColor="@color/text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
     </LinearLayout>
 
     <LinearLayout
