@@ -40,7 +40,8 @@
 6. 如果最看重后台可靠性，建议保持 **常驻通知** 开启。如果 Android / HyperOS 禁用了 FCM Guard 通知，App 会引导进入系统通知设置，使前台通知真正可见。
 7. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App。若当前 HyperOS 允许读取自启动状态，列表会标记 已开启 / 部分开启 / 未开启 / 未知，并在你从 **在 HyperOS 中统一配置** 返回后自动重新检查；若 ROM 不允许读取，FCM Guard 会明确显示“未知 / 不可读取”，而不是猜测。
 8. 可选：点击 **打开 FCM 诊断**，进入 Google Play 服务诊断界面，检查 `mtalk.google.com:5228` 连接状态。
-9. 为减少金融 App 的兼容风险，除非确有需要，建议保持开发者选项 / USB 调试 / 无线调试关闭。
+9. 如果只有某个 App 仍出现通知延迟，而其他 FCM App 正常，请单独调整该 App 的后台策略。对于 **WhatsApp** 等即时通讯 App，建议设置为：**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**；若系统提供自启动选项，也建议为该 App 开启 **自启动**。
+10. 为减少金融 App 的兼容风险，除非确有需要，建议保持开发者选项 / USB 调试 / 无线调试关闭。
 
 > FCM Guard 主要针对中国版 HyperOS 3：Google 服务本身可以正常使用，但 PowerKeeper / Greezer 仍可能在后台限制 GMS，造成 FCM 推送延迟或中断。
 
@@ -125,6 +126,16 @@ FCM Guard **不会把“未知”当成“未开启”**。如果所有检测到
 
 整个过程不会程序化修改任何其他 App 的自启动状态，也不会引入 Shizuku / Root / ADB 权限。
 
+## 单 App 推送仍可能受后台策略影响
+
+FCM Guard 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 HyperOS 对每个接收 App 单独施加的后台限制。某些 App——尤其是 **WhatsApp** 这类即时通讯 App——可能把 FCM 用作唤醒 / tickle 信号，之后仍需要自己的进程获得后台执行时间、建立网络连接、同步消息并生成本地通知。
+
+因此，如果 FCM 诊断连接正常、YouTube / X 等其他 App 推送也正常，但只有某个 App 持续延迟，请优先检查该 App 自身的后台策略。对于 WhatsApp，建议：
+
+**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**
+
+如果当前 HyperOS 版本提供该 App 的 **自启动** 开关，也建议开启。无需把所有 App 都设为无限制，只针对实际出现延迟的 App 调整即可。
+
 ## 外观、语言与屏幕适配
 
 - 跟随系统 / 浅色 / 深色三种外观模式。
@@ -141,6 +152,8 @@ FCM Guard **不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮�
 ## 局限性
 
 本项目依赖 Xiaomi 当前 HyperOS 的具体实现。未来如果 PowerKeeper / Greezer、私有设置 key、App 管理页面或厂商 AppOps 行为发生变化，本方案可能需要同步调整。FCM 重连、FCM App 识别和自启动状态读取都属于 best-effort，因为 Android 没有向普通第三方 App 提供保证这些厂商私有行为的公开 API。
+
+FCM Guard 只能保护共享的 GMS / FCM 连接，不能保证 HyperOS 一定为每个接收 App 提供足够的后台执行时间和网络权限。对于 WhatsApp 等仍出现延迟的 App，可能仍需要单独设置 **电池优化 → 无限制**。
 
 ## 参考与致谢
 
