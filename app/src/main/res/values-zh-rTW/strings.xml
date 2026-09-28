@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">僅監聽 FCM 白名單這一項的變化，主要採用事件觸發；30 分鐘兜底檢查不會主動喚醒休眠中的手機。</string>
     <string name="persistent_notification">常駐通知</string>
     <string name="persistent_notification_summary">建議開啟以獲得最高可靠性。關閉後會移除通知並切換為純背景模式，但 HyperOS 更容易終止此服務。</string>
+    <string name="hide_from_recents">隱藏最近任務卡片</string>
+    <string name="hide_from_recents_summary">隱藏最近任務中的應用程式卡片，不會停止自動保護。仍可透過桌面圖示或通知開啟應用程式。</string>
+    <string name="hide_from_recents_failed">無法變更最近任務卡片的顯示狀態，請重試。</string>
     <string name="actions_title">工具</string>
     <string name="advanced_title">進階設定</string>
 

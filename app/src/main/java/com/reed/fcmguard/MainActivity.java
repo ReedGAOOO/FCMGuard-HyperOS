@@ -2,6 +2,7 @@ package com.reed.fcmguard;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
 import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
+import android.util.Log;
 import android.view.DisplayCutout;
 import android.view.Gravity;
 import android.view.View;
@@ -58,6 +60,7 @@ public class MainActivity extends Activity {
     private Button scanFcmAppsBtn;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
+    private Switch hideRecentsSwitch;
     private Button permissionBtn;
     private RadioGroup appearanceGroup;
     private boolean suppressSwitchCallbacks = false;
@@ -119,6 +122,7 @@ public class MainActivity extends Activity {
             startProtectionService();
         }
         refreshStatus(null);
+        applyRecentsVisibility(SettingsGuard.hideFromRecents(this));
         if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
             renderFcmAppStatuses();
         }
@@ -152,6 +156,7 @@ public class MainActivity extends Activity {
         scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
+        hideRecentsSwitch = findViewById(R.id.hideRecentsSwitch);
         permissionBtn = findViewById(R.id.permissionBtn);
         appearanceGroup = findViewById(R.id.appearanceGroup);
     }
@@ -271,6 +276,7 @@ public class MainActivity extends Activity {
         suppressSwitchCallbacks = true;
         protectionSwitch.setChecked(SettingsGuard.isProtectionEnabled(this));
         notificationSwitch.setChecked(SettingsGuard.usePersistentNotification(this));
+        hideRecentsSwitch.setChecked(SettingsGuard.hideFromRecents(this));
         suppressSwitchCallbacks = false;
 
         protectionSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
@@ -315,6 +321,19 @@ public class MainActivity extends Activity {
                 languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
             }
             if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
+            refreshStatus(null);
+        });
+
+        hideRecentsSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (suppressSwitchCallbacks) return;
+            if (applyRecentsVisibility(checked)) {
+                SettingsGuard.setHideFromRecents(this, checked);
+            } else {
+                suppressSwitchCallbacks = true;
+                hideRecentsSwitch.setChecked(SettingsGuard.hideFromRecents(this));
+                suppressSwitchCallbacks = false;
+                toast(getString(R.string.hide_from_recents_failed));
+            }
             refreshStatus(null);
         });
     }
@@ -624,6 +643,7 @@ public class MainActivity extends Activity {
         suppressSwitchCallbacks = true;
         protectionSwitch.setChecked(enabled);
         notificationSwitch.setChecked(notification);
+        hideRecentsSwitch.setChecked(SettingsGuard.hideFromRecents(this));
         suppressSwitchCallbacks = false;
 
         if (enabled && canWrite && present) {
@@ -814,6 +834,39 @@ public class MainActivity extends Activity {
             return insets;
         });
         root.requestApplyInsets();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (SettingsGuard.hideFromRecents(this)) {
+            // Keep the task warm in background while hidden from recent tasks
+            moveTaskToBack(true);
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    private boolean applyRecentsVisibility(boolean hidden) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) return true;
+        ActivityManager manager = (ActivityManager) getSystemService(ACTIVITY_SERVICE);
+        if (manager == null) return false;
+        try {
+            int myTaskId = getTaskId();
+            for (ActivityManager.AppTask task : manager.getAppTasks()) {
+                if (task.getTaskInfo().id == myTaskId) {
+                    task.setExcludeFromRecents(hidden);
+                    return true;
+                }
+            }
+            List<ActivityManager.AppTask> tasks = manager.getAppTasks();
+            if (tasks != null && !tasks.isEmpty()) {
+                tasks.get(0).setExcludeFromRecents(hidden);
+                return true;
+            }
+        } catch (Throwable e) {
+            Log.w("FCMGuard", "Unable to update Recents visibility", e);
+        }
+        return false;
     }
 
     private int dp(int value) {

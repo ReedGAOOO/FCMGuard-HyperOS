@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">Event-driven monitoring of only the FCM whitelist key. A non-waking 30-minute fallback check is used only as insurance.</string>
     <string name="persistent_notification">Persistent notification</string>
     <string name="persistent_notification_summary">Recommended ON for maximum reliability. Turn it OFF to remove the ongoing notification and use background-only mode; HyperOS may then stop the service more easily.</string>
+    <string name="hide_from_recents">Hide from Recents</string>
+    <string name="hide_from_recents_summary">Hide the app card from Recents without stopping automatic protection. Open the app from its icon or notification.</string>
+    <string name="hide_from_recents_failed">Could not change Recents visibility. Please try again.</string>
     <string name="actions_title">Tools</string>
     <string name="advanced_title">Advanced configuration</string>
 

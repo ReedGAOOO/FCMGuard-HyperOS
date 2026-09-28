@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">Отслеживается только ключ списка FCM по событиям. Резервная проверка раз в 30 минут специально не будит устройство.</string>
     <string name="persistent_notification">Постоянное уведомление</string>
     <string name="persistent_notification_summary">Рекомендуется для максимальной надёжности. Отключите, чтобы скрыть уведомление и использовать только фоновый режим.</string>
+    <string name="hide_from_recents">Скрыть из недавних</string>
+    <string name="hide_from_recents_summary">Скрывает карточку приложения из списка недавних, не останавливая автоматическую защиту. Открыть приложение можно через значок или уведомление.</string>
+    <string name="hide_from_recents_failed">Не удалось изменить видимость в списке недавних. Повторите попытку.</string>
     <string name="actions_title">Инструменты</string>
     <string name="advanced_title">Расширенные настройки</string>
 

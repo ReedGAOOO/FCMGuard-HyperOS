@@ -23,6 +23,9 @@
     <string name="automatic_protection_summary">Monitoriza apenas a chave da lista FCM por eventos. A verificação de segurança a cada 30 minutos não acorda deliberadamente o telefone.</string>
     <string name="persistent_notification">Notificação permanente</string>
     <string name="persistent_notification_summary">Recomendado ativado para máxima fiabilidade. Desative para remover a notificação e usar apenas o modo em segundo plano.</string>
+    <string name="hide_from_recents">Ocultar dos recentes</string>
+    <string name="hide_from_recents_summary">Oculta o cartão da app nos recentes sem parar a proteção automática. Abre a app pelo ícone ou pela notificação.</string>
+    <string name="hide_from_recents_failed">Não foi possível alterar a visibilidade nos recentes. Tenta novamente.</string>
     <string name="actions_title">Ferramentas</string>
     <string name="advanced_title">Configuração avançada</string>
 
