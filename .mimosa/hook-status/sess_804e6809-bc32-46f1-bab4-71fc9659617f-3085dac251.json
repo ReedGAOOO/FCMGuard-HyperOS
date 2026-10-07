@@ -1,0 +1,14 @@
+{
+  "schemaVersion": "mimosa-hook-status/v1",
+  "recordedAt": "2026-10-05T07:45:34.710Z",
+  "sessionId": "sess_804e6809-bc32-46f1-bab4-71fc9659617f",
+  "event": "PostToolUse",
+  "toolName": "Edit",
+  "file": "app/src/main/java/com/reed/fcmguard/LocaleHelper.java",
+  "outcome": "clear",
+  "coverage": "complete",
+  "findingCount": 0,
+  "durationMs": 42,
+  "hostState": "hook_complete",
+  "reportHint": ".mimosa/reports/"
+}

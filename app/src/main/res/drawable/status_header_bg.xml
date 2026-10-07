@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- White cover panel behind the detailed status lines. Drawn above the
+     whitelist panel while collapsing; its 16dp radius matches tonal_bg. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/surface" />
-    <corners android:radius="14dp" />
+    <corners android:radius="@dimen/panel_corner" />
 </shape>

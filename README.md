@@ -1,174 +1,178 @@
 <p align="center">
-  <a href="README.md"><strong>English</strong></a> · <a href="README.zh-CN.md">简体中文</a>
+  <a href="README.md"><strong>Tiếng Việt</strong></a> · <a href="README.en.md">English</a> · <a href="README.zh-CN.md">简体中文</a>
 </p>
 
 <p align="center">
-  <img src="docs/icon.svg" width="180" alt="FCM Guard icon" />
+  <img src="docs/icon.svg" width="180" alt="Biểu tượng FCM Guard" />
 </p>
 
 # FCM Guard for HyperOS
 
-**A lightweight, no-root watchdog for HyperOS 3 China ROM that keeps Google Play services in Xiaomi's no-restrict background list so FCM push stays reliable.**
+**Công cụ canh giữ nhẹ, không cần root dành cho HyperOS 3 bản ROM Trung Quốc, giữ Google Play services luôn nằm trong danh sách nền "không giới hạn" của Xiaomi để thông báo đẩy FCM luôn ổn định.**
 
-**Designed for:** China-market Xiaomi / Redmi / POCO phones with Google Play services already installed and working.
+**Thiết kế cho:** điện thoại Xiaomi / Redmi / POCO bản Trung Quốc, đã cài Google Play services và đang hoạt động bình thường.
 
 <p align="center">
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>Download latest APK</strong></a>
+  <a href="https://github.com/longhangoc/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>Tải APK mới nhất</strong></a>
   ·
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">Latest release</a>
+  <a href="https://github.com/longhangoc/FCMGuard-HyperOS/releases/latest">Bản phát hành mới nhất</a>
 </p>
 
-## Highlights
+## Điểm nổi bật
 
-- **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, persistent ADB, Accessibility, VPN, overlay, or device-admin privileges.
-- **Finance-app friendly** — keeps the implementation deliberately low-privilege for better compatibility with security-sensitive apps.
-- **Low background power** — exact event-driven monitoring is the main path; the 30-minute fallback is in-process and does not deliberately wake a sleeping phone.
-- **Reconnects only when needed** — FCM/MCS reconnect broadcasts are sent only after a real whitelist repair or a manual request.
-- **Optional persistent notification** — foreground mode uses a visible-but-silent notification channel for stronger process survival; quiet background mode remains available.
-- **FCM app assistant** — scans likely Firebase/GCM clients and, when HyperOS exposes the vendor AppOps state, shows read-only Autostart status with automatic re-check after returning from system settings.
-- **Native dark mode** — System / Light / Dark, with **System** as the default.
-- **10-language UI** — English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian through Android's native per-app language mechanism.
-- **Compact-phone ready** — responsive layout checks cover 320–480dp widths, including a Xiaomi 17-class 393dp profile.
+- **Không cần root hay Shizuku** — chỉ dùng quyền **Sửa đổi cài đặt hệ thống** mà người dùng có thể tự cấp, thay vì root, ADB thường trực, Accessibility, VPN, overlay hay quyền quản trị thiết bị.
+- **Thân thiện với app tài chính** — giữ chủ ý mức đặc quyền thấp để tương thích tốt với các app nhạy cảm về bảo mật.
+- **Ít tốn pin khi chạy nền** — giám sát theo sự kiện chính xác là đường chính; các lần kiểm tra định kỳ 15 phút qua JobScheduler im lặng thay thế hoàn toàn việc poll và không chủ động đánh thức điện thoại đang ngủ.
+- **Chỉ kết nối lại khi cần** — yêu cầu kết nối lại FCM/MCS chỉ được gửi sau khi thực sự sửa danh sách trắng hoặc khi người dùng chủ động yêu cầu.
+- **Chế độ gác thông minh** — Tự động bắt đầu bằng gác sát, nới thành kiểm tra định kỳ im lặng sau 24 giờ yên tĩnh, và siết lại ngay ở lần phá đầu tiên; Luôn gác và Tiết kiệm cho bạn toàn quyền kiểm soát.
+- **Trợ lý app FCM** — quét các app có khả năng là client Firebase/GCM và, khi HyperOS cho phép đọc trạng thái AppOps của nhà sản xuất, hiển thị trạng thái Tự khởi động ở chế độ chỉ đọc, tự kiểm tra lại sau khi bạn quay về từ cài đặt hệ thống.
+- **Chế độ tối gốc Android** — Theo hệ thống / Sáng / Tối, mặc định **Theo hệ thống**.
+- **Giao diện 11 ngôn ngữ** — tiếng Anh, tiếng Trung giản thể, tiếng Trung phồn thể, tiếng Pháp, tiếng Nhật, tiếng Hàn, tiếng Tây Ban Nha, tiếng Bồ Đào Nha, tiếng Đức, tiếng Nga và tiếng Việt, qua cơ chế ngôn ngữ theo ứng dụng gốc của Android.
+- **Cập nhật ngay trong app** — tự kiểm tra GitHub Releases mỗi 24 giờ và có nút kiểm tra thủ công; tải về mở trình cài luôn, không cần mở GitHub.
+- **Sẵn sàng cho máy màn nhỏ** — kiểm tra bố cục tương thích cho độ rộng 320–480dp, gồm cả profile 393dp kiểu Xiaomi 17.
 
-## Quick setup
+## Thiết lập nhanh
 
-1. Install the latest APK from **GitHub Releases**.
-2. Open FCM Guard and grant **Modify system settings**.
-3. Tap **Repair now** once.
-4. Enable **Automatic protection**.
-5. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
-6. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
-7. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, FCM Guard shows a clear Unknown/unavailable fallback instead of guessing.
-8. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
-9. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
+1. Cài APK mới nhất từ **GitHub Releases**.
+2. Mở FCM Guard và cấp quyền **Sửa đổi cài đặt hệ thống**.
+3. Chạm **Sửa ngay** một lần.
+4. Bật **Bảo vệ tự động**.
+5. Trong HyperOS, bật **Tự khởi động** cho FCM Guard và đặt chính sách pin thành **Không giới hạn**.
+6. Chọn **Chế độ gác**. **Tự động** (khuyến nghị): gác sát lúc đầu, nới sau 24 giờ yên tĩnh và siết lại ngay ở lần phá đầu tiên; **Luôn gác**: giữ thông báo thường trực để sống bám tối đa; **Tiết kiệm**: chỉ kiểm tra định kỳ im lặng. Khi gác sát đang bật mà thông báo bị chặn, app sẽ mở thẳng cài đặt thông báo hệ thống để bạn bật thông báo nền trước.
+7. Tùy chọn: quét **Ứng dụng FCM**. Nếu HyperOS cho phép đọc trạng thái Tự khởi động, danh sách sẽ đánh dấu app là Đã bật / Một phần / Đã tắt / Không rõ và tự cập nhật sau khi bạn quay về từ **Cấu hình tất cả trong HyperOS**. Nếu ROM chặn truy vấn, FCM Guard hiển thị trạng thái Không rõ/không khả dụng thay vì đoán bừa.
+8. Tùy chọn: chạm **Mở chẩn đoán FCM** để vào màn hình chẩn đoán của Google Play services và xem kết nối `mtalk.google.com:5228`.
+9. Nếu chỉ một app vẫn nhận thông báo chậm trong khi các app FCM khác bình thường, hãy cấu hình riêng app đó. Với các app như **WhatsApp**, đặt **Trình tiết kiệm pin / Tối ưu hóa pin → Không giới hạn** trong HyperOS; cũng nên bật **Tự khởi động** cho app đó khi có tùy chọn.
 
-> FCM Guard is mainly for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
+> FCM Guard chủ yếu dành cho máy HyperOS 3 bản ROM Trung Quốc, nơi Google services hoạt động bình thường nhưng PowerKeeper / Greezer vẫn có thể ngắt kết nối FCM chạy nền.
 
 ---
 
-# Technical overview
+# Tổng quan kỹ thuật
 
-## Core mechanism
+## Cơ chế chính
 
-Affected HyperOS builds can rebuild the private setting:
+Các bản HyperOS bị ảnh hưởng có thể dựng lại giá trị cài đặt riêng tư sau:
 
 ```text
 Settings.System.MILLET_NO_RESTRICT_APP
 ```
 
-If `com.google.android.gms` is removed, Google Play services can be treated like a normal background process and its long-lived FCM/MCS connection may be interrupted.
+Nếu `com.google.android.gms` bị loại khỏi đó, Google Play services có thể bị coi như một tiến trình nền thông thường và kết nối FCM/MCS dài hạn của nó có thể bị ngắt.
 
-FCM Guard reads the current comma-separated value, preserves all existing packages, and appends `com.google.android.gms` only when it is missing.
+FCM Guard đọc giá trị hiện tại (phân tách bằng dấu phẩy), giữ nguyên mọi package có sẵn, và chỉ thêm `com.google.android.gms` khi còn thiếu.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','lineColor':'#000000'}}}%%
 flowchart TD
-    A[Watch MILLET_NO_RESTRICT_APP] --> B[Read current value]
-    B --> C{GMS present?}
-    C -- Yes --> D[Do nothing]
-    C -- No --> E[Preserve current packages]
-    E --> F[Append com.google.android.gms]
-    F --> G[Write once]
-    G --> H[Best-effort FCM reconnect]
+    A[Giám sát MILLET_NO_RESTRICT_APP] --> B[Đọc giá trị hiện tại]
+    B --> C{GMS có mặt?}
+    C -- Có --> D[Không làm gì]
+    C -- Không --> E[Giữ nguyên các package hiện có]
+    E --> F[Thêm com.google.android.gms]
+    F --> G[Ghi một lần]
+    G --> H[Kết nối lại FCM best-effort]
     classDef bw fill:#ffffff,stroke:#000000,color:#000000,stroke-width:1.5px;
     class A,B,C,D,E,F,G,H bw;
 ```
 
-## Why `targetSdk 22`?
+## Vì sao dùng `targetSdk 22`?
 
-FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission and without root/Shizuku.
+FCM Guard cố ý dùng `compileSdk 35` với `targetSdk 22`. Compile SDK hiện đại giúp dự án dùng công cụ build mới nhất, còn target cũ giữ lại đường dẫn tương thích cần thiết để ghi key riêng tư `Settings.System` của Xiaomi bằng quyền **Sửa đổi cài đặt hệ thống** người dùng tự cấp, không cần root/Shizuku.
 
-## Low-power design
+## Thiết kế tiết kiệm pin
 
-- Exact `ContentObserver` only for `MILLET_NO_RESTRICT_APP`.
-- ~400 ms debounce after an observed change.
-- 30-minute in-process fallback instead of rapid polling.
-- No `AlarmManager`, repeating exact alarm, or WakeLock for the fallback.
-- No write when GMS is already present.
-- No reconnect broadcast unless a repair actually happened or the user requests one.
+- `ContentObserver` chính xác chỉ cho `MILLET_NO_RESTRICT_APP`.
+- Debounce ~400 ms sau mỗi thay đổi được ghi nhận.
+- Dự phòng trong tiến trình mỗi 30 phút thay vì poll liên tục.
+- Không dùng `AlarmManager`, báo thức chính xác lặp lại, hay WakeLock cho phần dự phòng.
+- Không ghi khi GMS đã có sẵn.
+- Không gửi broadcast kết nối lại trừ khi thực sự có sửa chữa hoặc người dùng yêu cầu.
 
-## Persistent notification
+## Chế độ gác và kiểm tra định kỳ
 
-Persistent mode runs `GuardService` as a foreground service. The current implementation uses a dedicated `IMPORTANCE_LOW`, silent notification channel so the notification remains visible without sound or vibration. Because FCM Guard deliberately targets SDK 22, Android 13+ controls the notification-permission prompt timing; if notifications are already blocked, FCM Guard links directly to the app's system notification settings.
+Bảo vệ chạy theo một trong hai kiến trúc. **Gác sát** chạy `GuardService` như dịch vụ trên nền trước với kênh thông báo `IMPORTANCE_LOW` im lặng riêng, kèm `ContentObserver` sửa lại trong ~400 ms. **Tiết kiệm** không có tiến trình thường trú: một job JobScheduler bền vững chạy mỗi 15 phút, sửa một lần, nghe thêm ~90 giây cho các lần ghi đè thường theo sau PowerKeeper dựng lại danh sách, rồi nhả tiến trình. HyperOS giết app không làm hỏng đường định kỳ này.
 
-## FCM diagnostics
+**Tự động** bắt đầu bằng gác sát, nới sang tiết kiệm sau 24 giờ yên tĩnh, và nâng lại ngay ở lần phá thật đầu tiên (lần sửa thực sự ghi whitelist). Backoff chống bão kéo dài khoảng cách giữa các lần sửa liên tiếp (400 ms → 2 s → 5 s → 10 s → 20 s → 40 s → 60 s) nên bão ghi đè không đốt được pin. Vì FCM Guard nhắm SDK 22, Android 13+ kiểm soát thời điểm hỏi quyền thông báo; nếu thông báo bị chặn, FCM Guard dẫn tới trang cài đặt thông báo hệ thống của app.
 
-**Open FCM diagnostics** now launches the current Google Play services activity first:
+## Chẩn đoán FCM
+
+**Mở chẩn đoán FCM** hiện ưu tiên chạy Activity hiện tại của Google Play services:
 
 ```text
 com.google.android.gms/com.google.android.gms.gcm.GcmDiagnostics
 ```
 
-Older `GTalkServiceDiagnostics` is retained as a compatibility fallback, with a final best-effort lookup for a diagnostics activity inside Google Play services.
+`GTalkServiceDiagnostics` cũ vẫn được giữ làm phương án dự phòng tương thích, kèm bước tra cứu cuối cùng các Activity chẩn đoán trong Google Play services.
 
-## FCM app assistant
+## Trợ lý app FCM
 
-The scanner looks for standard manifest signals such as:
+Bộ quét tìm các dấu hiệu manifest chuẩn như:
 
 ```text
 com.google.firebase.MESSAGING_EVENT
 com.google.android.c2dm.intent.RECEIVE
 ```
 
-A match means the app is a likely FCM/GCM client, not proof that every notification from that app uses FCM.
+Khớp nghĩa là app nhiều khả năng là client FCM/GCM, nhưng không chứng minh mọi thông báo của app đó đều dùng FCM.
 
-For detected apps, FCM Guard performs a **read-only, best-effort** check of Xiaomi's vendor Autostart AppOps (`10008` and `10053`). When both are readable, the UI reports:
+Với app được phát hiện, FCM Guard thực hiện kiểm tra **chỉ đọc, best-effort** các AppOps Tự khởi động của nhà sản xuất Xiaomi (`10008` và `10053`). Khi đọc được cả hai, giao diện hiển thị:
 
-- **Enabled** — both Autostart AppOps are allowed.
-- **Partial** — one is allowed and the other is explicitly ignored.
-- **Disabled** — both are explicitly ignored.
-- **Unknown** — HyperOS blocked the query, returned a vendor/default state that cannot be interpreted safely, or otherwise did not expose a reliable result.
+- **Đã bật** — cả hai AppOps Tự khởi động đều được phép.
+- **Một phần** — một cái được phép, cái kia bị ignore rõ ràng.
+- **Đã tắt** — cả hai đều bị ignore rõ ràng.
+- **Không rõ** — HyperOS chặn truy vấn, trả về trạng thái nhà sản xuất/mặc định không thể diễn giải an toàn, hoặc không cung cấp kết quả đáng tin cậy.
 
-FCM Guard never treats **Unknown** as **Disabled**. If every detected app is Unknown, the per-app list is hidden and the assistant falls back to the detected count plus the single **Configure all in HyperOS** action. After returning from HyperOS settings, an expanded result is checked again automatically.
+FCM Guard không bao giờ coi **Không rõ** là **Đã tắt**. Nếu mọi app được phát hiện đều Không rõ, danh sách từng app sẽ bị ẩn và trợ lý chỉ giữ số lượng app phát hiện cùng hành động **Cấu hình tất cả trong HyperOS**. Sau khi quay về từ cài đặt HyperOS, kết quả mở rộng được kiểm tra lại tự động.
 
-No Autostart state is modified programmatically, and no Shizuku/root/ADB privilege is introduced.
+Không có trạng thái Tự khởi động nào bị sửa bằng lệnh, và không có đặc quyền Shizuku/root/ADB nào được đưa vào.
 
-## Per-app delivery caveat
+## Lưu ý gửi thông báo theo từng app
 
-FCM Guard protects the Google Play services / FCM transport layer, but it does **not** override HyperOS battery rules for every receiving app. Some apps — including messaging apps such as **WhatsApp** — may use FCM as a wake-up/tickle path and still need their own process to run, open a background network connection, synchronize data, and generate the local notification.
+FCM Guard bảo vệ lớp truyền tải Google Play services / FCM, nhưng **không** ghi đè quy tắc pin của HyperOS cho từng app nhận. Một số app — gồm cả app nhắn tin như **WhatsApp** — có thể dùng FCM làm tín hiệu đánh thức và vẫn cần tiến trình riêng của nó chạy, mở kết nối nền, đồng bộ dữ liệu và tạo thông báo cục bộ.
 
-Therefore, if FCM diagnostics are healthy and other apps receive pushes normally but one app is still delayed, configure that app separately. For WhatsApp, the recommended HyperOS setting is:
+Vì vậy, nếu chẩn đoán FCM ổn và các app khác nhận đẩy bình thường nhưng một app vẫn chậm, hãy cấu hình riêng app đó. Với WhatsApp, cài đặt HyperOS được khuyến nghị là:
 
-**WhatsApp → Battery saver / Battery optimization → No restrictions**
+**WhatsApp → Trình tiết kiệm pin / Tối ưu hóa pin → Không giới hạn**
 
-Also enable **Autostart** for the affected app when the ROM exposes that option. This should be applied only to apps that actually show delayed delivery rather than globally disabling battery optimization for every app.
+Cũng bật **Tự khởi động** cho app bị ảnh hưởng khi ROM có tùy chọn này. Chỉ áp dụng cho các app thực sự bị chậm, thay vì tắt tối ưu hóa pin cho mọi app.
 
-## Appearance, languages, and responsive layout
+## Giao diện, ngôn ngữ và bố cục responsive
 
-- System / Light / Dark appearance modes.
-- 10 native app languages: English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian.
-- Compact and large-width resource profiles.
-- CI geometry checks for 320, 360, 393, 411, 430, and 480dp widths.
+- Ba chế độ hiển thị: Theo hệ thống / Sáng / Tối.
+- 11 ngôn ngữ gốc: tiếng Anh, tiếng Trung giản thể, tiếng Trung phồn thể, tiếng Pháp, tiếng Nhật, tiếng Hàn, tiếng Tây Ban Nha, tiếng Bồ Đào Nha, tiếng Đức, tiếng Nga và tiếng Việt.
+- Profile tài nguyên riêng cho máy hẹp và máy rộng.
+- Kiểm tra hình học trong CI cho độ rộng 320, 360, 393, 411, 430 và 480dp.
 
-## Permissions and privacy
+## Quyền hạn và quyền riêng tư
 
-FCM Guard uses `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, foreground-service/notification support, and narrow package visibility for FCM/GCM handlers, Google Play services, and Xiaomi Security Center.
+FCM Guard dùng `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, hỗ trợ dịch vụ nền trước/thông báo, và phạm vi nhìn thấy package hẹp cho các handler FCM/GCM, Google Play services, và Trung tâm Bảo mật Xiaomi.
 
-It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overlay, device-admin, account access, or traffic inspection.
+Nó **không** yêu cầu root, Shizuku, ADB thường trực, Accessibility, VPN, overlay, quản trị thiết bị, truy cập tài khoản hay giám sát lưu lượng mạng.
 
-## Limitations
+## Giới hạn
 
-This project depends on Xiaomi's current HyperOS implementation. Xiaomi can change PowerKeeper / Greezer behavior, the private setting, app-management pages, or vendor AppOps behavior in future releases. FCM reconnect, FCM-client detection, and Autostart-status reading are all best-effort because Android does not expose public APIs that guarantee these vendor-specific operations.
+Dự án này phụ thuộc vào cách HyperOS hiện tại của Xiaomi hoạt động. Xiaomi có thể thay đổi hành vi PowerKeeper / Greezer, cài đặt riêng tư, trang quản lý app, hay AppOps của nhà sản xuất trong các bản phát hành sau. Kết nối lại FCM, nhận diện client FCM và đọc trạng thái Tự khởi động đều là best-effort vì Android không có API công khai nào đảm bảo các thao tác riêng tư theo nhà sản xuất này.
 
-FCM Guard protects the shared GMS/FCM connection; it cannot guarantee that HyperOS will allow every individual app enough background execution or network time to process a delivered FCM wake-up. Per-app battery settings may still be required for apps such as WhatsApp.
+FCM Guard bảo vệ kết nối GMS/FCM dùng chung; nó không thể đảm bảo HyperOS sẽ cho phép từng app có đủ thời gian chạy nền và mạng để xử lý tín hiệu FCM đã nhận. Cài đặt pin theo từng app vẫn có thể cần cho app như WhatsApp.
 
-## References & Acknowledgements
+## Tham khảo & Ghi nhận
 
-The PowerKeeper / Greezer investigation and the `MILLET_NO_RESTRICT_APP` repair strategy were originally documented by **HyperOS FCM Fix**:
+Cuộc điều tra PowerKeeper / Greezer và chiến lược sửa `MILLET_NO_RESTRICT_APP` ban đầu được ghi nhận bởi **HyperOS FCM Fix**:
 
-- HyperOS FCM Fix by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
-- Technical investigation: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
+- HyperOS FCM Fix của `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
+- Tài liệu điều tra kỹ thuật: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
+- Bản dịch tiếng Việt của tài liệu trên (GPL-3.0, kèm ghi công): [docs/xiaomi-hyperos-gms-fcm-greezer-investigation.vi.md](docs/xiaomi-hyperos-gms-fcm-greezer-investigation.vi.md)
 
-FCM Guard is an independent implementation focused on no Shizuku/root dependency, minimal privileges, event-driven monitoring, and low idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
+FCM Guard là bản triển khai độc lập tập trung vào việc không cần Shizuku/root, đặc quyền tối thiểu, giám sát theo sự kiện và hoạt động nền nhàn rỗi thấp. Không có mã nguồn nào của HyperOS FCM Fix được sao chép vào repo này.
 
 ## Build
 
-GitHub Actions checks responsive layout profiles and builds a signed debug APK. Pushes to `main` publish/update the versioned GitHub Release; feature branches can be validated before release.
+GitHub Actions kiểm tra profile bố cục responsive và build APK debug có ký. Push lên `main` sẽ phát hành/cập nhật GitHub Release theo phiên bản; nhánh feature có thể được kiểm tra trước khi phát hành.
 
-For normal phone installation, use:
+Để cài lên điện thoại, dùng:
 
-**https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
+**https://github.com/longhangoc/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
 
-## License
+## Giấy phép
 
-MIT License — see [LICENSE](LICENSE).
+MIT License — xem [LICENSE](LICENSE).

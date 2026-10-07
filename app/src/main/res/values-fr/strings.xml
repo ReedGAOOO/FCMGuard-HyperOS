@@ -20,7 +20,7 @@
 
     <string name="protection_title">Protection</string>
     <string name="automatic_protection">Protection automatique</string>
-    <string name="automatic_protection_summary">Surveillance événementielle uniquement de la clé FCM. Une vérification de secours toutes les 30 minutes ne réveille pas volontairement un téléphone en veille.</string>
+    <string name="automatic_protection_summary">Surveillance événementielle de la seule clé de liste blanche FCM, avec des vérifications planifiées silencieuses en filet de sécurité. En cas de comportement anormal du ROM, passage automatique en surveillance rapprochée.</string>
     <string name="persistent_notification">Notification persistante</string>
     <string name="persistent_notification_summary">Recommandé pour une fiabilité maximale. Désactivez-la pour supprimer la notification et utiliser le mode arrière-plan silencieux ; HyperOS pourra alors arrêter le service plus facilement.</string>
     <string name="actions_title">Outils</string>
@@ -57,4 +57,21 @@
     <string name="notification_channel_description">Notification de faible priorité utilisée pour maintenir la protection FCM automatique</string>
     <string name="notification_active">Protection active · événementielle</string>
     <string name="notification_repaired">Liste réparée · FCM protégé</string>
+    <string name="guard_mode_label">Mode de garde</string>
+    <string name="guard_mode_auto">Auto</string>
+    <string name="guard_mode_always">Toujours</string>
+    <string name="guard_mode_saving">Éco</string>
+    <string name="guard_mode_summary">Auto : surveillance rapprochée au début, assouplie en vérifications planifiées après 24 heures calmes, et retour immédiat à la surveillance rapprochée dès la première vraie altération. Toujours : surveillance continue avec notification permanente. Éco : vérifications planifiées uniquement, sans notification, consommation minimale.</string>
+    <string name="state_guard_vigilant">Mode de garde : rapprochée</string>
+    <string name="state_guard_quiet">Mode de garde : planifiée</string>
+    <string name="update_check">Rechercher des mises à jour</string>
+    <string name="update_checking">Recherche de mises à jour…</string>
+    <string name="update_downloading">Téléchargement de la mise à jour…</string>
+    <string name="update_latest">Vous utilisez la dernière version</string>
+    <string name="update_available_title">Mise à jour disponible : %1$s</string>
+    <string name="update_available_body">Une version plus récente de FCM Guard est publiée sur GitHub Releases. Télécharger et installer maintenant ?</string>
+    <string name="update_download">Télécharger et installer</string>
+    <string name="update_download_failed">Échec de la vérification ou du téléchargement</string>
+    <string name="update_installing">Ouverture du programme d\'installation…</string>
+    <string name="update_need_permission">Autorisez FCM Guard à installer des applications de sources inconnues, puis appuyez à nouveau sur Rechercher</string>
 </resources>

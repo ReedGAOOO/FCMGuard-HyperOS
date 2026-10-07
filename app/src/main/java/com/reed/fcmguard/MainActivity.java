@@ -3,6 +3,7 @@ package com.reed.fcmguard;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
@@ -40,10 +41,10 @@ import java.util.List;
 
 public class MainActivity extends Activity {
     private static final String[] LANGUAGE_CODES = {
-            "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
+            "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru", "vi"
     };
     private static final String[] LANGUAGE_BUTTON_LABELS = {
-            "Language", "语言", "語言", "Langue", "言語", "언어", "Idioma", "Idioma", "Sprache", "Язык"
+            "Language", "语言", "語言", "Langue", "言語", "언어", "Idioma", "Idioma", "Sprache", "Язык", "Ngôn ngữ"
     };
     private static final long LANGUAGE_LABEL_INTERVAL_MS = 2200L;
 
@@ -57,7 +58,7 @@ public class MainActivity extends Activity {
     private Button languageButton;
     private Button scanFcmAppsBtn;
     private Switch protectionSwitch;
-    private Switch notificationSwitch;
+    private RadioGroup guardModeGroup;
     private Button permissionBtn;
     private RadioGroup appearanceGroup;
     private boolean suppressSwitchCallbacks = false;
@@ -79,7 +80,7 @@ public class MainActivity extends Activity {
     private final Runnable notificationAccessFollowUp = new Runnable() {
         @Override public void run() {
             if (!notificationAccessPending || !hasWindowFocus()) return;
-            if (SettingsGuard.usePersistentNotification(MainActivity.this) &&
+            if (SmartGuardController.shouldWatchResidently(MainActivity.this) &&
                     !GuardService.canShowPersistentNotification(MainActivity.this)) {
                 notificationAccessPending = false;
                 openNotificationSettings();
@@ -96,6 +97,7 @@ public class MainActivity extends Activity {
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SmartGuardController.migrate(this);
         LocaleHelper.migrateLegacyPreference(this);
         configureFullEdgeToEdge();
         setContentView(R.layout.activity_main);
@@ -104,19 +106,21 @@ public class MainActivity extends Activity {
         loadConfigIntoFields();
         setupLanguagePicker();
         setupAppearance();
+        setupGuardMode();
         setupSwitches();
         bindActions();
         refreshStatus(null);
+        UpdateChecker.autoCheck(this);
     }
 
     @Override protected void onResume() {
         super.onResume();
         configureFullEdgeToEdge();
         startLanguageButtonAnimation();
-        if (SettingsGuard.isProtectionEnabled(this) &&
-                SettingsGuard.usePersistentNotification(this) &&
-                GuardService.canShowPersistentNotification(this)) {
-            startProtectionService();
+        UpdateChecker.resumePendingInstall(this);
+        if (SettingsGuard.isProtectionEnabled(this)) {
+            SmartGuardController.checkDowngrade(this);
+            SmartGuardController.apply(this);
         }
         refreshStatus(null);
         if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
@@ -151,7 +155,7 @@ public class MainActivity extends Activity {
         languageButton = findViewById(R.id.languageButton);
         scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
         protectionSwitch = findViewById(R.id.protectionSwitch);
-        notificationSwitch = findViewById(R.id.notificationSwitch);
+        guardModeGroup = findViewById(R.id.guardModeGroup);
         permissionBtn = findViewById(R.id.permissionBtn);
         appearanceGroup = findViewById(R.id.appearanceGroup);
     }
@@ -270,7 +274,6 @@ public class MainActivity extends Activity {
     private void setupSwitches() {
         suppressSwitchCallbacks = true;
         protectionSwitch.setChecked(SettingsGuard.isProtectionEnabled(this));
-        notificationSwitch.setChecked(SettingsGuard.usePersistentNotification(this));
         suppressSwitchCallbacks = false;
 
         protectionSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
@@ -290,31 +293,46 @@ public class MainActivity extends Activity {
                 }
 
                 SettingsGuard.setProtectionEnabled(this, true);
-                if (SettingsGuard.usePersistentNotification(this)) {
+                SmartGuardController.apply(this);
+                if (SmartGuardController.shouldWatchResidently(this)) {
                     ensurePersistentNotificationAccess();
                 }
-                startProtectionService();
                 SettingsGuard.Result result = SettingsGuard.repair(this);
                 if (result.changed) FcmReconnect.kick(this);
                 toast(getString(R.string.service_started));
             } else {
-                stopService(new Intent(this, GuardService.class));
                 SettingsGuard.setProtectionEnabled(this, false);
+                SmartGuardController.apply(this);
+                notificationAccessPending = false;
+                languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
                 toast(getString(R.string.service_stopped));
             }
             refreshStatus(null);
         });
+    }
 
-        notificationSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+    private void setupGuardMode() {
+        suppressSwitchCallbacks = true;
+        String mode = SmartGuardController.getMode(this);
+        if (SmartGuardController.MODE_ALWAYS.equals(mode)) {
+            guardModeGroup.check(R.id.guardModeAlways);
+        } else if (SmartGuardController.MODE_SAVING.equals(mode)) {
+            guardModeGroup.check(R.id.guardModeSaving);
+        } else {
+            guardModeGroup.check(R.id.guardModeAuto);
+        }
+        suppressSwitchCallbacks = false;
+
+        guardModeGroup.setOnCheckedChangeListener((group, checkedId) -> {
             if (suppressSwitchCallbacks) return;
-            SettingsGuard.setPersistentNotification(this, checked);
-            if (checked) {
+            String next = SmartGuardController.MODE_AUTO;
+            if (checkedId == R.id.guardModeAlways) next = SmartGuardController.MODE_ALWAYS;
+            else if (checkedId == R.id.guardModeSaving) next = SmartGuardController.MODE_SAVING;
+
+            SmartGuardController.setMode(this, next);
+            if (SmartGuardController.shouldWatchResidently(this)) {
                 ensurePersistentNotificationAccess();
-            } else {
-                notificationAccessPending = false;
-                languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
             }
-            if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
             refreshStatus(null);
         });
     }
@@ -323,7 +341,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.saveBtn).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
             loadConfigIntoFields();
-            if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
+            if (SettingsGuard.isProtectionEnabled(this)) SmartGuardController.apply(this);
             toast(getString(R.string.saved));
             refreshStatus(getString(R.string.saved));
         });
@@ -344,6 +362,7 @@ public class MainActivity extends Activity {
         });
 
         findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
+        findViewById(R.id.updateCheckBtn).setOnClickListener(v -> runManualUpdateCheck());
         scanFcmAppsBtn.setOnClickListener(v -> toggleFcmAppsList());
         findViewById(R.id.openAutostartBtn).setOnClickListener(v -> {
             if (!HyperOsSettings.openAutoStartManager(this)) {
@@ -517,20 +536,13 @@ public class MainActivity extends Activity {
         return background;
     }
 
-    private void startProtectionService() {
-        Intent service = new Intent(this, GuardService.class);
-        try {
-            boolean persistent = SettingsGuard.usePersistentNotification(this);
-            if (persistent) GuardService.ensureNotificationChannel(this);
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O && persistent) {
-                startForegroundService(service);
-            } else {
-                startService(service);
-            }
-        } catch (Throwable t) {
-            toast(t.getClass().getSimpleName());
-        }
+    private void runManualUpdateCheck() {
+        ProgressDialog progress = new ProgressDialog(this);
+        progress.setMessage(getString(R.string.update_checking));
+        progress.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progress.setCancelable(true);
+        progress.show();
+        UpdateChecker.manualCheck(this, progress);
     }
 
     private void ensurePersistentNotificationAccess() {
@@ -617,13 +629,20 @@ public class MainActivity extends Activity {
     private void refreshStatus(String firstLine) {
         boolean canWrite = Settings.System.canWrite(this);
         boolean enabled = SettingsGuard.isProtectionEnabled(this);
-        boolean notification = SettingsGuard.usePersistentNotification(this);
+        boolean resident = SmartGuardController.shouldWatchResidently(this);
         String current = SettingsGuard.read(this);
         boolean present = SettingsGuard.hasRequiredItem(this, current);
 
         suppressSwitchCallbacks = true;
         protectionSwitch.setChecked(enabled);
-        notificationSwitch.setChecked(notification);
+        String mode = SmartGuardController.getMode(this);
+        if (SmartGuardController.MODE_ALWAYS.equals(mode)) {
+            guardModeGroup.check(R.id.guardModeAlways);
+        } else if (SmartGuardController.MODE_SAVING.equals(mode)) {
+            guardModeGroup.check(R.id.guardModeSaving);
+        } else {
+            guardModeGroup.check(R.id.guardModeAuto);
+        }
         suppressSwitchCallbacks = false;
 
         if (enabled && canWrite && present) {
@@ -659,12 +678,12 @@ public class MainActivity extends Activity {
                 present ? R.color.status_value_green_bg : R.color.status_value_red_bg
         );
         status.append('\n');
-        boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
+        boolean visibleForeground = enabled && resident && GuardService.canShowPersistentNotification(this);
         appendStatusValueLine(
                 status,
                 visibleForeground
-                        ? getString(R.string.notification_mode_foreground)
-                        : getString(R.string.notification_mode_quiet),
+                        ? getString(R.string.state_guard_vigilant)
+                        : getString(R.string.state_guard_quiet),
                 visibleForeground ? R.color.status_value_green_bg : R.color.status_value_yellow_bg
         );
         statusText.setText(status);

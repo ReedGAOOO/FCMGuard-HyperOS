@@ -20,7 +20,7 @@
 
     <string name="protection_title">保護設定</string>
     <string name="automatic_protection">自動保護</string>
-    <string name="automatic_protection_summary">僅監聽 FCM 白名單這一項的變化，主要採用事件觸發；30 分鐘兜底檢查不會主動喚醒休眠中的手機。</string>
+    <string name="automatic_protection_summary">僅對 FCM 白名單鍵做事件驅動監聽，並以安靜的定時檢查兜底；ROM 行為異常時自動轉為貼身監視。</string>
     <string name="persistent_notification">常駐通知</string>
     <string name="persistent_notification_summary">建議開啟以獲得最高可靠性。關閉後會移除通知並切換為純背景模式，但 HyperOS 更容易終止此服務。</string>
     <string name="actions_title">工具</string>
@@ -57,4 +57,21 @@
     <string name="notification_channel_description">用於維持自動 FCM 保護可靠性的低優先級通知</string>
     <string name="notification_active">保護已啟動 · 事件驅動</string>
     <string name="notification_repaired">白名單已修復 · FCM 已保護</string>
+    <string name="guard_mode_label">守護模式</string>
+    <string name="guard_mode_auto">自動</string>
+    <string name="guard_mode_always">常駐</string>
+    <string name="guard_mode_saving">省電</string>
+    <string name="guard_mode_summary">自動：先貼身監視，連續 24 小時無異常後放寬為定時檢查，一旦發現白名單被改立即恢復貼身監視。常駐：持續貼身監視並保留常駐通知。省電：僅定時檢查，無通知，最省電。</string>
+    <string name="state_guard_vigilant">守護模式：貼身監視</string>
+    <string name="state_guard_quiet">守護模式：定時檢查</string>
+    <string name="update_check">檢查更新</string>
+    <string name="update_checking">正在檢查更新…</string>
+    <string name="update_downloading">正在下載更新…</string>
+    <string name="update_latest">已是最新版本</string>
+    <string name="update_available_title">有新版本：%1$s</string>
+    <string name="update_available_body">GitHub Releases 已發布新版 FCM Guard。要立即下載並安裝嗎？</string>
+    <string name="update_download">下載並安裝</string>
+    <string name="update_download_failed">檢查或下載更新失敗</string>
+    <string name="update_installing">正在開啟安裝程式…</string>
+    <string name="update_need_permission">請先允許 FCM Guard 安裝不明應用程式，然後再次點按檢查</string>
 </resources>

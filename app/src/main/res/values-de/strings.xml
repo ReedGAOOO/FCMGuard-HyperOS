@@ -20,7 +20,7 @@
 
     <string name="protection_title">Schutz</string>
     <string name="automatic_protection">Automatischer Schutz</string>
-    <string name="automatic_protection_summary">Überwacht ereignisgesteuert nur den FCM-Listenwert. Die 30-minütige Sicherheitsprüfung weckt das Telefon nicht absichtlich auf.</string>
+    <string name="automatic_protection_summary">Ereignisgesteuerte Überwachung nur des FCM-Listenschlüssels, mit stillen geplanten Prüfungen als Versicherung. Bei auffälligem ROM-Verhalten wird automatisch engmaschig überwacht.</string>
     <string name="persistent_notification">Dauerhafte Benachrichtigung</string>
     <string name="persistent_notification_summary">Für maximale Zuverlässigkeit empfohlen. Ausschalten, um die Benachrichtigung zu entfernen und nur den Hintergrundmodus zu verwenden.</string>
     <string name="actions_title">Werkzeuge</string>
@@ -57,4 +57,21 @@
     <string name="notification_channel_description">Benachrichtigung mit niedriger Priorität für zuverlässigen automatischen FCM-Schutz</string>
     <string name="notification_active">Schutz aktiv · ereignisgesteuert</string>
     <string name="notification_repaired">Liste repariert · FCM geschützt</string>
+    <string name="guard_mode_label">Wachmodus</string>
+    <string name="guard_mode_auto">Auto</string>
+    <string name="guard_mode_always">Immer</string>
+    <string name="guard_mode_saving">Sparen</string>
+    <string name="guard_mode_summary">Auto: wacht zuerst engmaschig, lockert nach 24 ruhigen Stunden zu geplanten Prüfungen und kehrt bei der ersten echten Manipulation sofort zurück. Immer: engmaschige Überwachung mit dauerhafter Benachrichtigung. Sparen: nur geplante Prüfungen, ohne Benachrichtigung, minimaler Akkuverbrauch.</string>
+    <string name="state_guard_vigilant">Wachmodus: engmaschig</string>
+    <string name="state_guard_quiet">Wachmodus: geplant</string>
+    <string name="update_check">Nach Updates suchen</string>
+    <string name="update_checking">Suche nach Updates…</string>
+    <string name="update_downloading">Update wird heruntergeladen…</string>
+    <string name="update_latest">Du nutzt die neueste Version</string>
+    <string name="update_available_title">Update verfügbar: %1$s</string>
+    <string name="update_available_body">Eine neuere FCM Guard-Version wurde auf GitHub Releases veröffentlicht. Jetzt herunterladen und installieren?</string>
+    <string name="update_download">Herunterladen &amp; installieren</string>
+    <string name="update_download_failed">Update-Prüfung oder Download fehlgeschlagen</string>
+    <string name="update_installing">Installationsprogramm wird geöffnet…</string>
+    <string name="update_need_permission">Erlaube FCM Guard die Installation unbekannter Apps und tippe erneut auf Suchen</string>
 </resources>

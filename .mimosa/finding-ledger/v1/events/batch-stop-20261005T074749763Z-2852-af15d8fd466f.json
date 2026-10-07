@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "mimosa-finding-ledger-batch/v1",
+  "batchId": "stop-20261005T074749763Z-2852-af15d8fd466f",
+  "runId": "20261005T074749763Z-2852-af15d8fd466f",
+  "runStatus": "completed",
+  "coverage": {
+    "status": "complete",
+    "reasons": []
+  },
+  "source": {
+    "component": "zcode-hook",
+    "operationId": "Stop"
+  },
+  "revision": "b6eb75c3213da24369efbe7e02f13e96dc303a69",
+  "diffHash": "f348e46c1fc62139820bb043c5f71da988ba6b3cb6a1433f3d84619061058430",
+  "rulesVersion": "unavailable",
+  "sessionHash": "3085dac251e4428970e902d2caa4f229c93397c9e03c623ea8dff1b72ce934e3",
+  "reportRef": ".mimosa/reports/task-review-sess_804e6809-bc32-46f1-bab4-71fc9659617f-20261005T074749763Z-2852-af15d8fd466f.json",
+  "events": [],
+  "observedFindingIds": [],
+  "verifiedFiles": [
+    {
+      "file": "app/src/main/java/com/reed/fcmguard/MainActivity.java",
+      "direct": "complete",
+      "projectContext": "partial"
+    },
+    {
+      "file": "app/src/main/java/com/reed/fcmguard/LocaleHelper.java",
+      "direct": "complete",
+      "projectContext": "partial"
+    }
+  ],
+  "recordedAt": "2026-10-05T07:47:50.387Z"
+}

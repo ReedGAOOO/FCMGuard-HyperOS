@@ -20,7 +20,7 @@
 
     <string name="protection_title">Protection</string>
     <string name="automatic_protection">Automatic protection</string>
-    <string name="automatic_protection_summary">Event-driven monitoring of only the FCM whitelist key. A non-waking 30-minute fallback check is used only as insurance.</string>
+    <string name="automatic_protection_summary">Event-driven monitoring of only the FCM whitelist key, with quiet scheduled checks as insurance. Close watching starts automatically when the ROM misbehaves.</string>
     <string name="persistent_notification">Persistent notification</string>
     <string name="persistent_notification_summary">Recommended ON for maximum reliability. Turn it OFF to remove the ongoing notification and use background-only mode; HyperOS may then stop the service more easily.</string>
     <string name="actions_title">Tools</string>
@@ -57,4 +57,21 @@
     <string name="notification_channel_description">Low-priority notification used to keep automatic FCM protection reliable</string>
     <string name="notification_active">Protection active · event-driven</string>
     <string name="notification_repaired">Whitelist repaired · FCM protected</string>
+    <string name="guard_mode_label">Guard mode</string>
+    <string name="guard_mode_auto">Auto</string>
+    <string name="guard_mode_always">Always</string>
+    <string name="guard_mode_saving">Saving</string>
+    <string name="guard_mode_summary">Auto: watches closely at first, relaxes into scheduled checks after 24 quiet hours, and returns to close watching on the first real break. Always: close watching with the persistent notification. Saving: scheduled checks only, no notification, lowest battery use.</string>
+    <string name="state_guard_vigilant">Guard mode: close watching</string>
+    <string name="state_guard_quiet">Guard mode: scheduled checks</string>
+    <string name="update_check">Check for updates</string>
+    <string name="update_checking">Checking for updates…</string>
+    <string name="update_downloading">Downloading update…</string>
+    <string name="update_latest">You are on the latest version</string>
+    <string name="update_available_title">Update available: %1$s</string>
+    <string name="update_available_body">A newer FCM Guard version is published on GitHub Releases. Download and install it now?</string>
+    <string name="update_download">Download &amp; install</string>
+    <string name="update_download_failed">Update check or download failed</string>
+    <string name="update_installing">Opening the installer…</string>
+    <string name="update_need_permission">Allow FCM Guard to install unknown apps, then tap Check again</string>
 </resources>

@@ -100,6 +100,7 @@ public final class LocaleHelper {
         if (lower.startsWith("pt")) return "pt";
         if (lower.startsWith("de")) return "de";
         if (lower.startsWith("ru")) return "ru";
+        if (lower.startsWith("vi")) return "vi";
         if (lower.startsWith("en")) return "en";
         return "system";
     }

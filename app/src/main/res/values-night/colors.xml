@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="bg">#0F1115</color>
-    <color name="surface">#181B20</color>
-    <color name="surface_alt">#22262D</color>
-    <color name="text_primary">#F1F3F4</color>
-    <color name="text_secondary">#AAB0B8</color>
+    <!-- Dark theme: deeper neutral canvas, same accent roles as light. -->
+    <color name="bg">#0D0F14</color>
+    <color name="surface">#15181E</color>
+    <color name="surface_alt">#1F232B</color>
+    <color name="text_primary">#EDEFF3</color>
+    <color name="text_secondary">#9AA3B0</color>
     <color name="blue">#8AB4F8</color>
     <color name="green">#81C995</color>
     <color name="yellow">#FDD663</color>
     <color name="red">#F28B82</color>
-    <color name="border">#30353D</color>
-    <color name="chip_bg">#1E2B40</color>
-    <color name="info_bg">#172236</color>
-    <color name="divider">#2B3037</color>
+    <color name="border">#282D36</color>
+    <color name="chip_bg">#1C2942</color>
+    <color name="info_bg">#152238</color>
+    <color name="divider">#22262E</color>
 
     <!-- Slightly stronger alpha in dark mode keeps the accent chips legible. -->
     <color name="status_value_blue_bg">#338AB4F8</color>
@@ -22,13 +23,13 @@
     <color name="status_value_purple_bg">#33C58AF9</color>
     <color name="status_value_neutral_bg">#26FFFFFF</color>
 
-    <color name="hero_start">#272337</color>
-    <color name="hero_center">#242435</color>
-    <color name="hero_end">#1B2838</color>
-    <color name="hero_pill">#D92B2F36</color>
-    <color name="floating_border">#30353D</color>
-    <color name="primary_fill">#3568C7</color>
-    <color name="primary_pressed">#2C5BAE</color>
-    <color name="primary_disabled">#45556E</color>
-    <color name="secondary_pressed">#303640</color>
+    <color name="hero_start">#201E33</color>
+    <color name="hero_center">#1E2033</color>
+    <color name="hero_end">#16233A</color>
+    <color name="hero_pill">#D91E2432</color>
+    <color name="floating_border">#282D36</color>
+    <color name="primary_fill">#3B6DD0</color>
+    <color name="primary_pressed">#3260BC</color>
+    <color name="primary_disabled">#3A475F</color>
+    <color name="secondary_pressed">#262C36</color>
 </resources>

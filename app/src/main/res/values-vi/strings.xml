@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">FCM Guard</string>
+    <string name="subtitle">Bảo vệ FCM im lặng cho HyperOS</string>
+    <string name="label_key">Khóa cài đặt</string>
+    <string name="label_item">Mục bắt buộc</string>
+    <string name="save_configuration">Lưu cấu hình</string>
+    <string name="grant_modify">Cấp quyền sửa đổi cài đặt hệ thống</string>
+    <string name="repair_now">Sửa ngay</string>
+    <string name="wake_fcm">Đánh thức FCM ngay</string>
+    <string name="open_fcm_diag">Mở chẩn đoán FCM</string>
+    <string name="status_title">Trạng thái</string>
+    <string name="current_value_title">Giá trị danh sách trắng hiện tại</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="follow_system">Theo hệ thống</string>
+    <string name="english">English</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_required_item">com.google.android.gms</string>
+
+    <string name="protection_title">Bảo vệ</string>
+    <string name="automatic_protection">Bảo vệ tự động</string>
+    <string name="automatic_protection_summary">Giám sát theo sự kiện chỉ trên khóa danh sách trắng FCM, kèm các lần kiểm tra định kỳ im lặng làm bảo hiểm. Tự chuyển sang gác sát khi ROM có hành vi xấu.</string>
+    <string name="persistent_notification">Thông báo thường trực</string>
+    <string name="persistent_notification_summary">Nên BẬT để đạt độ tin cậy tối đa. Tắt để bỏ thông báo thường trực và dùng chế độ chỉ chạy nền; khi đó HyperOS có thể dễ dàng dừng dịch vụ hơn.</string>
+    <string name="actions_title">Công cụ</string>
+    <string name="advanced_title">Cấu hình nâng cao</string>
+
+    <string name="helper_text">Thiết kế tiết kiệm pin: dịch vụ không còn quét mỗi 30 giây, không còn theo dõi các cài đặt hệ thống không liên quan, và chỉ gửi yêu cầu kết nối lại FCM sau khi thực sự sửa danh sách trắng.</string>
+    <string name="note_text">Khuyến nghị trên HyperOS: giữ Tự khởi động ở chế độ bật và chế độ pin đặt thành Không giới hạn. Không cần bật Tùy chọn nhà phát triển, Gỡ lỗi USB hay Gỡ lỗi không dây.</string>
+
+    <string name="status_protected">Được bảo vệ</string>
+    <string name="status_ready">Sẵn sàng</string>
+    <string name="status_attention">Cần chú ý</string>
+    <string name="status_granted">Sửa cài đặt hệ thống: đã cấp</string>
+    <string name="status_not_granted">Sửa cài đặt hệ thống: chưa cấp</string>
+    <string name="status_enabled">Bảo vệ tự động: đang bật</string>
+    <string name="status_disabled">Bảo vệ tự động: đang tắt</string>
+    <string name="present_yes">Mục bắt buộc có mặt: có</string>
+    <string name="present_no">Mục bắt buộc có mặt: không</string>
+    <string name="notification_mode_foreground">Chế độ nền: dịch vụ trên nền trước</string>
+    <string name="notification_mode_quiet">Chế độ nền: chỉ chạy nền, im lặng</string>
+
+    <string name="saved">Đã lưu cấu hình</string>
+    <string name="repaired">Đã sửa / được bảo vệ</string>
+    <string name="already_protected">Đã được bảo vệ sẵn</string>
+    <string name="missing_current">(thiếu)</string>
+    <string name="permission_missing">Chưa cấp quyền sửa đổi cài đặt hệ thống</string>
+    <string name="service_started">Đã khởi động bảo vệ tự động</string>
+    <string name="service_stopped">Đã dừng bảo vệ tự động</string>
+    <string name="wake_sent">Đã gửi tín hiệu heartbeat / yêu cầu kết nối lại</string>
+    <string name="diagnostics_unavailable">Không tìm thấy màn hình chẩn đoán FCM</string>
+    <string name="write_rejected">Hệ thống từ chối thao tác ghi</string>
+    <string name="write_failed">Ghi thất bại: %1$s</string>
+
+    <string name="notification_channel_name">Bảo vệ FCM Guard</string>
+    <string name="notification_channel_description">Thông báo ưu tiên thấp giúp duy trì độ tin cậy của bảo vệ FCM tự động</string>
+    <string name="notification_active">Bảo vệ đang hoạt động · theo sự kiện</string>
+    <string name="notification_repaired">Đã sửa danh sách trắng · FCM được bảo vệ</string>
+    <string name="guard_mode_label">Chế độ gác</string>
+    <string name="guard_mode_auto">Tự động</string>
+    <string name="guard_mode_always">Luôn gác</string>
+    <string name="guard_mode_saving">Tiết kiệm</string>
+    <string name="guard_mode_summary">Tự động: gác sát lúc đầu, nới thành kiểm tra định kỳ sau 24 giờ yên tĩnh, và gác sát lại ngay từ lần phá đầu tiên. Luôn gác: gác sát liên tục với thông báo thường trực. Tiết kiệm: chỉ kiểm tra định kỳ, không thông báo, tốn pin ít nhất.</string>
+    <string name="state_guard_vigilant">Chế độ gác: sát sao</string>
+    <string name="state_guard_quiet">Chế độ gác: định kỳ</string>
+    <string name="update_check">Kiểm tra bản cập nhật</string>
+    <string name="update_checking">Đang kiểm tra bản cập nhật…</string>
+    <string name="update_downloading">Đang tải bản cập nhật…</string>
+    <string name="update_latest">Bạn đang dùng bản mới nhất</string>
+    <string name="update_available_title">Có bản mới: %1$s</string>
+    <string name="update_available_body">FCM Guard đã có phiên bản mới trên GitHub Releases. Tải về và cài đặt ngay?</string>
+    <string name="update_download">Tải về và cài đặt</string>
+    <string name="update_download_failed">Kiểm tra hoặc tải bản cập nhật thất bại</string>
+    <string name="update_installing">Đang mở trình cài đặt…</string>
+    <string name="update_need_permission">Hãy cho phép FCM Guard cài ứng dụng không rõ nguồn, rồi bấm kiểm tra lại</string>
+</resources>

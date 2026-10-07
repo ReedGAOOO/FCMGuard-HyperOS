@@ -1,109 +1,94 @@
 package com.reed.fcmguard;
 
-import android.Manifest;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
-import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.database.ContentObserver;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
-import android.provider.Settings;
 
 public class GuardService extends Service {
     // v2 intentionally uses a new channel id. Android does not allow an app to raise
     // an existing channel from IMPORTANCE_MIN to IMPORTANCE_LOW after creation.
     private static final String CHANNEL_ID = "fcm_guard_persistent_v2";
     private static final int NOTIFICATION_ID = 426;
-    private static final long FALLBACK_INTERVAL_MS = 30L * 60L * 1000L;
     private final Handler handler = new Handler(Looper.getMainLooper());
-    private ContentObserver observer;
+    private WhitelistWatcher watcher;
     private boolean foreground;
-
-    private final Runnable fallbackCheck = new Runnable() {
-        @Override public void run() {
-            repair(false);
-            handler.postDelayed(this, FALLBACK_INTERVAL_MS);
-        }
-    };
-
-    private final Runnable repairDebounced = new Runnable() {
-        @Override public void run() {
-            repair(true);
-        }
-    };
 
     @Override public void onCreate() {
         super.onCreate();
-        applyExecutionMode();
-        registerObserver();
         SettingsGuard.rememberIfUseful(this);
-        handler.post(fallbackCheck);
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         SettingsGuard.setProtectionEnabled(this, true);
-        registerObserver();
-        applyExecutionMode();
-        handler.removeCallbacks(fallbackCheck);
-        handler.post(fallbackCheck);
+        ensureNotificationChannel(this);
+        // Always enter foreground first: startForegroundService() callers expect
+        // it, and a mode flip between scheduling and delivery must not crash.
+        startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.notification_active)));
+        foreground = true;
+
+        if (!SmartGuardController.shouldWatchResidently(this)) {
+            SmartGuardController.scheduleJob(this);
+            stopForeground(true);
+            stopSelf();
+            return START_NOT_STICKY;
+        }
+
+        if (watcher == null) {
+            watcher = new WhitelistWatcher(this, handler, new WhitelistWatcher.Listener() {
+                @Override public void onRepair(boolean changed) {
+                    if (changed) {
+                        SmartGuardController.recordBreak(GuardService.this);
+                        refreshNotification(getString(R.string.notification_repaired));
+                    }
+                }
+            });
+        }
+        watcher.register();
+        // Repair once per start: covers overwrites that happened while the
+        // process was dead and no observer was registered.
+        watcher.repairNow();
         return START_STICKY;
     }
 
-    private void repair(boolean notifyFailure) {
-        SettingsGuard.Result result = SettingsGuard.repair(this);
-        if (result.changed) {
-            FcmReconnect.kick(this);
-            if (foreground) refreshNotification(getString(R.string.notification_repaired));
-        } else if (!result.success && notifyFailure && foreground) {
-            refreshNotification(result.message);
+    /** True when Android will actually place the foreground notification in the shade. */
+    public static boolean canShowPersistentNotification(Context context) {
+        NotificationManager nm = (NotificationManager) context.getSystemService(NOTIFICATION_SERVICE);
+        if (nm == null) return false;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !nm.areNotificationsEnabled()) {
+            return false;
         }
-    }
-
-    private void registerObserver() {
-        ContentResolver resolver = getContentResolver();
-        try {
-            if (observer != null) resolver.unregisterContentObserver(observer);
-        } catch (Throwable ignored) {}
-
-        observer = new ContentObserver(handler) {
-            @Override public void onChange(boolean selfChange, Uri uri) {
-                handler.removeCallbacks(repairDebounced);
-                handler.postDelayed(repairDebounced, 400L);
-            }
-        };
-        resolver.registerContentObserver(
-                Settings.System.getUriFor(SettingsGuard.getConfiguredKey(this)),
-                false,
-                observer
-        );
-    }
-
-    private void applyExecutionMode() {
-        if (SettingsGuard.usePersistentNotification(this)) {
-            ensureNotificationChannel(this);
-            startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.notification_active)));
-            foreground = true;
-        } else {
-            if (foreground) stopForeground(true);
-            NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-            if (nm != null) nm.cancel(NOTIFICATION_ID);
-            foreground = false;
+        if (Build.VERSION.SDK_INT >= 33 &&
+                context.checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) != android.content.pm.PackageManager.PERMISSION_GRANTED) {
+            return false;
         }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel channel = nm.getNotificationChannel(CHANNEL_ID);
+            return channel != null && channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
+        }
+        return true;
     }
 
-    /**
-     * Creates the visible-but-silent foreground-service channel. Returns true only
-     * when this call created the channel for the first time.
-     */
+    @Override public void onDestroy() {
+        if (watcher != null) {
+            watcher.unregister();
+            watcher = null;
+        }
+        foreground = false;
+        super.onDestroy();
+    }
+
+    @Override public IBinder onBind(Intent intent) { return null; }
+
+    /** Creates the visible-but-silent foreground-service channel. */
     public static boolean ensureNotificationChannel(Context context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return false;
         NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
@@ -124,35 +109,6 @@ public class GuardService extends Service {
         nm.createNotificationChannel(channel);
         return created;
     }
-
-    /** True when Android will actually place the foreground notification in the shade. */
-    public static boolean canShowPersistentNotification(Context context) {
-        NotificationManager nm = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
-        if (nm == null) return false;
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N && !nm.areNotificationsEnabled()) {
-            return false;
-        }
-        if (Build.VERSION.SDK_INT >= 33 &&
-                context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED) {
-            return false;
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            NotificationChannel channel = nm.getNotificationChannel(CHANNEL_ID);
-            return channel != null && channel.getImportance() != NotificationManager.IMPORTANCE_NONE;
-        }
-        return true;
-    }
-
-    @Override public void onDestroy() {
-        handler.removeCallbacksAndMessages(null);
-        try {
-            if (observer != null) getContentResolver().unregisterContentObserver(observer);
-        } catch (Throwable ignored) {}
-        super.onDestroy();
-    }
-
-    @Override public IBinder onBind(Intent intent) { return null; }
 
     private void refreshNotification(String text) {
         if (!foreground) return;

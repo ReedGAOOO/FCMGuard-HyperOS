@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="README.md">English</a> · <a href="README.zh-CN.md"><strong>简体中文</strong></a>
+  <a href="README.md">Tiếng Việt</a> · <a href="README.en.md">English</a> · <a href="README.zh-CN.md"><strong>简体中文</strong></a>
 </p>
 
 <p align="center">
@@ -13,21 +13,22 @@
 **适用范围：** 中国大陆销售、运行 **HyperOS 3 中国版 ROM** 的 Xiaomi / Redmi / POCO 手机，且 Google Play 服务已经正常安装并可使用。
 
 <p align="center">
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>直接下载最新版 APK</strong></a>
+  <a href="https://github.com/longhangoc/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>直接下载最新版 APK</strong></a>
   ·
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">查看最新 Release</a>
+  <a href="https://github.com/longhangoc/FCMGuard-HyperOS/releases/latest">查看最新 Release</a>
 </p>
 
 ## 亮点
 
 - **免 Root / Shizuku** — 仅使用用户可手动授权的 **修改系统设置** 权限，不依赖 Root、持续 ADB、无障碍、VPN、悬浮窗或设备管理员。
 - **对金融 App 更友好** — 整体保持低权限设计，避免引入更容易触发安全敏感 App 风控的高权限方案。
-- **低后台耗电** — 主要采用精确事件监听，30 分钟兜底检查仅在进程内运行，不会主动唤醒休眠手机。
+- **低后台耗电** — 主要采用精确事件监听，每 15 分钟一次的静音 JobScheduler 检查取代轮询，不会主动唤醒休眠手机。
 - **只在必要时重连** — 仅在真正执行白名单修复后，或用户手动点击时发送 FCM/MCS 重连请求。
-- **常驻通知可选** — 前台模式使用可见但静音的通知渠道提升进程存活率，也可切换为静默纯后台模式。
+- **智能守护模式** — 自动模式先贴身监视，24 小时安静后放宽为静音定时检查，发现首次真实改写立即收紧；常驻与省电模式可手动选择。
 - **FCM App 助手** — 扫描可能依赖 Firebase/GCM 的 App；当 HyperOS 允许读取厂商 AppOps 时，会只读显示自启动状态，并在用户从系统设置返回后自动复查。
 - **原生深色模式** — 支持 跟随系统 / 浅色 / 深色，默认 **跟随系统**。
-- **10 种主流语言** — 英语、简体中文、繁体中文、法语、日语、韩语、西班牙语、葡萄牙语、德语、俄语，接入 Android 原生应用语言机制。
+- **11 种主流语言** — 英语、简体中文、繁体中文、法语、日语、韩语、西班牙语、葡萄牙语、德语、俄语、越南语，接入 Android 原生应用语言机制。
+- **应用内更新** — 每 24 小时自动检查 GitHub Releases，另有手动检查按钮；直接下载并调起安装器，无需打开 GitHub。
 - **小屏适配** — 响应式布局自动检查 320–480dp 宽度，包含 Xiaomi 17 级别的 393dp profile。
 
 ## 快速使用
@@ -37,7 +38,7 @@
 3. 点击一次 **立即修复**。
 4. 开启 **自动保护**。
 5. 在 HyperOS 中为 FCM Guard 开启 **自启动**，并将电池策略设为 **无限制**。
-6. 如果最看重后台可靠性，建议保持 **常驻通知** 开启。如果 Android / HyperOS 禁用了 FCM Guard 通知，App 会引导进入系统通知设置，使前台通知真正可见。
+6. 选择**守护模式**。**自动**（推荐）：先贴身监视，24 小时安静后放宽，发现首次真实改写立即收紧；**常驻**：保留常驻通知以最大化存活率；**省电**：仅静音定时检查。贴身监视开启而通知被禁用时，App 会引导进入系统通知设置，使前台通知真正可见。
 7. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App。若当前 HyperOS 允许读取自启动状态，列表会标记 已开启 / 部分开启 / 未开启 / 未知，并在你从 **在 HyperOS 中统一配置** 返回后自动重新检查；若 ROM 不允许读取，FCM Guard 会明确显示“未知 / 不可读取”，而不是猜测。
 8. 可选：点击 **打开 FCM 诊断**，进入 Google Play 服务诊断界面，检查 `mtalk.google.com:5228` 连接状态。
 9. 如果只有某个 App 仍出现通知延迟，而其他 FCM App 正常，请单独调整该 App 的后台策略。对于 **WhatsApp** 等即时通讯 App，建议设置为：**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**；若系统提供自启动选项，也建议为该 App 开启 **自启动**。
@@ -88,11 +89,11 @@ FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让
 - GMS 已存在时不执行重复写入。
 - 只有真正修复成功或用户主动操作时才发送重连广播。
 
-## 常驻通知
+## 守护模式与定时检查
 
-开启常驻通知后，`GuardService` 会作为前台服务运行。当前版本改为独立的 `IMPORTANCE_LOW` 静音通知渠道，因此通知会保持可见，但不会发声或振动。
+保护运行在两种架构之一。**贴身监视**将 `GuardService` 作为前台服务运行，使用独立的 `IMPORTANCE_LOW` 静音通知渠道，并由 `ContentObserver` 在约 400 ms 内完成修复。**省电**模式没有常驻进程：一个持久化的 JobScheduler 任务每 15 分钟运行一次，先修复一次，再监听约 90 秒以捕捉 PowerKeeper 重建后的连带改写，然后彻底释放进程。HyperOS 杀掉 App 对这条定时路径没有影响。
 
-由于项目为了 Xiaomi 私有设置写入而刻意保持 `targetSdk 22`，Android 13+ 的通知权限弹窗时机由系统控制。如果通知已经被系统关闭，FCM Guard 会直接引导进入本 App 的系统通知设置页面。
+**自动**模式从贴身监视开始，连续 24 小时安静后放宽为省电模式，并在第一次真实改写（实际写入白名单的修复）时立即升级。风暴退避会拉长连续修复的间隔（400 ms → 2 s → 5 s → 10 s → 20 s → 40 s → 60 s），持续改写也无法烧掉电量。由于 FCM Guard 使用 `targetSdk 22`，Android 13+ 的通知权限弹窗时机由系统控制；如果通知被关闭，FCM Guard 会直接引导进入本 App 的系统通知设置页面。
 
 ## FCM 诊断
 
@@ -139,7 +140,7 @@ FCM Guard 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 
 ## 外观、语言与屏幕适配
 
 - 跟随系统 / 浅色 / 深色三种外观模式。
-- 10 种原生 App 语言：英语、简中、繁中、法语、日语、韩语、西班牙语、葡萄牙语、德语、俄语。
+- 11 种原生 App 语言：英语、简中、繁中、法语、日语、韩语、西班牙语、葡萄牙语、德语、俄语、越南语。
 - compact 与较大宽度分别使用响应式资源参数。
 - CI 自动检查 320、360、393、411、430、480dp 宽度，包括 Hero / Status overlap 与同心圆角几何关系。
 
@@ -170,7 +171,7 @@ GitHub Actions 会自动检查响应式布局并构建签名后的 debug APK。p
 
 手机用户建议直接使用固定最新版地址：
 
-**https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
+**https://github.com/longhangoc/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
 
 ## License
 

@@ -1,0 +1,140 @@
+{
+  "schema_version": "mimosa-task-review/v2",
+  "run_id": "20261005T074749763Z-2852-af15d8fd466f",
+  "run_status": "completed",
+  "errors": [],
+  "coverage": {
+    "schema_version": "mimosa-hook-coverage/v1",
+    "status": "complete",
+    "scope": "hook_observed_diff",
+    "baseline": {
+      "complete": true,
+      "captured_files": 16,
+      "candidate_limit": 5000,
+      "truncated": false,
+      "enumeration_error_count": 0,
+      "snapshot_error_count": 0,
+      "compensated_target_count": 2
+    },
+    "change_tracking": {
+      "touched_observed": 2,
+      "touched_retained": 2,
+      "truncated": false,
+      "bash_mutation": true,
+      "bash_discovered": 2,
+      "bash_discovery_limit": 80,
+      "bash_discovery_truncated": false
+    },
+    "candidates": {
+      "eligible_files": 2,
+      "selected_files": 2,
+      "limit": 20,
+      "truncated": false
+    },
+    "scanning": {
+      "required_files": 2,
+      "scanned_files": 2,
+      "skipped_files": 0,
+      "failed_files": 0,
+      "project_checks_required": 0,
+      "project_checks_completed": 0
+    },
+    "notification": {
+      "eligible_findings": 0,
+      "detailed_findings": 0,
+      "detail_limit": 3,
+      "truncated": false
+    },
+    "reason_counts": {},
+    "reasons": [],
+    "reasons_truncated": false
+  },
+  "generated_at": "2026-10-05T07:47:49.763Z",
+  "session_id": "sess_804e6809-bc32-46f1-bab4-71fc9659617f",
+  "target": ".",
+  "revision": "b6eb75c3213da24369efbe7e02f13e96dc303a69",
+  "rules_version": "unavailable",
+  "diff_hash": "f348e46c1fc62139820bb043c5f71da988ba6b3cb6a1433f3d84619061058430",
+  "diff": {
+    "algorithm": "sha256",
+    "changed_file_count": 2,
+    "changed_files": [
+      {
+        "file": "app/src/main/java/com/reed/fcmguard/LocaleHelper.java",
+        "ranges": [
+          {
+            "start": 103,
+            "end": 103
+          }
+        ],
+        "before_hash": "50ab5102e05fb675d65096a04b2caaeee1b6b158fcb95dc656403910fb6f5dec",
+        "after_hash": "9e366763d9cba51ca40d444413f1887ff96f525680865755ea41e1a1cc1c946e"
+      },
+      {
+        "file": "app/src/main/java/com/reed/fcmguard/MainActivity.java",
+        "ranges": [
+          {
+            "start": 43,
+            "end": 43
+          },
+          {
+            "start": 46,
+            "end": 46
+          }
+        ],
+        "before_hash": "61c9d057099af70fb898452ba3f432ee9877280344452a9666eb1898b52015ba",
+        "after_hash": "73015321703e9daceda808b31047f2dd11312d13f866d0a1ce3db3df7063424a"
+      }
+    ]
+  },
+  "timing": {
+    "started_at": "2026-10-05T07:47:48.047Z",
+    "completed_at": "2026-10-05T07:47:49.763Z",
+    "duration_ms": 1716,
+    "measurement": "hook_wall_clock"
+  },
+  "tokens": {
+    "input": 0,
+    "output": 0,
+    "total": 0,
+    "model_calls": 0,
+    "measurement": "known-zero"
+  },
+  "telemetry": {
+    "schemaVersion": "mimosa-gate-telemetry/v1",
+    "profile": "gate",
+    "operation": "Stop",
+    "outcome": "complete",
+    "latencyMs": 1716,
+    "peakMemoryBytes": 156090368,
+    "memoryMeasurement": "max-observed-process-rss",
+    "scannedFiles": 2,
+    "cache": {
+      "hits": 0,
+      "misses": 0,
+      "measurement": "not-applicable"
+    },
+    "denyCount": 0,
+    "tokens": {
+      "input": 0,
+      "output": 0,
+      "total": 0,
+      "modelCalls": 0,
+      "measurement": "known-zero"
+    }
+  },
+  "finding_count": 0,
+  "rewake_finding_count": 0,
+  "evidence_boundary": {
+    "scan": "candidate",
+    "static_fix_verification": "observed_static_only",
+    "runtime_verification": "not_performed"
+  },
+  "finding_events": [],
+  "findings": [],
+  "artifacts": {
+    "immutable_report": ".mimosa/reports/task-review-sess_804e6809-bc32-46f1-bab4-71fc9659617f-20261005T074749763Z-2852-af15d8fd466f.json",
+    "latest_report": ".mimosa/reports/task-review-sess_804e6809-bc32-46f1-bab4-71fc9659617f.json",
+    "history_summary": ".mimosa/history/run-20261005T074749763Z-2852-af15d8fd466f.json"
+  }
+}

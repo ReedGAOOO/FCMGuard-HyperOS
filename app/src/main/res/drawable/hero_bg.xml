@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Hero plate. 28dp corners stay concentric with the floating status card
+     (status_card_radius + status_card_inset = 28dp). -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <gradient
         android:startColor="@color/hero_start"

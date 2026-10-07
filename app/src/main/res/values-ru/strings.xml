@@ -20,7 +20,7 @@
 
     <string name="protection_title">Защита</string>
     <string name="automatic_protection">Автоматическая защита</string>
-    <string name="automatic_protection_summary">Отслеживается только ключ списка FCM по событиям. Резервная проверка раз в 30 минут специально не будит устройство.</string>
+    <string name="automatic_protection_summary">Событийный мониторинг только ключа белого списка FCM с тихими плановыми проверками в качестве страховки. При неадекватном поведении ROM автоматически включается пристальное наблюдение.</string>
     <string name="persistent_notification">Постоянное уведомление</string>
     <string name="persistent_notification_summary">Рекомендуется для максимальной надёжности. Отключите, чтобы скрыть уведомление и использовать только фоновый режим.</string>
     <string name="actions_title">Инструменты</string>
@@ -57,4 +57,21 @@
     <string name="notification_channel_description">Низкоприоритетное уведомление для надёжной автоматической защиты FCM</string>
     <string name="notification_active">Защита активна · по событиям</string>
     <string name="notification_repaired">Список исправлен · FCM защищён</string>
+    <string name="guard_mode_label">Режим защиты</string>
+    <string name="guard_mode_auto">Авто</string>
+    <string name="guard_mode_always">Всегда</string>
+    <string name="guard_mode_saving">Экономия</string>
+    <string name="guard_mode_summary">Авто: сначала пристальное наблюдение, после 24 спокойных часов ослабляется до плановых проверок, а при первой реальной подмене немедленно возвращается. Всегда: непрерывное наблюдение с постоянным уведомлением. Экономия: только плановые проверки, без уведомлений, минимальный расход батареи.</string>
+    <string name="state_guard_vigilant">Режим защиты: непрерывно</string>
+    <string name="state_guard_quiet">Режим защиты: по расписанию</string>
+    <string name="update_check">Проверить обновления</string>
+    <string name="update_checking">Проверка обновлений…</string>
+    <string name="update_downloading">Загрузка обновления…</string>
+    <string name="update_latest">У вас последняя версия</string>
+    <string name="update_available_title">Доступно обновление: %1$s</string>
+    <string name="update_available_body">Новая версия FCM Guard опубликована на GitHub Releases. Скачать и установить сейчас?</string>
+    <string name="update_download">Скачать и установить</string>
+    <string name="update_download_failed">Не удалось проверить или загрузить обновление</string>
+    <string name="update_installing">Открывается установщик…</string>
+    <string name="update_need_permission">Разрешите FCM Guard установку неизвестных приложений и повторно нажмите «Проверить»</string>
 </resources>

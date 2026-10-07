@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- Round pill for the language button. -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="@color/hero_pill" />
     <corners android:radius="999dp" />

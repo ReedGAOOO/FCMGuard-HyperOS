@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  Dashboard shell, redesigned in v1.8.0.
+
+  Contract kept for the scroll-linked collapse machinery:
+  - StickyDashboardLayout root, ids: root / stickyHeader / heroCard / statusCard /
+    statusHeaderPanel / statusDetailsPanel / currentValuePanel / scroll
+  - statusCard is a CollapsingStatusCard; statusDetailsPanel and currentValuePanel
+    stay direct match_parent children in this order.
+  - Hero corners 28dp = status_card_radius + status_card_inset (concentric dock).
+-->
 <com.reed.fcmguard.StickyDashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
@@ -13,6 +23,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true"
         android:clipToPadding="false"
+        android:scrollbars="none"
         android:background="@color/bg">
         <include layout="@layout/dashboard_scroll_content" />
     </ScrollView>
@@ -49,8 +60,23 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_name" android:textColor="@color/text_primary" android:textSize="@dimen/hero_title_size" android:textStyle="bold" />
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/subtitle" android:textColor="@color/text_secondary" android:textSize="@dimen/hero_subtitle_size" android:maxLines="2" android:ellipsize="end" android:paddingTop="3dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/app_name"
+                        android:textColor="@color/text_primary"
+                        android:textSize="@dimen/hero_title_size"
+                        android:textStyle="bold"
+                        android:letterSpacing="-0.01" />
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/subtitle"
+                        android:textColor="@color/text_secondary"
+                        android:textSize="@dimen/hero_subtitle_size"
+                        android:maxLines="2"
+                        android:ellipsize="end"
+                        android:paddingTop="4dp" />
                 </LinearLayout>
 
                 <Button
@@ -77,10 +103,10 @@
             android:layout_marginTop="@dimen/status_expanded_top"
             android:layout_marginRight="@dimen/status_card_inset"
             android:orientation="vertical"
-            android:paddingLeft="16dp"
+            android:paddingLeft="18dp"
             android:paddingTop="16dp"
-            android:paddingRight="16dp"
-            android:paddingBottom="16dp"
+            android:paddingRight="18dp"
+            android:paddingBottom="18dp"
             android:elevation="8dp">
 
             <LinearLayout
@@ -88,9 +114,24 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingBottom="10dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold" />
-                <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" />
+                android:paddingBottom="12dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_title"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.08" />
+                <TextView
+                    android:id="@+id/statusHeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/status_ready"
+                    android:textColor="@color/green"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    android:paddingTop="2dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -99,9 +140,17 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/status_header_bg"
-                android:paddingTop="2dp"
-                android:paddingBottom="2dp">
-                <TextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:lineSpacingExtra="2dp" />
+                android:paddingTop="4dp"
+                android:paddingBottom="4dp">
+                <TextView
+                    android:id="@+id/statusText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:lineSpacingExtra="3dp"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp" />
             </LinearLayout>
 
             <LinearLayout
@@ -110,9 +159,29 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:background="@drawable/tonal_bg"
-                android:layout_marginTop="13dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/current_value_title" android:textColor="@color/text_secondary" android:textSize="10sp" android:textStyle="bold" />
-                <TextView android:id="@+id/currentValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="12sp" android:fontFamily="monospace" android:textIsSelectable="true" android:paddingTop="4dp" />
+                android:layout_marginTop="12dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/current_value_title"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:letterSpacing="0.06"
+                    android:paddingLeft="12dp" />
+                <TextView
+                    android:id="@+id/currentValueText"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    android:textIsSelectable="true"
+                    android:paddingLeft="12dp"
+                    android:paddingRight="12dp"
+                    android:paddingTop="5dp" />
             </LinearLayout>
         </com.reed.fcmguard.CollapsingStatusCard>
     </FrameLayout>

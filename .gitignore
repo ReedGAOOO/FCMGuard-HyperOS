@@ -16,3 +16,6 @@ local.properties
 # Signing
 *.jks
 *.keystore
+
+# Local security-hook state
+.mimosa/

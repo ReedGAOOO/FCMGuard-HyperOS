@@ -19,7 +19,7 @@
     <string name="default_required_item">com.google.android.gms</string>
     <string name="protection_title">&#x4FDD;&#x8B77;&#x8A2D;&#x5B9A;</string>
     <string name="automatic_protection">&#x81EA;&#x52D5;&#x4FDD;&#x8B77;</string>
-    <string name="automatic_protection_summary">FCM&#x30DB;&#x30EF;&#x30A4;&#x30C8;&#x30EA;&#x30B9;&#x30C8;&#x9805;&#x76EE;&#x306E;&#x307F;&#x3092;&#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x99C6;&#x52D5;&#x3067;&#x76E3;&#x8996;&#x3057;&#x307E;&#x3059;&#x3002;30&#x5206;&#x3054;&#x3068;&#x306E;&#x78BA;&#x8A8D;&#x306F;&#x30B9;&#x30EA;&#x30FC;&#x30D7;&#x4E2D;&#x306E;&#x7AEF;&#x672B;&#x3092;&#x610F;&#x56F3;&#x7684;&#x306B;&#x8D77;&#x3053;&#x3057;&#x307E;&#x305B;&#x3093;&#x3002;</string>
+    <string name="automatic_protection_summary">FCM ホワイトリストキーのみをイベント駆動で監視し、静かな定期チェックを保険として行います。ROM の異常動作時は自動的に常時監視へ切り替わります。</string>
     <string name="persistent_notification">&#x5E38;&#x99D0;&#x901A;&#x77E5;</string>
     <string name="persistent_notification_summary">&#x6700;&#x9AD8;&#x306E;&#x4FE1;&#x983C;&#x6027;&#x3092;&#x5F97;&#x308B;&#x306B;&#x306F;&#x6709;&#x52B9;&#x3092;&#x63A8;&#x5968;&#x3057;&#x307E;&#x3059;&#x3002;&#x7121;&#x52B9;&#x306B;&#x3059;&#x308B;&#x3068;&#x901A;&#x77E5;&#x3092;&#x6D88;&#x3057;&#x3066;&#x30D0;&#x30C3;&#x30AF;&#x30B0;&#x30E9;&#x30A6;&#x30F3;&#x30C9;&#x5C02;&#x7528;&#x30E2;&#x30FC;&#x30C9;&#x306B;&#x306A;&#x308A;&#x307E;&#x3059;&#x304C;&#x3001;HyperOS&#x306B;&#x30B5;&#x30FC;&#x30D3;&#x30B9;&#x3092;&#x7D42;&#x4E86;&#x3055;&#x308C;&#x3084;&#x3059;&#x304F;&#x306A;&#x308A;&#x307E;&#x3059;&#x3002;</string>
     <string name="actions_title">&#x30C4;&#x30FC;&#x30EB;</string>
@@ -52,4 +52,21 @@
     <string name="notification_channel_description">&#x81EA;&#x52D5;FCM&#x4FDD;&#x8B77;&#x306E;&#x4FE1;&#x983C;&#x6027;&#x3092;&#x7DAD;&#x6301;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;&#x4F4E;&#x512A;&#x5148;&#x5EA6;&#x901A;&#x77E5;</string>
     <string name="notification_active">&#x4FDD;&#x8B77;&#x4E2D; &#xB7; &#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x99C6;&#x52D5;</string>
     <string name="notification_repaired">&#x30DB;&#x30EF;&#x30A4;&#x30C8;&#x30EA;&#x30B9;&#x30C8;&#x4FEE;&#x5FA9;&#x6E08;&#x307F; &#xB7; FCM&#x4FDD;&#x8B77;&#x4E2D;</string>
+    <string name="guard_mode_label">監視モード</string>
+    <string name="guard_mode_auto">自動</string>
+    <string name="guard_mode_always">常時</string>
+    <string name="guard_mode_saving">省電力</string>
+    <string name="guard_mode_summary">自動：最初は密に監視し、24時間異常がなければ定期チェックに緩和、ホワイトリストの変更を1回検知したら即座に密な監視へ戻ります。常時：常駐通知付きで継続監視。省電力：定期チェックのみ、通知なし、最も省電力。</string>
+    <string name="state_guard_vigilant">監視モード：常時監視</string>
+    <string name="state_guard_quiet">監視モード：定期チェック</string>
+    <string name="update_check">更新を確認</string>
+    <string name="update_checking">更新を確認中…</string>
+    <string name="update_downloading">更新をダウンロード中…</string>
+    <string name="update_latest">最新バージョンです</string>
+    <string name="update_available_title">新しいバージョンがあります：%1$s</string>
+    <string name="update_available_body">GitHub Releases に新しい FCM Guard が公開されました。今すぐダウンロードしてインストールしますか？</string>
+    <string name="update_download">ダウンロードしてインストール</string>
+    <string name="update_download_failed">更新の確認またはダウンロードに失敗しました</string>
+    <string name="update_installing">インストーラーを開いています…</string>
+    <string name="update_need_permission">FCM Guard による不明なアプリのインストールを許可してから、もう一度確認をタップしてください</string>
 </resources>
