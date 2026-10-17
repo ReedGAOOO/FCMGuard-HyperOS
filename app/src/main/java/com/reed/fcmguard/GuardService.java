@@ -14,6 +14,7 @@ import android.database.ContentObserver;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.provider.Settings;
@@ -27,6 +28,15 @@ public class GuardService extends Service {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private ContentObserver observer;
     private boolean foreground;
+    private ContentObserver nightObserver;
+    private NightFcmProtection night;
+    private HandlerThread repairThread;
+    private Handler repairHandler;
+    private boolean destroyed;
+    private final Runnable nightRepair = () -> night.maintain();
+    private final Runnable nightChanged = () -> {
+        if (!destroyed) reconcileNightObserver();
+    };
 
     private final Runnable fallbackCheck = new Runnable() {
         @Override public void run() {
@@ -45,12 +55,24 @@ public class GuardService extends Service {
         super.onCreate();
         applyExecutionMode();
         registerObserver();
-        SettingsGuard.rememberIfUseful(this);
+        repairThread = new HandlerThread("MilletGuard");
+        repairThread.start();
+        repairHandler = new Handler(repairThread.getLooper());
+        night = NightFcmProtection.get(this);
+        night.listen(nightChanged);
+        night.whenReady(() -> handler.post(() -> {
+            if (destroyed) return;
+            reconcileNightObserver();
+            night.maintain();
+        }));
         handler.post(fallbackCheck);
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
-        SettingsGuard.setProtectionEnabled(this, true);
+        if (!SettingsGuard.isProtectionEnabled(this) && night.isInitialized() && !night.isEnabled()) {
+            stopSelf();
+            return START_NOT_STICKY;
+        }
         registerObserver();
         applyExecutionMode();
         handler.removeCallbacks(fallbackCheck);
@@ -59,13 +81,19 @@ public class GuardService extends Service {
     }
 
     private void repair(boolean notifyFailure) {
-        SettingsGuard.Result result = SettingsGuard.repair(this);
-        if (result.changed) {
-            FcmReconnect.kick(this);
-            if (foreground) refreshNotification(getString(R.string.notification_repaired));
-        } else if (!result.success && notifyFailure && foreground) {
-            refreshNotification(result.message);
-        }
+        night.maintain();
+        repairHandler.post(() -> {
+            if (!SettingsGuard.isProtectionEnabled(this)) return;
+            try {
+                SettingsGuard.Result result = SettingsGuard.repair(this);
+                if (result.changed) FcmReconnect.kick(this);
+                handler.post(() -> {
+                    if (destroyed) return;
+                    if (result.changed) refreshNotification(getString(R.string.notification_repaired));
+                    else if (!result.success && notifyFailure) refreshNotification(result.message);
+                });
+            } catch (Throwable error) { night.serviceFailure(error); }
+        });
     }
 
     private void registerObserver() {
@@ -74,6 +102,8 @@ public class GuardService extends Service {
             if (observer != null) resolver.unregisterContentObserver(observer);
         } catch (Throwable ignored) {}
 
+        observer = null;
+        if (!SettingsGuard.isProtectionEnabled(this)) return;
         observer = new ContentObserver(handler) {
             @Override public void onChange(boolean selfChange, Uri uri) {
                 handler.removeCallbacks(repairDebounced);
@@ -85,6 +115,30 @@ public class GuardService extends Service {
                 false,
                 observer
         );
+    }
+
+    private void reconcileNightObserver() {
+        if (night.isEnabled() && nightObserver == null) {
+            ContentObserver candidate = new ContentObserver(handler) {
+                @Override public void onChange(boolean selfChange, Uri uri) {
+                    handler.removeCallbacks(nightRepair);
+                    handler.postDelayed(nightRepair, 400L);
+                }
+            };
+            try {
+                getContentResolver().registerContentObserver(
+                        Settings.System.getUriFor(NightProtectionEngine.KEY), false, candidate);
+                nightObserver = candidate;
+                night.observer(true);
+            } catch (Throwable e) { night.serviceFailure(e); }
+        } else if (!night.isEnabled() && nightObserver != null) {
+            try { getContentResolver().unregisterContentObserver(nightObserver); }
+            catch (Throwable e) { night.serviceFailure(e); }
+            nightObserver = null;
+            handler.removeCallbacks(nightRepair);
+            night.observer(false);
+        }
+        if (night.isInitialized() && !night.isEnabled() && !SettingsGuard.isProtectionEnabled(this)) stopSelf();
     }
 
     private void applyExecutionMode() {
@@ -145,7 +199,15 @@ public class GuardService extends Service {
     }
 
     @Override public void onDestroy() {
+        destroyed = true;
         handler.removeCallbacksAndMessages(null);
+        if (night != null) {
+            night.unlisten(nightChanged);
+            night.observer(false);
+        }
+        if (repairThread != null) repairThread.quitSafely();
+        try { if (nightObserver != null) getContentResolver().unregisterContentObserver(nightObserver); }
+        catch (Throwable ignored) {}
         try {
             if (observer != null) getContentResolver().unregisterContentObserver(observer);
         } catch (Throwable ignored) {}

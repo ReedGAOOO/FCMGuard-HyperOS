@@ -175,3 +175,53 @@ GitHub Actions 会自动检查响应式布局并构建签名后的 debug APK。p
 ## License
 
 MIT License — 见 [LICENSE](LICENSE)。
+
+## HyperOS 4 夜间 FCM 防冻结（实验性）
+
+主画面新增独立、默认关闭的「夜间 FCM 防冻结」卡片，通过普通 App 的
+`WRITE_SETTINGS` 权限操作 `Settings.System["com.miui.game.allowlist"]`，不需要
+Root、Shizuku、持续 ADB、无障碍服务或新增权限。本独立变更不引入 Shizuku provider
+或生产依赖，保留上游 `minSdk 21`、`targetSdk 22`、包名、版本与原有 MILLET 保护。
+
+功能针对中国版 HyperOS 4 在 23:00–07:59、息屏及 Deep Doze 下观察到的 nightDoze
+策略，属于未公开的实验性系统机制，不保证消息送达。旧版或无法辨识的 ROM 不会
+自动视为支持；界面明确标示无法确认 ROM 版本及支持性。明显非小米设备在修复时
+报告不支持。豁免全天有效，可能增加 Google Play 服务后台耗电。
+
+实现保留原始下划线分隔内容和顺序，按小米已知解析器进行不修剪的完整 token
+比较。套件名本身含下划线时无法由该格式完整表示。每次写入前重新读取，写后要求
+完整值一致。首次初始化时，若 GMS 已存在，仅切换一个尾端下划线请求 Observer
+通知，不能验证 Framework 缓存确已加载；健康检查不改写、不重连。
+Settings 没有 CAS，最终读取与写入之间仍可能被外部组件抢写。失败后 Observer
+回调至少等待 60 秒才可再次尝试，后续由原有 30 分钟进程内兜底或手动修复重试，
+不增加计时器、闹钟、任务或 WakeLock。解冻与重连广播每 10 秒最多一组；失败的
+恢复可在后续兜底重试，无需重写健康清单。
+
+两个保护开关独立控制共享 GuardService。夜间功能仅监听自己的 Key，采用 400 ms
+防抖，并在启动时重新检查。常驻通知模式共享且可选；纯后台模式可靠性较低，
+进程停止后不能继续监控。开机或应用替换后按任一已启用开关尝试恢复服务。
+
+「重新检查」只读；「立即修复／重试清理」在开启时修复、停用时重试清理。
+「测试解冻／重连」不改设置，分别向 android 发送小米
+`REFRESH_WHITE_LIST_ACTION`（`pkgName=com.google.android.gms, option=-1`），
+向 GMS 发送 `GCM_RECONNECT`，不修改 MiPush 成员；原有 GTALK/MCS 心跳保留。
+广播发送不表示接收方接受、已解冻或已连接。普通 App 权限不能验证冻结状态、FCM
+Socket、分身恢复或受控夜间防冻结效果，界面不会报告此类验证成功，也不会关闭
+Deep Doze。
+
+展开 Debug 可查看各步骤结果、游戏清单原始值、权限／读写／监听器状态、系统版本
+标签、最后修复设置时间、错误、所有权及最近 100 条持久化诊断日志。支持复制完整
+报告、复制及清除日志。技术错误和日志使用英语；界面提供英文、繁体中文、简体
+中文，其余七种语言使用英语 fallback。Settings I/O 和持久化使用串行后台线程，
+不轮询 UI、不保留 Activity 监听器。
+
+首次写入前持久记录 GMS 是否原本存在。停用时保留原有 GMS，只移除本应用加入的
+完整 GMS token，保留其他项目；必要时写入非 null 空字符串，让 Framework 有机会
+收到清理通知，并重新读取验证。观察到外部改写时标记所有权不确定，停止自动删除，
+Debug 的清理按钮须明确确认才移除 GMS。其他应用写入完全相同的值无法检测。
+清理失败或不确定时保留待清理状态，可重试。**卸载或清除资料前，先停用并完成
+清理**，不能依赖卸载后自动清理，也不能用旧的完整清单覆盖当前值。
+
+实现及验证细节见 [开发记录](docs/nighttime-fcm-protection.md)。
+参考：[HyperOS 4 调查](https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos4-nighttime-fcm-investigation.md)、
+[参考控制器](https://github.com/dingwen07/hyperos-fcm-fix/blob/main/app/src/main/java/net/extrawdw/apps/miuisucks/powerkeeper/GameAllowlistProtection.kt)。

@@ -84,3 +84,19 @@ assert value_panel.attrib.get(android_width) == "match_parent", (
 print("Responsive layout checks passed for:")
 for name, width in profiles:
     print(f"  - {name}: {width}dp")
+
+# The night card must remain a vertical, wrapping part of the existing dashboard.
+night = ET.parse(ROOT / "app/src/main/res/layout/night_protection_card.xml").getroot()
+ns = "{http://schemas.android.com/apk/res/android}"
+assert night.attrib[ns + "orientation"] == "vertical"
+night_ids = {node.attrib.get(android_id) for node in night.iter()}
+for required in ("nightSwitch", "nightSummary", "nightCheck", "nightRepair", "nightTest",
+                 "nightCopy", "nightDebug", "nightReport", "nightLogs", "nightCopyLogs",
+                 "nightClearLogs", "nightCleanup"):
+    assert "@+id/" + required in night_ids, f"Missing night protection control: {required}"
+for node in night.iter():
+    if node.tag in ("Button", "Switch", "TextView"):
+        assert node.attrib[android_width] == "match_parent", "Night controls must fit narrow cards"
+        assert node.attrib[ns + "layout_height"] == "wrap_content", "Night text must wrap at large font scales"
+        assert node.attrib.get(ns + "singleLine", "false") == "false"
+print("Night protection card wrapping/control checks passed")

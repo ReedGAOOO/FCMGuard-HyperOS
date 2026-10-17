@@ -20,6 +20,12 @@ public final class FcmReconnect {
 
     private FcmReconnect() {}
 
+    /** Dispatch only. A normal UID cannot verify that GMS accepted or connected. */
+    public static void requestGcmReconnect(Context context) {
+        context.sendBroadcast(new Intent("com.google.android.intent.action.GCM_RECONNECT")
+                .setPackage("com.google.android.gms"));
+    }
+
     public static boolean kick(Context context) {
         boolean sent = false;
         for (String target : TARGET_PACKAGES) {

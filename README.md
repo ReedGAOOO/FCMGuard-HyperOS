@@ -172,3 +172,70 @@ For normal phone installation, use:
 ## License
 
 MIT License — see [LICENSE](LICENSE).
+
+## Experimental HyperOS 4 nighttime FCM protection
+
+The independent, default-off **Nighttime FCM protection** card uses ordinary app
+`WRITE_SETTINGS` access to `Settings.System["com.miui.game.allowlist"]`. It needs
+neither root, Shizuku, persistent ADB, Accessibility nor any new permission. The
+upstream `minSdk 21`, legacy `targetSdk 22`, application ID and version remain
+unchanged, as does the original MILLET protection. This independent change adds
+no Shizuku provider or production dependency.
+
+This targets the China-ROM HyperOS 4 nightDoze policy observed at 23:00–07:59,
+with screen off and deep Doze. It is an undocumented, experimental workaround,
+not a push-delivery guarantee. Older or unrecognized ROMs are not automatically
+classified as supported: the UI states that support/version cannot be verified.
+Clearly non-Xiaomi devices are reported unsupported on repair. The exemption is
+effective all day and can increase GMS background battery consumption.
+
+The controller preserves the raw underscore-delimited list and order, uses exact
+untrimmed tokens like the inspected Xiaomi parser, reads again before PUT and
+requires an exact read-back. Packages containing underscores cannot be represented
+intact by that vendor format. Initialization toggles one trailing underscore only
+when GMS is already present; healthy checks never rewrite or reconnect. This
+requests observer delivery, but cannot verify Xiaomi's loaded cache. Settings has
+no compare-and-swap: an external writer can still race the final read/PUT. Failures
+are not immediately retried by observer callbacks (60-second minimum gate); the
+existing 30-minute in-process fallback or an explicit repair can retry. There is
+no extra timer, alarm, job or wake lock. Broadcast requests are rate-limited to
+one pair per 10 seconds; failed recovery may retry on a later fallback without
+rewriting healthy membership.
+
+Both protection switches independently control the shared GuardService. Night
+protection registers only its exact key observer, debounces for 400 ms, and is
+checked again on startup. Foreground notification mode is shared and optional;
+quiet mode is less reliable. Monitoring cannot run after the process is stopped.
+Boot/package-replacement restart honors either enabled switch.
+
+**Recheck** only reads. **Repair now / retry cleanup** repairs while enabled and
+retries cleanup while disabled. **Test thaw / reconnect** changes no setting and
+independently dispatches Xiaomi's `REFRESH_WHITE_LIST_ACTION` to `android` with
+`pkgName=com.google.android.gms, option=-1`, and `GCM_RECONNECT` to GMS. It does not
+change MiPush membership. Original GTALK/MCS heartbeat actions are preserved.
+Sending a broadcast does not establish receiver acceptance, thaw or connection.
+Ordinary app permissions cannot verify frozen state, FCM sockets, clone-profile
+recovery or controlled nighttime protection; the UI never reports these as
+verified success. Deep Doze is left enabled.
+
+Expand Debug for per-step results, the raw game setting, permission/read/write/
+observer status, build labels, last configuration repair/error, ownership state
+and the latest 100 persistent timestamped technical log entries. Reports and logs
+can be copied; logs can be cleared. Error details and technical logs use English;
+UI labels are English, Traditional Chinese and Simplified Chinese, with English
+fallback for the other seven locales. Settings I/O and persistence run on a
+serial worker, without a UI polling loop or retained Activity listener.
+
+Ownership is durably recorded before the first write. Disabling preserves
+preexisting GMS, removes only app-added exact GMS tokens, preserves other entries,
+and writes a non-null empty string when appropriate so the framework can observe
+removal. Cleanup is reread and verified. Observable external changes mark ownership
+uncertain; automatic deletion then stops and the Debug cleanup button requires
+explicit consent to remove GMS. A same-value write by another app is inherently
+undetectable. Failed/uncertain cleanup remains visible and retryable. **Disable
+and complete cleanup before uninstalling or clearing data**: uninstallation cannot
+run cleanup. Do not blindly restore an old full-list snapshot.
+
+Implementation and verification details: [Night protection development notes](docs/nighttime-fcm-protection.md).
+Research: [HyperOS 4 investigation](https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos4-nighttime-fcm-investigation.md),
+[reference controller](https://github.com/dingwen07/hyperos-fcm-fix/blob/main/app/src/main/java/net/extrawdw/apps/miuisucks/powerkeeper/GameAllowlistProtection.kt).

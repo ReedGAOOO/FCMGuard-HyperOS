@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- English fallback for seven locales is intentional for this experimental feature. -->
+<resources xmlns:tools="http://schemas.android.com/tools" tools:ignore="MissingTranslation">
+    <string name="night_title">HyperOS 4 Nighttime FCM Protection</string>
+    <string name="night_toggle">Nighttime FCM protection</string>
+    <string name="night_warning">Exemption applies all day and may increase Google Play services background battery use. Quiet mode is less reliable. Monitoring stops if Android stops this process. Disable and finish cleanup before uninstalling or clearing data. Shared GMS ownership cannot always be distinguished.</string>
+    <string name="night_experimental">Experimental for China-ROM HyperOS 4 (23:00–07:59, screen off, deep Doze). ROM version and support cannot be verified through public APIs. No root, Shizuku or ADB used.</string>
+    <string name="night_disabled">Disabled</string>
+    <string name="night_permission_missing">Insufficient permission</string>
+    <string name="night_write_failed">Read / write failed; see error</string>
+    <string name="night_configured">Exemption configured; actual protection unverified</string>
+    <string name="night_detected_failure">Protection configuration missing</string>
+    <string name="night_limited">Some features limited; actual protection unverified</string>
+    <string name="night_unsupported">Unsupported system</string>
+    <string name="night_cleanup_pending">Disabled; cleanup pending / ownership uncertain</string>
+    <string name="night_failed">Failed</string>
+    <string name="night_not_tested">Not performed this process</string>
+    <string name="night_unknown">Cannot verify</string>
+    <string name="night_cannot_check">Cannot inspect with ordinary app permissions</string>
+    <string name="night_permission">WRITE_SETTINGS permission</string>
+    <string name="night_granted">Granted</string>
+    <string name="night_denied">Not granted</string>
+    <string name="night_read">Game Allowlist read</string>
+    <string name="night_membership">GMS in allowlist</string>
+    <string name="night_yes">Yes</string>
+    <string name="night_no">No</string>
+    <string name="night_write">Write read-back verification</string>
+    <string name="night_observer">Settings observer</string>
+    <string name="night_active">Running</string>
+    <string name="night_inactive">Not running</string>
+    <string name="night_reload">Framework cache refresh request</string>
+    <string name="night_thaw">Xiaomi thaw broadcast (dispatch only)</string>
+    <string name="night_frozen">Actual GMS thaw state</string>
+    <string name="night_reconnect">FCM reconnect broadcast (dispatch only)</string>
+    <string name="night_overall">Overall status</string>
+    <string name="night_last_success">Last verified configuration repair</string>
+    <string name="night_error">Last failure (technical detail)</string>
+    <string name="night_ownership">Ownership / cleanup</string>
+    <string name="night_check">Recheck</string>
+    <string name="night_repair">Repair now / retry cleanup</string>
+    <string name="night_test">Test thaw / reconnect</string>
+    <string name="night_copy">Copy diagnostic report</string>
+    <string name="night_debug">Expand / collapse Debug details</string>
+    <string name="night_copy_logs">Copy Debug log</string>
+    <string name="night_clear_logs">Clear Debug log</string>
+    <string name="night_cleanup">Resolve uncertain ownership cleanup</string>
+    <string name="night_cleanup_confirm">Remove only GMS from the shared game allowlist? Another app may need this entry. Other packages will be preserved.</string>
+    <string name="night_copied">Copied</string>
+    <string name="night_success">Succeeded</string>
+    <string name="night_sent">Broadcast dispatched; outcome unknown</string>
+    <string name="night_triggered">Triggered; framework cache unverified</string>
+    <string name="night_not_executed">Not performed</string>
+</resources>
