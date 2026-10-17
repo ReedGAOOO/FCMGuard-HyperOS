@@ -2,13 +2,20 @@ plugins {
     id 'com.android.application'
 }
 
+// 12.2.0 is the latest official API line compatible with Android 6.0 (minSdk 23).
+// Newer 13.x artifacts require API 24 and would force an unrelated target-SDK migration.
+def shizukuVersion = '12.2.0'
+
 android {
     namespace 'com.reed.fcmguard'
     compileSdk 35
 
     defaultConfig {
         applicationId "com.reed.fcmguard"
-        minSdk 21
+        // Shizuku's official provider requires Android 6.0 (API 23).
+        minSdk 23
+        // HyperOS accepts its private Settings.System key only on this legacy path.
+        // Shizuku still requires minSdk 23; Gradle warns about the deliberate target/min gap.
         targetSdk 22
         versionCode 30
         versionName "1.5.9"
@@ -16,10 +23,13 @@ android {
 
     signingConfigs {
         debug {
-            storeFile rootProject.file('ci-signing/fcmguard-debug.keystore')
-            storePassword ('and' + 'roid')
-            keyAlias 'fcmguarddebug'
-            keyPassword ('and' + 'roid')
+            def ciKeystore = rootProject.file('ci-signing/fcmguard-debug.keystore')
+            if (ciKeystore.exists()) {
+                storeFile ciKeystore
+                storePassword ('and' + 'roid')
+                keyAlias 'fcmguarddebug'
+                keyPassword ('and' + 'roid')
+            }
         }
     }
 
@@ -36,4 +46,14 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        aidl true
+    }
+}
+
+dependencies {
+    implementation "dev.rikka.shizuku:api:$shizukuVersion"
+    implementation "dev.rikka.shizuku:provider:$shizukuVersion"
+    implementation 'androidx.annotation:annotation:1.3.0'
 }

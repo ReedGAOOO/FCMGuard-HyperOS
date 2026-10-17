@@ -17,6 +17,9 @@
     <string name="autostart_unknown">不明</string>
     <string name="autostart_manager_unavailable">HyperOS の自動起動設定を開けませんでした</string>
     <string name="app_settings_unavailable">アプリ設定を開けませんでした</string>
+    <string name="shizuku_grant_access">Shizuku コントロールを有効化</string><string name="shizuku_connected">Shizuku コントロールは有効です</string><string name="shizuku_unavailable">Shizuku を利用できません</string>
+    <string name="shizuku_access_summary">高度な任意機能です。Shizuku を許可すると、選択した FCM アプリの 2 つの HyperOS 自動起動 AppOps を変更できます。USB デバッグは有効にしません。</string><string name="shizuku_connected_summary">Shizuku は許可されています。スキャンしたアプリの自動起動状態をタップして切り替えます。</string><string name="shizuku_not_running">最初に Shizuku を起動してからアクセスを許可してください。root なしの端末では、再起動後にユーザーが ADB またはワイヤレス デバッグで Shizuku を起動する必要があります。</string><string name="shizuku_not_supported">Shizuku コントロールには Android 6.0 以降が必要です。</string>
+    <string name="shizuku_access_granted">Shizuku アクセスを許可しました</string><string name="shizuku_access_denied">Shizuku アクセスは許可されませんでした</string><string name="shizuku_manage">管理</string><string name="shizuku_enable_autostart">自動起動を有効化</string><string name="shizuku_disable_autostart">自動起動を無効化</string><string name="shizuku_open_app_settings">アプリ設定を開く</string><string name="shizuku_change_verified">自動起動を変更し確認しました</string><string name="shizuku_change_unverified">コマンドは完了しましたが、HyperOS が読取可能な結果を公開しませんでした。HyperOS 設定で確認してください。</string><string name="shizuku_change_failed">自動起動を変更できませんでした: %1$s</string>
     <string name="fcm_detection_note">自動起動状態は読み取り専用のベストエフォート確認です。「不明」は HyperOS がベンダー AppOps の照会を遮断または非公開にしていることを意味し、FCM Guard は「無効」とは判定しません。</string>
     <string name="appearance_title">外観</string>
     <string name="appearance_summary">既定ではシステムに従います。UI テーマだけを変更し、バックグラウンド処理は追加しません。</string>

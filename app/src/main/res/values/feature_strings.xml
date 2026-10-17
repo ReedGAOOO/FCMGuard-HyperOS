@@ -17,6 +17,22 @@
     <string name="autostart_unknown">Unknown</string>
     <string name="autostart_manager_unavailable">HyperOS Autostart settings could not be opened</string>
     <string name="app_settings_unavailable">App settings could not be opened</string>
+    <string name="shizuku_grant_access">Enable Shizuku controls</string>
+    <string name="shizuku_connected">Shizuku controls enabled</string>
+    <string name="shizuku_unavailable">Shizuku unavailable</string>
+    <string name="shizuku_access_summary">Advanced and optional: grant Shizuku access to change the two HyperOS Autostart AppOps for a selected FCM app. This does not start USB debugging.</string>
+    <string name="shizuku_connected_summary">Shizuku is authorized. Tap a scanned app\'s Autostart status to switch it.</string>
+    <string name="shizuku_not_running">Start Shizuku first, then return and grant access. On non-root phones Shizuku itself needs its own user-started ADB or wireless-debugging session after reboot.</string>
+    <string name="shizuku_not_supported">Shizuku controls require Android 6.0 or later.</string>
+    <string name="shizuku_access_granted">Shizuku access granted</string>
+    <string name="shizuku_access_denied">Shizuku access was not granted</string>
+    <string name="shizuku_manage">Manage</string>
+    <string name="shizuku_enable_autostart">Enable Autostart</string>
+    <string name="shizuku_disable_autostart">Disable Autostart</string>
+    <string name="shizuku_open_app_settings">Open app settings</string>
+    <string name="shizuku_change_verified">Autostart was changed and verified</string>
+    <string name="shizuku_change_unverified">Command completed, but HyperOS did not expose a readable result. Check it in HyperOS settings.</string>
+    <string name="shizuku_change_failed">Autostart was not changed: %1$s</string>
     <string name="fcm_detection_note">Autostart status is read-only and best-effort. Unknown means HyperOS blocked or did not expose the vendor AppOps query; FCM Guard never treats Unknown as Disabled.</string>
 
     <string name="appearance_title">Appearance</string>

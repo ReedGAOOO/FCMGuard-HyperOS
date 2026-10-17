@@ -20,7 +20,7 @@
 
 ## 亮点
 
-- **免 Root / Shizuku** — 仅使用用户可手动授权的 **修改系统设置** 权限，不依赖 Root、持续 ADB、无障碍、VPN、悬浮窗或设备管理员。
+- **默认低权限** — 常规保护仅使用用户可手动授权的 **修改系统设置** 权限，不依赖 Root、持续 ADB、无障碍、VPN、悬浮窗或设备管理员。仅针对高级用户，另提供需明确授权的可选 Shizuku 单应用自启动控制功能。
 - **对金融 App 更友好** — 整体保持低权限设计，避免引入更容易触发安全敏感 App 风控的高权限方案。
 - **低后台耗电** — 主要采用精确事件监听，30 分钟兜底检查仅在进程内运行，不会主动唤醒休眠手机。
 - **只在必要时重连** — 仅在真正执行白名单修复后，或用户手动点击时发送 FCM/MCS 重连请求。
@@ -77,7 +77,7 @@ flowchart TD
 
 ## 为什么使用 `targetSdk 22`
 
-FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让项目继续使用当前 Android 构建工具，而旧 target 保留对 Xiaomi 厂商私有 `Settings.System` key 的兼容写入路径，因此可以仅依靠用户授予的 **修改系统设置** 权限完成修复，而不需要 Root / Shizuku。
+FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让项目继续使用当前 Android 构建工具，而旧 target 保留对 Xiaomi 厂商私有 `Settings.System` key 的兼容写入路径，因此可以仅依靠用户授予的 **修改系统设置** 权限完成修复。可选官方 Shizuku 整合需要 `minSdk 23`，因此构建会出现刻意保留的 target/min 警告；这比破坏已验证的 HyperOS 私有设置写入路径更可取。
 
 ## 低功耗设计
 
@@ -92,7 +92,7 @@ FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让
 
 开启常驻通知后，`GuardService` 会作为前台服务运行。当前版本改为独立的 `IMPORTANCE_LOW` 静音通知渠道，因此通知会保持可见，但不会发声或振动。
 
-由于项目为了 Xiaomi 私有设置写入而刻意保持 `targetSdk 22`，Android 13+ 的通知权限弹窗时机由系统控制。如果通知已经被系统关闭，FCM Guard 会直接引导进入本 App 的系统通知设置页面。
+由于项目仍刻意保持在 Android 13 所要求的 target level 以下，Android 13+ 的通知权限弹窗时机由系统控制。如果通知已经被系统关闭，FCM Guard 会直接引导进入本 App 的系统通知设置页面。
 
 ## FCM 诊断
 
@@ -124,7 +124,15 @@ com.google.android.c2dm.intent.RECEIVE
 
 FCM Guard **不会把“未知”当成“未开启”**。如果所有检测到的 App 都只能得到未知状态，逐 App 列表会自动隐藏，只保留检测数量和 **在 HyperOS 中统一配置** 入口，避免展示没有实际帮助的伪状态。用户从 HyperOS 设置页返回后，如果扫描结果仍展开，状态会自动重新读取。
 
-整个过程不会程序化修改任何其他 App 的自启动状态，也不会引入 Shizuku / Root / ADB 权限。
+常规 FCM App 扫描不会程序化修改任何其他 App 的自启动状态，也不会引入 Shizuku / Root / ADB 权限。
+
+### 可选 Shizuku 自启动控制
+
+Shizuku 不可用时，点击按钮会先打开已安装的 Shizuku 管理应用；仅在找不到应用或打开失败时，显示原有的不可用提示。打开管理应用不会启动其服务，也不会开启 USB／无线调试。没有可用的 Shizuku 授权时，点击单个应用的自启动状态会打开该应用的系统详情页；已授权时保留原有的开启／关闭操作。
+
+高级用户可在自行安装并启动 Shizuku 后，让 FCM Guard 请求明确授权。授权完成后，直接点选每个扫描到 FCM App 原有的自启动状态：点「已开启」会请求关闭；点「部分开启」、「未开启」或「未知」会请求开启小米自启动的两个 AppOps（`10008`、`10053`）。命令只在短生命周期的 Shizuku user service 中执行，普通应用进程不会获得该身份；随后 FCM Guard 会在 HyperOS 允许时再次读取状态。
+
+此功能完全可选，**不会**开启 USB 调试。非 Root 手机在重启后，仍须由用户使用自己的 ADB 或无线调试会话启动 Shizuku。只有后续读取到预期状态，才会显示为已验证；不支持或无法读取的 ROM 会明确显示未验证结果，并保留跳转 HyperOS 设置的回退方式。
 
 ## 单 App 推送仍可能受后台策略影响
 
@@ -162,7 +170,7 @@ PowerKeeper / Greezer 行为与 `MILLET_NO_RESTRICT_APP` 修复思路最初由 *
 - HyperOS FCM Fix（`dingwen07`）：https://github.com/dingwen07/hyperos-fcm-fix
 - 技术调查文档：https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard 是独立实现，设计重点是无需 Shizuku / Root、权限尽量少、事件驱动和更低待机后台活动。本仓库没有复制 HyperOS FCM Fix 的源代码。
+FCM Guard 是独立实现，设计重点是默认权限尽量少、事件驱动和更低待机后台活动；Shizuku 仅是需明确授权的可选高级控制。本仓库没有复制 HyperOS FCM Fix 的源代码。
 
 ## 构建
 
@@ -171,6 +179,8 @@ GitHub Actions 会自动检查响应式布局并构建签名后的 debug APK。p
 手机用户建议直接使用固定最新版地址：
 
 **https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
+
+由于可选的官方 Shizuku provider 不支持 Android 5.x，本应用需要 Android 6.0（API 23）或更高版本。
 
 ## License
 

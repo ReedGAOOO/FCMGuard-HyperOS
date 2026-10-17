@@ -38,6 +38,8 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import rikka.shizuku.Shizuku;
+
 public class MainActivity extends Activity {
     private static final String[] LANGUAGE_CODES = {
             "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
@@ -56,6 +58,8 @@ public class MainActivity extends Activity {
     private LinearLayout fcmAppsContainer;
     private Button languageButton;
     private Button scanFcmAppsBtn;
+    private Button shizukuAccessBtn;
+    private TextView shizukuAccessText;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
     private Button permissionBtn;
@@ -65,6 +69,21 @@ public class MainActivity extends Activity {
     private boolean notificationAccessPending = false;
     private boolean fcmListExpanded = false;
     private List<FcmAppScanner.AppEntry> scannedFcmApps;
+    private ShizukuAutostartManager shizukuAutostartManager;
+
+    private final Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
+            (requestCode, grantResult) -> {
+                if (requestCode != ShizukuAutostartManager.REQUEST_CODE) return;
+                updateShizukuAccessUi();
+                if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                    toast(getString(R.string.shizuku_access_granted));
+                    if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
+                        renderFcmAppStatuses();
+                    }
+                } else {
+                    toast(getString(R.string.shizuku_access_denied));
+                }
+            };
 
     private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
     private int languageLabelIndex = 0;
@@ -106,6 +125,11 @@ public class MainActivity extends Activity {
         setupAppearance();
         setupSwitches();
         bindActions();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            shizukuAutostartManager = new ShizukuAutostartManager(this);
+            Shizuku.addRequestPermissionResultListener(shizukuPermissionListener);
+        }
+        updateShizukuAccessUi();
         refreshStatus(null);
     }
 
@@ -119,6 +143,7 @@ public class MainActivity extends Activity {
             startProtectionService();
         }
         refreshStatus(null);
+        updateShizukuAccessUi();
         if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
             renderFcmAppStatuses();
         }
@@ -127,6 +152,16 @@ public class MainActivity extends Activity {
     @Override protected void onPause() {
         stopLanguageButtonAnimation();
         super.onPause();
+    }
+
+    @Override protected void onDestroy() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try {
+                Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener);
+            } catch (Throwable ignored) {}
+        }
+        if (shizukuAutostartManager != null) shizukuAutostartManager.close();
+        super.onDestroy();
     }
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
@@ -150,6 +185,8 @@ public class MainActivity extends Activity {
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
         languageButton = findViewById(R.id.languageButton);
         scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
+        shizukuAccessBtn = findViewById(R.id.shizukuAccessBtn);
+        shizukuAccessText = findViewById(R.id.shizukuAccessText);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
         permissionBtn = findViewById(R.id.permissionBtn);
@@ -350,6 +387,7 @@ public class MainActivity extends Activity {
                 toast(getString(R.string.autostart_manager_unavailable));
             }
         });
+        shizukuAccessBtn.setOnClickListener(v -> requestShizukuAccess());
     }
 
     private void toggleFcmAppsList() {
@@ -403,7 +441,7 @@ public class MainActivity extends Activity {
             }
         }
 
-        if (unknownCount == scannedFcmApps.size()) {
+        if (unknownCount == scannedFcmApps.size() && !canManageAutostartWithShizuku()) {
             fcmAppsContainer.setVisibility(View.GONE);
             fcmAppsStatusText.setText(getString(
                     R.string.fcm_autostart_status_unavailable, scannedFcmApps.size()));
@@ -474,6 +512,13 @@ public class MainActivity extends Activity {
         badge.setMinWidth(dp(72));
         badge.setPadding(dp(10), dp(6), dp(10), dp(6));
         badge.setBackground(makeStatusBadgeBackground(autostartStatus));
+        boolean enable = autostartStatus != AutostartStatusReader.Status.ENABLED;
+        badge.setClickable(true);
+        badge.setFocusable(true);
+        badge.setContentDescription(getString(canManageAutostartWithShizuku()
+                ? (enable ? R.string.shizuku_enable_autostart : R.string.shizuku_disable_autostart)
+                : R.string.shizuku_open_app_settings));
+        badge.setOnClickListener(v -> setAutostartWithShizuku(app, enable));
         row.addView(badge, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
@@ -515,6 +560,87 @@ public class MainActivity extends Activity {
         background.setColor(getResources().getColor(color));
         background.setCornerRadius(dp(12));
         return background;
+    }
+
+    private boolean canManageAutostartWithShizuku() {
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
+                shizukuAutostartManager != null && ShizukuAutostartManager.hasPermission();
+    }
+
+    private void requestShizukuAccess() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            toast(getString(R.string.shizuku_not_supported));
+            return;
+        }
+        ShizukuAutostartManager.RequestState state = ShizukuAutostartManager.requestPermission();
+        if (state == ShizukuAutostartManager.RequestState.GRANTED) {
+            updateShizukuAccessUi();
+            if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
+                renderFcmAppStatuses();
+            }
+        } else if (state == ShizukuAutostartManager.RequestState.NOT_RUNNING) {
+            if (!openShizukuApp()) toast(getString(R.string.shizuku_not_running));
+        } else if (state == ShizukuAutostartManager.RequestState.UNSUPPORTED) {
+            toast(getString(R.string.shizuku_not_supported));
+        } else if (state == ShizukuAutostartManager.RequestState.DENIED) {
+            toast(getString(R.string.shizuku_access_denied));
+        }
+    }
+
+    /** Opens the manager UI only; never starts its daemon or enables debugging. */
+    private boolean openShizukuApp() {
+        try {
+            Intent launch = getPackageManager().getLaunchIntentForPackage("moe.shizuku.privileged.api");
+            if (launch == null) return false;
+            startActivity(launch);
+            return true;
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    private void updateShizukuAccessUi() {
+        if (shizukuAccessBtn == null || shizukuAccessText == null) return;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+            shizukuAccessBtn.setEnabled(false);
+            shizukuAccessBtn.setText(R.string.shizuku_unavailable);
+            shizukuAccessText.setText(R.string.shizuku_not_supported);
+        } else if (ShizukuAutostartManager.hasPermission()) {
+            shizukuAccessBtn.setEnabled(true);
+            shizukuAccessBtn.setText(R.string.shizuku_connected);
+            shizukuAccessText.setText(R.string.shizuku_connected_summary);
+        } else if (ShizukuAutostartManager.isBinderReady()) {
+            shizukuAccessBtn.setEnabled(true);
+            shizukuAccessBtn.setText(R.string.shizuku_grant_access);
+            shizukuAccessText.setText(R.string.shizuku_access_summary);
+        } else {
+            shizukuAccessBtn.setEnabled(true);
+            shizukuAccessBtn.setText(R.string.shizuku_unavailable);
+            shizukuAccessText.setText(R.string.shizuku_not_running);
+        }
+    }
+
+    private void setAutostartWithShizuku(FcmAppScanner.AppEntry app, boolean enabled) {
+        if (!canManageAutostartWithShizuku()) {
+            if (!HyperOsSettings.openAppDetails(this, app.packageName)) {
+                toast(getString(R.string.app_settings_unavailable));
+            }
+            return;
+        }
+        shizukuAutostartManager.setAutostart(app.packageName, enabled, (success, detail) -> {
+            if (!success) {
+                toast(getString(R.string.shizuku_change_failed, detail));
+                return;
+            }
+            AutostartStatusReader.Status status = AutostartStatusReader.check(this, app.packageName);
+            if ((enabled && status == AutostartStatusReader.Status.ENABLED) ||
+                    (!enabled && status == AutostartStatusReader.Status.DISABLED)) {
+                toast(getString(R.string.shizuku_change_verified));
+            } else {
+                toast(getString(R.string.shizuku_change_unverified));
+            }
+            if (fcmListExpanded) renderFcmAppStatuses();
+        });
     }
 
     private void startProtectionService() {

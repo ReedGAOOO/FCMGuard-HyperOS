@@ -17,6 +17,22 @@
     <string name="autostart_unknown">未知</string>
     <string name="autostart_manager_unavailable">无法打开 HyperOS 自启动设置</string>
     <string name="app_settings_unavailable">无法打开该应用的设置</string>
+    <string name="shizuku_grant_access">启用 Shizuku 控制功能</string>
+    <string name="shizuku_connected">Shizuku 控制功能已启用</string>
+    <string name="shizuku_unavailable">Shizuku 不可用</string>
+    <string name="shizuku_access_summary">高级可选功能：授权 Shizuku 后，可修改所选 FCM 应用的两个 HyperOS 自启动 AppOps；不会启用 USB 调试。</string>
+    <string name="shizuku_connected_summary">Shizuku 已授权。直接点击已扫描应用的自启动状态即可切换。</string>
+    <string name="shizuku_not_running">请先启动 Shizuku，再返回授权。非 root 手机上的 Shizuku 在重启后仍需用户自行通过 ADB 或无线调试启动。</string>
+    <string name="shizuku_not_supported">Shizuku 控制功能需要 Android 6.0 或更高版本。</string>
+    <string name="shizuku_access_granted">已授予 Shizuku 访问权限</string>
+    <string name="shizuku_access_denied">未授予 Shizuku 访问权限</string>
+    <string name="shizuku_manage">管理</string>
+    <string name="shizuku_enable_autostart">开启自启动</string>
+    <string name="shizuku_disable_autostart">关闭自启动</string>
+    <string name="shizuku_open_app_settings">打开应用设置</string>
+    <string name="shizuku_change_verified">自启动已变更并验证</string>
+    <string name="shizuku_change_unverified">命令已完成，但 HyperOS 未提供可读结果。请在 HyperOS 设置中确认。</string>
+    <string name="shizuku_change_failed">无法变更自启动：%1$s</string>
     <string name="fcm_detection_note">自启动状态仅做只读、尽力而为的检测。“未知”表示 HyperOS 阻止或未公开对应的厂商 AppOps 查询；FCM Guard 不会把未知误判为未开启。</string>
 
     <string name="appearance_title">外观</string>

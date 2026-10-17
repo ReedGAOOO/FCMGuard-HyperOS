@@ -20,7 +20,7 @@
 
 ## Highlights
 
-- **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, persistent ADB, Accessibility, VPN, overlay, or device-admin privileges.
+- **Low-privilege by default** — normal protection uses the user-grantable **Modify system settings** permission instead of root, persistent ADB, Accessibility, VPN, overlay, or device-admin privileges. An optional, user-authorized Shizuku control is available only for advanced per-app Autostart changes.
 - **Finance-app friendly** — keeps the implementation deliberately low-privilege for better compatibility with security-sensitive apps.
 - **Low background power** — exact event-driven monitoring is the main path; the 30-minute fallback is in-process and does not deliberately wake a sleeping phone.
 - **Reconnects only when needed** — FCM/MCS reconnect broadcasts are sent only after a real whitelist repair or a manual request.
@@ -76,7 +76,7 @@ flowchart TD
 
 ## Why `targetSdk 22`?
 
-FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission and without root/Shizuku.
+FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission. The optional official Shizuku integration requires `minSdk 23`, so the build emits an intentional target/min warning; that warning is preferable to breaking the proven HyperOS private-setting write path.
 
 ## Low-power design
 
@@ -89,7 +89,7 @@ FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern com
 
 ## Persistent notification
 
-Persistent mode runs `GuardService` as a foreground service. The current implementation uses a dedicated `IMPORTANCE_LOW`, silent notification channel so the notification remains visible without sound or vibration. Because FCM Guard deliberately targets SDK 22, Android 13+ controls the notification-permission prompt timing; if notifications are already blocked, FCM Guard links directly to the app's system notification settings.
+Persistent mode runs `GuardService` as a foreground service. The current implementation uses a dedicated `IMPORTANCE_LOW`, silent notification channel so the notification remains visible without sound or vibration. Because FCM Guard deliberately remains below Android 13's target level, Android 13+ controls the notification-permission prompt timing; if notifications are already blocked, FCM Guard links directly to the app's system notification settings.
 
 ## FCM diagnostics
 
@@ -121,7 +121,30 @@ For detected apps, FCM Guard performs a **read-only, best-effort** check of Xiao
 
 FCM Guard never treats **Unknown** as **Disabled**. If every detected app is Unknown, the per-app list is hidden and the assistant falls back to the detected count plus the single **Configure all in HyperOS** action. After returning from HyperOS settings, an expanded result is checked again automatically.
 
-No Autostart state is modified programmatically, and no Shizuku/root/ADB privilege is introduced.
+The normal FCM app scan never modifies Autostart state or introduces Shizuku/root/ADB privilege.
+
+### Optional Shizuku Autostart controls
+
+When Shizuku is unavailable, tapping its button first opens the installed Shizuku
+manager. Only if the manager is missing or cannot be opened does FCM Guard show
+the existing unavailable message. Opening the manager does not start its daemon
+or enable USB/Wireless debugging. Without usable Shizuku authorization, tapping
+an app's Autostart status opens that app's system details page instead of requesting
+a state change. With authorization, the existing enable/disable action is retained.
+
+For advanced users, FCM Guard can request explicit Shizuku access after Shizuku
+has already been installed and started by the user. Once authorized, tap an
+app's existing Autostart status: **Enabled** requests disable; **Partial**,
+**Disabled**, or **Unknown** requests enable for the two Xiaomi Autostart AppOps
+(`10008` and `10053`). The command is executed
+inside a short-lived Shizuku user service, not by the normal app process, and
+FCM Guard then re-reads the status when HyperOS permits it.
+
+This is optional and does **not** turn on USB debugging. On non-root phones,
+the user must start Shizuku after a reboot using their own ADB or Wireless
+debugging session. A successful command is not treated as verified unless the
+subsequent read reports the expected state; unsupported or unreadable ROMs show
+a clear unverified result and retain the HyperOS settings fallback.
 
 ## Per-app delivery caveat
 
@@ -159,7 +182,7 @@ The PowerKeeper / Greezer investigation and the `MILLET_NO_RESTRICT_APP` repair 
 - HyperOS FCM Fix by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
 - Technical investigation: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard is an independent implementation focused on no Shizuku/root dependency, minimal privileges, event-driven monitoring, and low idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
+FCM Guard is an independent implementation focused on minimal privileges by default, event-driven monitoring, and low idle background activity. Shizuku is an optional, explicitly authorized advanced control only. No source code from HyperOS FCM Fix is copied into this repository.
 
 ## Build
 
@@ -168,6 +191,9 @@ GitHub Actions checks responsive layout profiles and builds a signed debug APK. 
 For normal phone installation, use:
 
 **https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
+
+Android 6.0 (API 23) or newer is required because the optional official
+Shizuku provider does not support Android 5.x.
 
 ## License
 

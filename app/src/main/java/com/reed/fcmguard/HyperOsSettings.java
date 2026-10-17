@@ -25,6 +25,13 @@ public final class HyperOsSettings {
         return launch(context, new Intent(Settings.ACTION_APPLICATION_SETTINGS));
     }
 
+    public static boolean openAppDetails(Context context, String packageName) {
+        Intent details = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + packageName));
+        details.addCategory(Intent.CATEGORY_DEFAULT);
+        return launch(context, details);
+    }
+
     public static boolean openAppPermissionEditor(Context context, String packageName) {
         String[] activityNames = {
                 "com.miui.permcenter.permissions.PermissionsEditorActivity",
@@ -39,12 +46,7 @@ public final class HyperOsSettings {
             if (launch(context, intent)) return true;
         }
 
-        Intent details = new Intent(
-                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
-                Uri.parse("package:" + packageName)
-        );
-        details.addCategory(Intent.CATEGORY_DEFAULT);
-        return launch(context, details);
+        return openAppDetails(context, packageName);
     }
 
     private static boolean launch(Context context, Intent intent) {
