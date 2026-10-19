@@ -4,6 +4,8 @@ import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.ApplicationInfo;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.lang.reflect.Method;
 
 /**
@@ -28,19 +30,89 @@ public final class AutostartStatusReader {
     public static Status check(Context context, String packageName) {
         try {
             ApplicationInfo info = context.getPackageManager().getApplicationInfo(packageName, 0);
-            Integer primary = checkOp(context, OP_MIUI_AUTOSTART, info.uid, packageName);
-            Integer switchOp = checkOp(context, OP_MIUI_AUTOSTART_SWITCH, info.uid, packageName);
+            return check(context, info);
+        } catch (Throwable ignored) {
+            return Status.UNKNOWN;
+        }
+    }
+
+    public static Status check(Context context, ApplicationInfo info) {
+        if (info == null || info.packageName == null) return Status.UNKNOWN;
+        try {
+            Integer primary = checkOp(context, OP_MIUI_AUTOSTART, info.uid, info.packageName);
+            Integer switchOp = checkOp(context, OP_MIUI_AUTOSTART_SWITCH, info.uid, info.packageName);
 
             if (isAllowed(primary) && isAllowed(switchOp)) return Status.ENABLED;
             if (isIgnored(primary) && isIgnored(switchOp)) return Status.DISABLED;
             if ((isAllowed(primary) && isIgnored(switchOp)) ||
-                    (isIgnored(primary) && isAllowed(switchOp))) {
-                return Status.PARTIAL;
-            }
+                    (isIgnored(primary) && isAllowed(switchOp))) return Status.PARTIAL;
             return Status.UNKNOWN;
         } catch (Throwable ignored) {
             return Status.UNKNOWN;
         }
+    }
+
+    /** Reads Xiaomi Autostart state directly under this app UID; no Shizuku service is used. */
+    public static ScanResult findEnabledPackages(Context context) {
+        ScanResult result = new ScanResult();
+        try {
+            List<ApplicationInfo> installed = context.getPackageManager().getInstalledApplications(0);
+            for (ApplicationInfo app : installed) {
+                if (app == null || app.packageName == null || !app.enabled
+                        || !isUserInstalledApp(app.flags)) continue;
+                result.scannedCount++;
+                Status status = check(context, app);
+                if (status == Status.ENABLED) result.enabledPackages.add(app.packageName);
+                else if (status == Status.UNKNOWN) {
+                    result.unknownCount++;
+                    result.unknownPackages.add(app.packageName);
+                }
+            }
+            result.readSucceeded = true;
+        } catch (Throwable error) {
+            result.error = error.getClass().getSimpleName() + ": " + String.valueOf(error.getMessage());
+        }
+        return result;
+    }
+
+    /** Checks Autostart only for installed, enabled user apps with an active FCM receive component. */
+    public static ScanResult findEnabledFcmPackages(Context context) {
+        ScanResult result = new ScanResult();
+        FcmAppScanner.ScanResult fcmScan = FcmAppScanner.scanDetailed(context);
+        if (!fcmScan.complete) {
+            result.error = fcmScan.error;
+            return result;
+        }
+        try {
+            for (FcmAppScanner.AppEntry app : fcmScan.apps) {
+                result.scannedCount++;
+                Status status = check(context, app.packageName);
+                if (status == Status.ENABLED) result.enabledPackages.add(app.packageName);
+                else if (status == Status.UNKNOWN) {
+                    result.unknownCount++;
+                    result.unknownPackages.add(app.packageName);
+                }
+            }
+            result.readSucceeded = true;
+        } catch (Throwable error) {
+            result.error = error.getClass().getSimpleName() + ": " + String.valueOf(error.getMessage());
+        }
+        return result;
+    }
+
+    /** A user-installed app has no system-image flag; updated system apps remain excluded. */
+    static boolean isUserInstalledApp(int applicationFlags) {
+        return (applicationFlags & ApplicationInfo.FLAG_SYSTEM) == 0;
+    }
+
+    public static final class ScanResult {
+        public final List<String> enabledPackages = new ArrayList<>();
+        public final List<String> unknownPackages = new ArrayList<>();
+        public int scannedCount;
+        public int unknownCount;
+        public boolean readSucceeded;
+        public String error = "";
+        public boolean isComplete() { return readSucceeded && unknownCount == 0; }
     }
 
     private static boolean isAllowed(Integer mode) {

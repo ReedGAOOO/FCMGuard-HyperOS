@@ -8,7 +8,9 @@ android {
 
     defaultConfig {
         applicationId "com.reed.fcmguard"
-        minSdk 21
+        // The official Shizuku provider is compatible from API 23; targetSdk stays 22
+        // to preserve Xiaomi's existing WRITE_SETTINGS compatibility path.
+        minSdk 23
         targetSdk 22
         versionCode 30
         versionName "1.5.9"
@@ -36,4 +38,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+
+    buildFeatures {
+        aidl true
+    }
+}
+
+dependencies {
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'dev.rikka.shizuku:api:12.2.0'
+    implementation 'dev.rikka.shizuku:provider:12.2.0'
+    implementation 'androidx.annotation:annotation:1.3.0'
 }

@@ -53,6 +53,8 @@ for name, width in profiles:
     )
 
 layout = ET.parse(ROOT / "app/src/main/res/layout/activity_main.xml").getroot()
+content_layout = ET.parse(ROOT / "app/src/main/res/layout/dashboard_scroll_content.xml").getroot()
+aurogon_layout = ET.parse(ROOT / "app/src/main/res/layout/aurogon_protection_card.xml").getroot()
 android_id = "{http://schemas.android.com/apk/res/android}id"
 android_width = "{http://schemas.android.com/apk/res/android}layout_width"
 ids = {node.attrib.get(android_id) for node in layout.iter()}
@@ -80,6 +82,19 @@ assert details_panel.attrib.get(android_width) == "match_parent", (
 assert value_panel.attrib.get(android_width) == "match_parent", (
     "currentValuePanel must span the same card width as the detailed status cover"
 )
+
+assert any(node.attrib.get("layout") == "@layout/aurogon_protection_card"
+           for node in content_layout.iter()), "Aurogon protection card is not included in the dashboard"
+aurogon_ids = {node.attrib.get(android_id) for node in aurogon_layout.iter()}
+for required in (
+    "@+id/aurogonSwitch",
+    "@+id/aurogonSummary",
+    "@+id/aurogonSyncNow",
+    "@+id/aurogonClearSetting",
+    "@+id/aurogonViewSetting",
+    "@+id/aurogonShizukuSetup",
+):
+    assert required in aurogon_ids, f"missing Aurogon card id: {required}"
 
 print("Responsive layout checks passed for:")
 for name, width in profiles:

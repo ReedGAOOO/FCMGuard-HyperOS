@@ -7,9 +7,13 @@ import android.os.Build;
 
 public class BootReceiver extends BroadcastReceiver {
     @Override public void onReceive(Context context, Intent intent) {
-        if (!SettingsGuard.isProtectionEnabled(context)) return;
+        boolean coreEnabled = SettingsGuard.isProtectionEnabled(context);
+        boolean aurogonEnabled = AurogonProtection.isAutoSyncEnabled(context)
+                && AurogonProtection.hasSecureSettingsPermission(context);
+        if (!coreEnabled && !aurogonEnabled) return;
 
         Intent service = new Intent(context, GuardService.class);
+        service.putExtra(GuardService.EXTRA_ENABLE_CORE_PROTECTION, coreEnabled);
         try {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                     SettingsGuard.usePersistentNotification(context)) {

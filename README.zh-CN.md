@@ -20,12 +20,13 @@
 
 ## 亮点
 
-- **免 Root / Shizuku** — 仅使用用户可手动授权的 **修改系统设置** 权限，不依赖 Root、持续 ADB、无障碍、VPN、悬浮窗或设备管理员。
+- **核心修复无需 Shizuku** — 使用用户可授权的 **修改系统设置** 权限。可选 Aurogon 同步仅在首次由用户确认后使用 Shizuku 授予 `WRITE_SECURE_SETTINGS`，不会自行启动 Shizuku 或开启调试。
 - **对金融 App 更友好** — 整体保持低权限设计，避免引入更容易触发安全敏感 App 风控的高权限方案。
 - **低后台耗电** — 主要采用精确事件监听，30 分钟兜底检查仅在进程内运行，不会主动唤醒休眠手机。
 - **只在必要时重连** — 仅在真正执行白名单修复后，或用户手动点击时发送 FCM/MCS 重连请求。
 - **常驻通知可选** — 前台模式使用可见但静音的通知渠道提升进程存活率，也可切换为静默纯后台模式。
 - **FCM App 助手** — 扫描可能依赖 Firebase/GCM 的 App；当 HyperOS 允许读取厂商 AppOps 时，会只读显示自启动状态，并在用户从系统设置返回后自动复查。
+- **可选 Aurogon 防护** — FCM Guard 运行时，每 30 分钟将 FCM App 中小米两个自启动操作都明确开启的用户 App 同步到 `aurogon_enable`，保留其他规则并通过完整回读验证写入。
 - **原生深色模式** — 支持 跟随系统 / 浅色 / 深色，默认 **跟随系统**。
 - **10 种主流语言** — 英语、简体中文、繁体中文、法语、日语、韩语、西班牙语、葡萄牙语、德语、俄语，接入 Android 原生应用语言机制。
 - **小屏适配** — 响应式布局自动检查 320–480dp 宽度，包含 Xiaomi 17 级别的 393dp profile。
@@ -39,8 +40,9 @@
 5. 在 HyperOS 中为 FCM Guard 开启 **自启动**，并将电池策略设为 **无限制**。
 6. 如果最看重后台可靠性，建议保持 **常驻通知** 开启。如果 Android / HyperOS 禁用了 FCM Guard 通知，App 会引导进入系统通知设置，使前台通知真正可见。
 7. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App。若当前 HyperOS 允许读取自启动状态，列表会标记 已开启 / 部分开启 / 未开启 / 未知，并在你从 **在 HyperOS 中统一配置** 返回后自动重新检查；若 ROM 不允许读取，FCM Guard 会明确显示“未知 / 不可读取”，而不是猜测。
-8. 可选：点击 **打开 FCM 诊断**，进入 Google Play 服务诊断界面，检查 `mtalk.google.com:5228` 连接状态。
-9. 如果只有某个 App 仍出现通知延迟，而其他 FCM App 正常，请单独调整该 App 的后台策略。对于 **WhatsApp** 等即时通讯 App，建议设置为：**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**；若系统提供自启动选项，也建议为该 App 开启 **自启动**。
+8. 可选：开启 **Aurogon FCM 防护**，将符合条件的 FCM App 同步到小米 Aurogon 广播规则。按提示启动 Shizuku 并确认授权；FCM Guard 只为自身申请 `WRITE_SECURE_SETTINGS`。保护服务运行期间每 30 分钟同步一次。
+9. 可选：点击 **打开 FCM 诊断**，进入 Google Play 服务诊断界面，检查 `mtalk.google.com:5228` 连接状态。
+10. 如果只有某个 App 仍出现通知延迟，而其他 FCM App 正常，请单独调整该 App 的后台策略。对于 **WhatsApp** 等即时通讯 App，建议设置为：**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**；若系统提供自启动选项，也建议为该 App 开启 **自启动**。
 10. 为减少金融 App 的兼容风险，除非确有需要，建议保持开发者选项 / USB 调试 / 无线调试关闭。
 
 > FCM Guard 主要针对中国版 HyperOS 3：Google 服务本身可以正常使用，但 PowerKeeper / Greezer 仍可能在后台限制 GMS，造成 FCM 推送延迟或中断。
@@ -77,7 +79,7 @@ flowchart TD
 
 ## 为什么使用 `targetSdk 22`
 
-FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让项目继续使用当前 Android 构建工具，而旧 target 保留对 Xiaomi 厂商私有 `Settings.System` key 的兼容写入路径，因此可以仅依靠用户授予的 **修改系统设置** 权限完成修复，而不需要 Root / Shizuku。
+FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让项目继续使用当前 Android 构建工具，而旧 target 保留核心 GMS 白名单修复所需的 Xiaomi 私有 `Settings.System` 写入兼容路径，只需用户授予 **修改系统设置** 权限，不需要 Root 或 Shizuku。可选 Aurogon 防护另需一次性 Shizuku 授权。
 
 ## 低功耗设计
 
@@ -126,6 +128,14 @@ FCM Guard **不会把“未知”当成“未开启”**。如果所有检测到
 
 整个过程不会程序化修改任何其他 App 的自启动状态，也不会引入 Shizuku / Root / ADB 权限。
 
+### 可选 Aurogon 防护
+
+开启后，FCM Guard 会检查 FCM/GCM manifest 信号，并只读查询小米自启动 AppOps `10008` 与 `10053`。只有两个操作都明确为允许的用户安装 App 才会加入 `Settings.Global.aurogon_enable`。未知状态不会创建新规则；原先由 FCM Guard 管理的规则会在状态未知时保留。合并时保留其他规则区段，写入前重新读取，写入后回读完整值验证。扫描失败或结果不完整时不会修改设置。
+
+首次设置需要用户启动 Shizuku 并同意授权提示。短暂的 Shizuku 用户服务只为 FCM Guard 授予 `WRITE_SECURE_SETTINGS`；之后的扫描和同步均以普通 App UID 执行。授权后无需持续运行 Shizuku。自动同步使用进程内 30 分钟回调，FCM Guard 保护服务未运行时会暂停。手动 **清空设置** 会清空整个厂商 key（包含其他 App 管理的规则），执行前会再次确认。
+
+Aurogon 专属文案已提供英文、简体中文和繁体中文翻译；其他七种 UI 语言暂时回退显示英文。
+
 ## 单 App 推送仍可能受后台策略影响
 
 FCM Guard 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 HyperOS 对每个接收 App 单独施加的后台限制。某些 App——尤其是 **WhatsApp** 这类即时通讯 App——可能把 FCM 用作唤醒 / tickle 信号，之后仍需要自己的进程获得后台执行时间、建立网络连接、同步消息并生成本地通知。
@@ -145,9 +155,11 @@ FCM Guard 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 
 
 ## 权限与隐私
 
-FCM Guard 使用 `WRITE_SETTINGS`、`RECEIVE_BOOT_COMPLETED`、前台服务 / 通知支持，以及针对 FCM/GCM handler、Google Play 服务和小米安全中心的窄范围 package visibility。
+FCM Guard 使用 `WRITE_SETTINGS`、`RECEIVE_BOOT_COMPLETED`、前台服务 / 通知支持，以及针对 FCM/GCM handler、Google Play 服务、小米安全中心和 Shizuku 管理器的窄范围 package visibility。可选 Aurogon 功能声明 `WRITE_SECURE_SETTINGS`，且仅在用户明确同意 Shizuku 授权后授予。
 
-FCM Guard **不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮窗、设备管理员、账号读取或网络流量抓取。
+核心 GMS 修复**不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮窗、设备管理员、账号读取或网络流量抓取。可选 Aurogon 同步需要上述一次性 Shizuku 设置。
+
+应用的 `minSdk` 为 23，因为可选 Aurogon 初始化使用的官方 Shizuku provider 要求 Android 6.0 或更高版本。`targetSdk` 仍为 22，以保留小米 `WRITE_SETTINGS` 兼容路径。
 
 ## 局限性
 
@@ -162,7 +174,7 @@ PowerKeeper / Greezer 行为与 `MILLET_NO_RESTRICT_APP` 修复思路最初由 *
 - HyperOS FCM Fix（`dingwen07`）：https://github.com/dingwen07/hyperos-fcm-fix
 - 技术调查文档：https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard 是独立实现，设计重点是无需 Shizuku / Root、权限尽量少、事件驱动和更低待机后台活动。本仓库没有复制 HyperOS FCM Fix 的源代码。
+FCM Guard 是独立实现，设计重点是权限尽量少、事件驱动和更低待机后台活动。核心 GMS 修复不依赖 Shizuku；只有可选 Aurogon 权限初始化会使用 Shizuku。本仓库没有复制 HyperOS FCM Fix 的源代码。
 
 ## 构建
 

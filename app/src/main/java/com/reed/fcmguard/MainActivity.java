@@ -36,6 +36,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import rikka.shizuku.Shizuku;
+
 import java.util.List;
 
 public class MainActivity extends Activity {
@@ -58,15 +60,31 @@ public class MainActivity extends Activity {
     private Button scanFcmAppsBtn;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
+    private Switch aurogonSwitch;
     private Button permissionBtn;
     private RadioGroup appearanceGroup;
     private boolean suppressSwitchCallbacks = false;
     private boolean suppressAppearanceCallbacks = false;
     private boolean notificationAccessPending = false;
     private boolean fcmListExpanded = false;
+    private boolean suppressAurogonCallbacks;
+    private boolean pendingAurogonShizukuGrant;
+    private AurogonShizukuManager aurogonShizukuManager;
     private List<FcmAppScanner.AppEntry> scannedFcmApps;
 
     private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
+    private final Shizuku.OnRequestPermissionResultListener aurogonPermissionListener =
+            (requestCode, grantResult) -> {
+                if (requestCode != AurogonShizukuManager.REQUEST_CODE) return;
+                if (grantResult == PackageManager.PERMISSION_GRANTED && pendingAurogonShizukuGrant) {
+                    pendingAurogonShizukuGrant = false;
+                    finishAurogonShizukuSetup();
+                } else {
+                    pendingAurogonShizukuGrant = false;
+                    toast(getString(R.string.aurogon_shizuku_denied));
+                    refreshAurogonUi();
+                }
+            };
     private int languageLabelIndex = 0;
     private boolean languageAnimationRunning = false;
     private final Runnable languageLabelTicker = new Runnable() {
@@ -106,7 +124,13 @@ public class MainActivity extends Activity {
         setupAppearance();
         setupSwitches();
         bindActions();
+        setupAurogonControls();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            aurogonShizukuManager = new AurogonShizukuManager(this);
+            Shizuku.addRequestPermissionResultListener(aurogonPermissionListener);
+        }
         refreshStatus(null);
+        refreshAurogonUi();
     }
 
     @Override protected void onResume() {
@@ -118,7 +142,10 @@ public class MainActivity extends Activity {
                 GuardService.canShowPersistentNotification(this)) {
             startProtectionService();
         }
+        if (AurogonProtection.isAutoSyncEnabled(this)
+                && AurogonProtection.hasSecureSettingsPermission(this)) startProtectionService(false);
         refreshStatus(null);
+        refreshAurogonUi();
         if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
             renderFcmAppStatuses();
         }
@@ -127,6 +154,15 @@ public class MainActivity extends Activity {
     @Override protected void onPause() {
         stopLanguageButtonAnimation();
         super.onPause();
+    }
+
+    @Override protected void onDestroy() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            try { Shizuku.removeRequestPermissionResultListener(aurogonPermissionListener); }
+            catch (Throwable ignored) {}
+        }
+        if (aurogonShizukuManager != null) aurogonShizukuManager.close();
+        super.onDestroy();
     }
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
@@ -298,8 +334,13 @@ public class MainActivity extends Activity {
                 if (result.changed) FcmReconnect.kick(this);
                 toast(getString(R.string.service_started));
             } else {
-                stopService(new Intent(this, GuardService.class));
                 SettingsGuard.setProtectionEnabled(this, false);
+                if (AurogonProtection.isAutoSyncEnabled(this)
+                        && AurogonProtection.hasSecureSettingsPermission(this)) {
+                    startProtectionService(false);
+                } else {
+                    stopService(new Intent(this, GuardService.class));
+                }
                 toast(getString(R.string.service_stopped));
             }
             refreshStatus(null);
@@ -315,8 +356,145 @@ public class MainActivity extends Activity {
                 languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
             }
             if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
+            else if (AurogonProtection.isAutoSyncEnabled(this)
+                    && AurogonProtection.hasSecureSettingsPermission(this)) startProtectionService(false);
             refreshStatus(null);
         });
+    }
+
+    private void setupAurogonControls() {
+        aurogonSwitch = findViewById(R.id.aurogonSwitch);
+        aurogonSwitch.setOnCheckedChangeListener((button, checked) -> {
+            if (suppressAurogonCallbacks) return;
+            if (AurogonProtection.hasSecureSettingsPermission(this)) {
+                AurogonProtection.setAutoSyncEnabled(this, checked);
+                if (checked) startProtectionService(false);
+                else if (!SettingsGuard.isProtectionEnabled(this)) {
+                    stopService(new Intent(this, GuardService.class));
+                }
+                if (checked) syncAurogonNow();
+                refreshAurogonUi();
+            } else {
+                aurogonSwitch.setChecked(false);
+                if (checked) setupAurogonPermission();
+            }
+        });
+        findViewById(R.id.aurogonShizukuSetup).setOnClickListener(v -> setupAurogonPermission());
+        findViewById(R.id.aurogonSyncNow).setOnClickListener(v -> syncAurogonNow());
+        findViewById(R.id.aurogonClearSetting).setOnClickListener(v ->
+                new AlertDialog.Builder(this)
+                        .setMessage(R.string.aurogon_clear_confirm)
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .setPositiveButton(android.R.string.ok, (dialog, which) -> clearAurogonSetting())
+                        .show());
+        findViewById(R.id.aurogonViewSetting).setOnClickListener(v -> showAurogonSetting());
+    }
+
+    private void setupAurogonPermission() {
+        if (AurogonProtection.hasSecureSettingsPermission(this)) {
+            toast(getString(R.string.aurogon_secure_settings_granted));
+            refreshAurogonUi();
+            return;
+        }
+        if (!AurogonShizukuManager.isBinderReady()) {
+            Intent launch = getPackageManager().getLaunchIntentForPackage("moe.shizuku.privileged.api");
+            if (launch != null) {
+                try { startActivity(launch); toast(getString(R.string.aurogon_start_shizuku_first)); }
+                catch (Throwable error) { toast(getString(R.string.aurogon_shizuku_unavailable)); }
+            } else toast(getString(R.string.aurogon_shizuku_unavailable));
+            return;
+        }
+        AurogonShizukuManager.RequestState state = AurogonShizukuManager.requestPermission();
+        if (state == AurogonShizukuManager.RequestState.REQUESTED) {
+            pendingAurogonShizukuGrant = true;
+        } else if (state == AurogonShizukuManager.RequestState.GRANTED) {
+            finishAurogonShizukuSetup();
+        } else {
+            toast(getString(R.string.aurogon_shizuku_unavailable));
+        }
+    }
+
+    private void finishAurogonShizukuSetup() {
+        if (AurogonProtection.hasSecureSettingsPermission(this)) {
+            toast(getString(R.string.aurogon_secure_settings_granted));
+            refreshAurogonUi();
+            return;
+        }
+        if (aurogonShizukuManager == null) return;
+        aurogonShizukuManager.grantSecureSettings(getPackageName(), (success, detail) -> {
+            boolean verified = success && AurogonProtection.hasSecureSettingsPermission(this);
+            toast(verified ? getString(R.string.aurogon_secure_settings_granted)
+                    : getString(R.string.aurogon_secure_settings_failed, detail));
+            refreshAurogonUi();
+            if (verified && AurogonProtection.isAutoSyncEnabled(this)) startProtectionService(false);
+        });
+    }
+
+    private void syncAurogonNow() {
+        if (!AurogonProtection.hasSecureSettingsPermission(this)) {
+            toast(getString(R.string.aurogon_status_permission));
+            return;
+        }
+        findViewById(R.id.aurogonSyncNow).setEnabled(false);
+        new Thread(() -> {
+            AurogonProtection.SyncOutcome result = AurogonProtection.syncCurrentAutostartApps(this);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                findViewById(R.id.aurogonSyncNow).setEnabled(true);
+                refreshAurogonUi();
+                toast(result.verified
+                        ? getString(R.string.aurogon_sync_done, result.packageCount)
+                        : getString(R.string.aurogon_action_failed, result.error));
+            });
+        }, "fcmguard-aurogon-sync-now").start();
+    }
+
+    private void clearAurogonSetting() {
+        new Thread(() -> {
+            AurogonProtection.ClearResult result = AurogonProtection.clearSettings(this);
+            new Handler(Looper.getMainLooper()).post(() -> {
+                if (!SettingsGuard.isProtectionEnabled(this)
+                        && !AurogonProtection.isAutoSyncEnabled(this)) {
+                    stopService(new Intent(this, GuardService.class));
+                }
+                refreshAurogonUi();
+                toast(result.verified ? getString(R.string.aurogon_clear_done)
+                        : getString(R.string.aurogon_action_failed, result.error));
+            });
+        }, "fcmguard-aurogon-clear").start();
+    }
+
+    private void showAurogonSetting() {
+        new Thread(() -> {
+            String value;
+            try {
+                String setting = Settings.Global.getString(getContentResolver(), AurogonConfig.KEY);
+                value = setting == null || setting.trim().isEmpty()
+                        ? getString(R.string.aurogon_value_empty)
+                        : getString(R.string.aurogon_value_content, setting);
+            } catch (Throwable error) {
+                value = getString(R.string.aurogon_value_error,
+                        error.getClass().getSimpleName() + ": " + String.valueOf(error.getMessage()));
+            }
+            String message = value;
+            new Handler(Looper.getMainLooper()).post(() -> new AlertDialog.Builder(this)
+                    .setTitle(R.string.aurogon_value_title)
+                    .setMessage(message)
+                    .setPositiveButton(android.R.string.ok, null)
+                    .show());
+        }, "fcmguard-aurogon-read").start();
+    }
+
+    private void refreshAurogonUi() {
+        if (aurogonSwitch == null) return;
+        suppressAurogonCallbacks = true;
+        aurogonSwitch.setChecked(AurogonProtection.isAutoSyncEnabled(this));
+        suppressAurogonCallbacks = false;
+        ((TextView) findViewById(R.id.aurogonSummary)).setText(AurogonProtection.summary(this));
+        findViewById(R.id.aurogonShizukuSetup).setVisibility(
+                AurogonProtection.hasSecureSettingsPermission(this) ? View.GONE : View.VISIBLE);
+        boolean allowed = AurogonProtection.hasSecureSettingsPermission(this);
+        findViewById(R.id.aurogonSyncNow).setEnabled(allowed);
+        findViewById(R.id.aurogonClearSetting).setEnabled(allowed);
     }
 
     private void bindActions() {
@@ -518,7 +696,12 @@ public class MainActivity extends Activity {
     }
 
     private void startProtectionService() {
+        startProtectionService(true);
+    }
+
+    private void startProtectionService(boolean enableCoreProtection) {
         Intent service = new Intent(this, GuardService.class);
+        service.putExtra(GuardService.EXTRA_ENABLE_CORE_PROTECTION, enableCoreProtection);
         try {
             boolean persistent = SettingsGuard.usePersistentNotification(this);
             if (persistent) GuardService.ensureNotificationChannel(this);

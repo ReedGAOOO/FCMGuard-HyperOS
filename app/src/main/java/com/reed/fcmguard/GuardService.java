@@ -27,10 +27,12 @@ public class GuardService extends Service {
     private final Handler handler = new Handler(Looper.getMainLooper());
     private ContentObserver observer;
     private boolean foreground;
+    private volatile boolean aurogonInFlight;
 
     private final Runnable fallbackCheck = new Runnable() {
         @Override public void run() {
-            repair(false);
+            if (SettingsGuard.isProtectionEnabled(GuardService.this)) repair(false);
+            maintainAurogon();
             handler.postDelayed(this, FALLBACK_INTERVAL_MS);
         }
     };
@@ -50,7 +52,9 @@ public class GuardService extends Service {
     }
 
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
-        SettingsGuard.setProtectionEnabled(this, true);
+        if (intent != null && intent.getBooleanExtra(EXTRA_ENABLE_CORE_PROTECTION, false)) {
+            SettingsGuard.setProtectionEnabled(this, true);
+        }
         registerObserver();
         applyExecutionMode();
         handler.removeCallbacks(fallbackCheck);
@@ -58,7 +62,21 @@ public class GuardService extends Service {
         return START_STICKY;
     }
 
+    public static final String EXTRA_ENABLE_CORE_PROTECTION = "enable_core_protection";
+
+    private void maintainAurogon() {
+        if (!AurogonProtection.isAutoSyncEnabled(this)
+                || !AurogonProtection.hasSecureSettingsPermission(this)
+                || aurogonInFlight) return;
+        aurogonInFlight = true;
+        new Thread(() -> {
+            try { AurogonProtection.syncCurrentAutostartApps(this); }
+            finally { aurogonInFlight = false; }
+        }, "fcmguard-aurogon-periodic-sync").start();
+    }
+
     private void repair(boolean notifyFailure) {
+        if (!SettingsGuard.isProtectionEnabled(this)) return;
         SettingsGuard.Result result = SettingsGuard.repair(this);
         if (result.changed) {
             FcmReconnect.kick(this);
@@ -77,7 +95,9 @@ public class GuardService extends Service {
         observer = new ContentObserver(handler) {
             @Override public void onChange(boolean selfChange, Uri uri) {
                 handler.removeCallbacks(repairDebounced);
-                handler.postDelayed(repairDebounced, 400L);
+                if (SettingsGuard.isProtectionEnabled(GuardService.this)) {
+                    handler.postDelayed(repairDebounced, 400L);
+                }
             }
         };
         resolver.registerContentObserver(

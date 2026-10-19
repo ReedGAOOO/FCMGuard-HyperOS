@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aurogon_title">Aurogon FCM protection</string>
+    <string name="aurogon_explanation">When enabled, syncs user apps with Xiaomi Autostart enabled to Aurogon every 30 minutes while FCM Guard is running. Shizuku is only needed once to grant WRITE_SECURE_SETTINGS.</string>
+    <string name="aurogon_status_initial">Aurogon sync: waiting for permission and first sync.</string>
+    <string name="aurogon_status_disabled">Automatic Aurogon protection is off.</string>
+    <string name="aurogon_status_permission">Shizuku has not granted this app permission to manage Aurogon.</string>
+    <string name="aurogon_status_waiting">Waiting for the first synchronization.</string>
+    <string name="aurogon_status_synced">Aurogon rules synchronized for %1$d apps.</string>
+    <string name="aurogon_status_failed">The last synchronization failed. Check permission and Autostart access, then try again.</string>
+    <string name="aurogon_shizuku_setup">Grant Aurogon permission through Shizuku</string>
+    <string name="aurogon_shizuku_unavailable">Shizuku is not running or access is unavailable.</string>
+    <string name="aurogon_shizuku_denied">Shizuku permission was not granted.</string>
+    <string name="aurogon_start_shizuku_first">Start Shizuku, then tap this button again.</string>
+    <string name="aurogon_secure_settings_granted">WRITE_SECURE_SETTINGS is granted and verified.</string>
+    <string name="aurogon_secure_settings_failed">Could not grant or verify WRITE_SECURE_SETTINGS: %1$s</string>
+    <string name="aurogon_clear_setting">Clear setting</string>
+    <string name="aurogon_sync_now">Sync Autostart apps</string>
+    <string name="aurogon_view_setting">View current Aurogon rules</string>
+    <string name="aurogon_clear_confirm">This clears the entire aurogon_enable setting, including rules from other apps. The next sync may add Autostart apps again. Continue?</string>
+    <string name="aurogon_clear_done">Aurogon setting cleared.</string>
+    <string name="aurogon_sync_done">Synced %1$d Autostart apps.</string>
+    <string name="aurogon_action_failed">Action failed: %1$s</string>
+    <string name="aurogon_value_title">Current Aurogon protection rules</string>
+    <string name="aurogon_value_empty">Setting value is empty (null).</string>
+    <string name="aurogon_value_content">Rules:\n%1$s</string>
+    <string name="aurogon_value_error">Could not read setting:\n%1$s</string>
+</resources>

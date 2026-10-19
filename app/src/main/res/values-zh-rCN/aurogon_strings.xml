@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="aurogon_title">Aurogon FCM 防护</string>
+    <string name="aurogon_explanation">开启后，FCM Guard 运行期间每 30 分钟会将小米自启动已开启的用户 App 同步至 Aurogon。Shizuku 仅用于首次授予 WRITE_SECURE_SETTINGS。</string>
+    <string name="aurogon_status_initial">Aurogon 同步：等待权限与首次同步。</string>
+    <string name="aurogon_status_disabled">Aurogon 自动防护已关闭。</string>
+    <string name="aurogon_status_permission">尚未通过 Shizuku 授予此 App 管理 Aurogon 的权限。</string>
+    <string name="aurogon_status_waiting">等待首次同步。</string>
+    <string name="aurogon_status_synced">已同步 %1$d 个 App 的 Aurogon 规则。</string>
+    <string name="aurogon_status_failed">上次同步失败，请确认权限与自启动状态后再试。</string>
+    <string name="aurogon_shizuku_setup">通过 Shizuku 授予 Aurogon 权限</string>
+    <string name="aurogon_shizuku_unavailable">Shizuku 尚未运行或无法取得授权。</string>
+    <string name="aurogon_shizuku_denied">尚未授予 Shizuku 权限。</string>
+    <string name="aurogon_start_shizuku_first">请先启动 Shizuku，再按一次此按钮。</string>
+    <string name="aurogon_secure_settings_granted">已授予并验证 WRITE_SECURE_SETTINGS。</string>
+    <string name="aurogon_secure_settings_failed">无法授予或验证 WRITE_SECURE_SETTINGS：%1$s</string>
+    <string name="aurogon_clear_setting">清空设置</string>
+    <string name="aurogon_sync_now">同步自启动 App</string>
+    <string name="aurogon_view_setting">查看当前 Aurogon 规则</string>
+    <string name="aurogon_clear_confirm">这会清空整个 aurogon_enable 设置，包括其他 App 的规则。下次同步可能会重新加入自启动 App。要继续吗？</string>
+    <string name="aurogon_clear_done">Aurogon 设置已清空。</string>
+    <string name="aurogon_sync_done">已同步 %1$d 个自启动 App。</string>
+    <string name="aurogon_action_failed">操作失败：%1$s</string>
+    <string name="aurogon_value_title">当前 Aurogon 防护规则</string>
+    <string name="aurogon_value_empty">设置值为空（null）。</string>
+    <string name="aurogon_value_content">规则内容：\n%1$s</string>
+    <string name="aurogon_value_error">读取设置失败：\n%1$s</string>
+</resources>

@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+    <!-- Only granted after the user explicitly authorizes the Shizuku setup action. -->
+    <uses-permission android:name="android.permission.WRITE_SECURE_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
@@ -20,6 +22,7 @@
         </intent>
         <package android:name="com.google.android.gms" />
         <package android:name="com.miui.securitycenter" />
+        <package android:name="moe.shizuku.privileged.api" />
     </queries>
 
     <application
@@ -29,6 +32,14 @@
         android:theme="@style/AppTheme"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true">
+
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:multiprocess="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
 
         <!--
           FCM Guard intentionally targets SDK 22 so WRITE_SETTINGS can modify Xiaomi's

@@ -20,12 +20,13 @@
 
 ## Highlights
 
-- **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, persistent ADB, Accessibility, VPN, overlay, or device-admin privileges.
+- **Core repair needs no Shizuku** — it uses the user-grantable **Modify system settings** permission. Optional Aurogon sync uses Shizuku only for a one-time, user-approved `WRITE_SECURE_SETTINGS` grant; it does not start Shizuku or enable debugging.
 - **Finance-app friendly** — keeps the implementation deliberately low-privilege for better compatibility with security-sensitive apps.
 - **Low background power** — exact event-driven monitoring is the main path; the 30-minute fallback is in-process and does not deliberately wake a sleeping phone.
 - **Reconnects only when needed** — FCM/MCS reconnect broadcasts are sent only after a real whitelist repair or a manual request.
 - **Optional persistent notification** — foreground mode uses a visible-but-silent notification channel for stronger process survival; quiet background mode remains available.
 - **FCM app assistant** — scans likely Firebase/GCM clients and, when HyperOS exposes the vendor AppOps state, shows read-only Autostart status with automatic re-check after returning from system settings.
+- **Optional Aurogon protection** — while FCM Guard is running, syncs FCM-capable user apps with both Xiaomi Autostart operations enabled into Xiaomi's `aurogon_enable` rules every 30 minutes. It preserves unrelated rule sections and verifies writes by reading the full setting back.
 - **Native dark mode** — System / Light / Dark, with **System** as the default.
 - **10-language UI** — English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian through Android's native per-app language mechanism.
 - **Compact-phone ready** — responsive layout checks cover 320–480dp widths, including a Xiaomi 17-class 393dp profile.
@@ -39,8 +40,9 @@
 5. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
 6. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
 7. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, FCM Guard shows a clear Unknown/unavailable fallback instead of guessing.
-8. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
-9. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
+8. Optional: enable **Aurogon FCM protection** to sync eligible FCM apps into Xiaomi's Aurogon broadcast rules. Start Shizuku and grant access when prompted; FCM Guard requests only `WRITE_SECURE_SETTINGS` for its own package. Aurogon sync runs every 30 minutes while the app's protection service is running.
+9. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
+10. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
 
 > FCM Guard is mainly for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
 
@@ -76,7 +78,7 @@ flowchart TD
 
 ## Why `targetSdk 22`?
 
-FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission and without root/Shizuku.
+FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path used by the core GMS whitelist repair with the user-grantable **Modify system settings** permission and without root or Shizuku. Optional Aurogon protection is separate and needs a one-time Shizuku grant.
 
 ## Low-power design
 
@@ -123,6 +125,14 @@ FCM Guard never treats **Unknown** as **Disabled**. If every detected app is Unk
 
 No Autostart state is modified programmatically, and no Shizuku/root/ADB privilege is introduced.
 
+### Optional Aurogon protection
+
+When enabled, FCM Guard checks the FCM/GCM manifest signals and reads Xiaomi Autostart AppOps `10008` and `10053`. Only user-installed apps with both operations explicitly allowed are added to `Settings.Global.aurogon_enable`. Unknown Autostart results do not create new rules; rules previously managed by FCM Guard are retained while the result remains unknown. The merge preserves unrelated sections, rereads immediately before writing, and verifies the complete value afterward. A failed or incomplete scan leaves the setting unchanged.
+
+The first setup requires the user to start Shizuku and approve its access prompt. A short-lived Shizuku user service grants `WRITE_SECURE_SETTINGS` to FCM Guard only; the ongoing scan and sync run under the normal app UID. Shizuku does not need to remain running after the grant. Automatic sync is an in-process 30-minute callback and pauses when FCM Guard's protection service is not running. The manual **Clear setting** action clears the whole vendor key, including rules owned by other apps, and asks for confirmation first.
+
+Aurogon-specific strings are translated in English, Simplified Chinese, and Traditional Chinese; the other seven UI locales currently fall back to English for this feature.
+
 ## Per-app delivery caveat
 
 FCM Guard protects the Google Play services / FCM transport layer, but it does **not** override HyperOS battery rules for every receiving app. Some apps — including messaging apps such as **WhatsApp** — may use FCM as a wake-up/tickle path and still need their own process to run, open a background network connection, synchronize data, and generate the local notification.
@@ -142,9 +152,11 @@ Also enable **Autostart** for the affected app when the ROM exposes that option.
 
 ## Permissions and privacy
 
-FCM Guard uses `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, foreground-service/notification support, and narrow package visibility for FCM/GCM handlers, Google Play services, and Xiaomi Security Center.
+FCM Guard uses `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, foreground-service/notification support, and narrow package visibility for FCM/GCM handlers, Google Play services, Xiaomi Security Center, and the Shizuku manager. `WRITE_SECURE_SETTINGS` is declared for optional Aurogon support and is granted only after explicit Shizuku consent.
 
-It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overlay, device-admin, account access, or traffic inspection.
+Core GMS repair does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overlay, device-admin, account access, or traffic inspection. Optional Aurogon sync does require the one-time Shizuku setup described above.
+
+The app's `minSdk` is 23 because the official Shizuku provider used by optional Aurogon setup requires Android 6.0 or later. `targetSdk` remains 22 for the Xiaomi `WRITE_SETTINGS` compatibility path.
 
 ## Limitations
 
@@ -159,7 +171,7 @@ The PowerKeeper / Greezer investigation and the `MILLET_NO_RESTRICT_APP` repair 
 - HyperOS FCM Fix by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
 - Technical investigation: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard is an independent implementation focused on no Shizuku/root dependency, minimal privileges, event-driven monitoring, and low idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
+FCM Guard is an independent implementation focused on minimal privileges, event-driven monitoring, and low idle background activity. Its core GMS repair does not depend on Shizuku; only optional Aurogon permission setup uses it. No source code from HyperOS FCM Fix is copied into this repository.
 
 ## Build
 
