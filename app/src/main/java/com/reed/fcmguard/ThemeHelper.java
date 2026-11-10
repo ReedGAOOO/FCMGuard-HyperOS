@@ -6,6 +6,7 @@ import android.content.res.Configuration;
 public final class ThemeHelper {
     private static final String PREFS = "guard_state";
     private static final String KEY_MODE = "appearance_mode";
+    private static final String KEY_GLASS = "hyperos_glass_material";
 
     public static final String MODE_SYSTEM = "system";
     public static final String MODE_LIGHT = "light";
@@ -43,6 +44,19 @@ public final class ThemeHelper {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_MODE, normalized)
+                .apply();
+    }
+
+    /** HyperOS advanced material; on by default and only effective where supported. */
+    public static boolean isGlassEnabled(Context context) {
+        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getBoolean(KEY_GLASS, true);
+    }
+
+    public static void setGlassEnabled(Context context, boolean enabled) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putBoolean(KEY_GLASS, enabled)
                 .apply();
     }
 

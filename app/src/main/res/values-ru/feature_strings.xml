@@ -24,4 +24,7 @@
     <string name="theme_system">Система</string>
     <string name="theme_light">Светлая</string>
     <string name="theme_dark">Тёмная</string>
+    <string name="glass_material">Расширенный материал HyperOS</string>
+    <string name="glass_material_summary">Заголовок и карточка статуса в стиле матового стекла с системным размытием. Автоматически приостанавливается в режиме энергосбережения.</string>
+    <string name="glass_material_unavailable">Недоступно: система не предоставляет расширенный материал HyperOS (системное размытие).</string>
 </resources>

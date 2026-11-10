@@ -25,4 +25,7 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Light</string>
     <string name="theme_dark">Dark</string>
+    <string name="glass_material">HyperOS advanced material</string>
+    <string name="glass_material_summary">Frosted-glass header and status card drawn with the system\'s own blur. Pauses automatically in Battery saver.</string>
+    <string name="glass_material_unavailable">Not available: this system does not expose HyperOS advanced material (system blur).</string>
 </resources>

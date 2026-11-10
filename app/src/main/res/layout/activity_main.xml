@@ -17,6 +17,16 @@
         <include layout="@layout/dashboard_scroll_content" />
     </ScrollView>
 
+    <!--
+      HyperOS advanced-material band behind the fixed header. Hidden unless the system
+      blur is available; StickyDashboardLayout sizes it to status bar + hero height.
+    -->
+    <View
+        android:id="@+id/headerBackdrop"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:background="@color/glass_header"
+        android:visibility="gone" />
 
     <FrameLayout
         android:id="@+id/stickyHeader"

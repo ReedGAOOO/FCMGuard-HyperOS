@@ -24,4 +24,7 @@
     <string name="theme_system">System</string>
     <string name="theme_light">Hell</string>
     <string name="theme_dark">Dunkel</string>
+    <string name="glass_material">Erweitertes HyperOS-Material</string>
+    <string name="glass_material_summary">Kopfbereich und Statuskarte als Milchglas mit der systemeigenen Unschärfe. Pausiert automatisch im Energiesparmodus.</string>
+    <string name="glass_material_unavailable">Nicht verfügbar: Dieses System stellt das erweiterte HyperOS-Material (Systemunschärfe) nicht bereit.</string>
 </resources>

@@ -24,4 +24,7 @@
     <string name="theme_system">システム</string>
     <string name="theme_light">ライト</string>
     <string name="theme_dark">ダーク</string>
+    <string name="glass_material">HyperOS 高度なマテリアル</string>
+    <string name="glass_material_summary">システム標準のぼかしでヘッダーとステータスカードをすりガラス表示にします。バッテリーセーバー中は自動で一時停止します。</string>
+    <string name="glass_material_unavailable">利用できません：このシステムは HyperOS の高度なマテリアル（システムぼかし）を公開していません。</string>
 </resources>

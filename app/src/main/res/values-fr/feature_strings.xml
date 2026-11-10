@@ -24,4 +24,7 @@
     <string name="theme_system">Système</string>
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
+    <string name="glass_material">Matière avancée HyperOS</string>
+    <string name="glass_material_summary">En-tête et carte d’état en verre dépoli, rendus avec le flou natif du système. Suspendu automatiquement par l’économiseur de batterie.</string>
+    <string name="glass_material_unavailable">Indisponible : ce système n’expose pas la matière avancée HyperOS (flou système).</string>
 </resources>

@@ -25,4 +25,7 @@
     <string name="theme_system">跟随系统</string>
     <string name="theme_light">浅色</string>
     <string name="theme_dark">深色</string>
+    <string name="glass_material">HyperOS 高级材质</string>
+    <string name="glass_material_summary">使用系统自带的模糊能力绘制毛玻璃头部与状态卡；省电模式下自动暂停。</string>
+    <string name="glass_material_unavailable">不可用：当前系统未开放 HyperOS 高级材质（系统模糊）。</string>
 </resources>

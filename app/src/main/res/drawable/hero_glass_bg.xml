@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Translucent hero tint drawn over the system-blurred header band. -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="@color/hero_start_glass"
+        android:centerColor="@color/hero_center_glass"
+        android:endColor="@color/hero_end_glass"
+        android:angle="0" />
+    <corners android:radius="28dp" />
+</shape>

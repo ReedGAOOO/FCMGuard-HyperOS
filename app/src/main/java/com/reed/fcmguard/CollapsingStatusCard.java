@@ -77,6 +77,20 @@ public final class CollapsingStatusCard extends LinearLayout {
     }
 
     /**
+     * Switches between the opaque surface and the translucent HyperOS glass surface.
+     * In glass mode the system blur (applied by the caller) shows through the fill;
+     * geometry, outline and the whitelist clip are unchanged.
+     */
+    public void setGlassSurface(boolean glass) {
+        int fill = getResources().getColor(glass ? R.color.glass_surface : R.color.surface);
+        int stroke = getResources().getColor(glass ? R.color.glass_border : R.color.floating_border);
+        if (fillPaint.getColor() == fill && strokePaint.getColor() == stroke) return;
+        fillPaint.setColor(fill);
+        strokePaint.setColor(stroke);
+        invalidate();
+    }
+
+    /**
      * Sets the visible bottom edge in this view's local coordinates. The measured
      * height intentionally remains unchanged so ScrollView geometry never jumps.
      */

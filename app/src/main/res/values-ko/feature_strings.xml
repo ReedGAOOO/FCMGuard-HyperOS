@@ -24,4 +24,7 @@
     <string name="theme_system">시스템</string>
     <string name="theme_light">라이트</string>
     <string name="theme_dark">다크</string>
+    <string name="glass_material">HyperOS 고급 머티리얼</string>
+    <string name="glass_material_summary">시스템 기본 블러로 헤더와 상태 카드를 반투명 유리처럼 표시합니다. 절전 모드에서는 자동으로 일시 중지됩니다.</string>
+    <string name="glass_material_unavailable">사용할 수 없음: 이 시스템은 HyperOS 고급 머티리얼(시스템 블러)을 제공하지 않습니다.</string>
 </resources>

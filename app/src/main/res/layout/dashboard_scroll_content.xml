@@ -89,6 +89,9 @@
             <RadioButton android:id="@+id/themeLight" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/theme_light" android:textColor="@color/text_primary" android:textSize="12sp" />
             <RadioButton android:id="@+id/themeDark" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/theme_dark" android:textColor="@color/text_primary" android:textSize="12sp" />
         </RadioGroup>
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="8dp" android:layout_marginBottom="4dp" />
+        <Switch android:id="@+id/glassSwitch" android:layout_width="match_parent" android:layout_height="48dp" android:text="@string/glass_material" android:textColor="@color/text_primary" android:textSize="15sp" />
+        <TextView android:id="@+id/glassSummary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/glass_material_summary" android:textColor="@color/text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
     </LinearLayout>
 
 </LinearLayout>

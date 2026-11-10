@@ -24,4 +24,7 @@
     <string name="theme_system">Sistema</string>
     <string name="theme_light">Claro</string>
     <string name="theme_dark">Oscuro</string>
+    <string name="glass_material">Material avanzado de HyperOS</string>
+    <string name="glass_material_summary">Encabezado y tarjeta de estado con efecto de vidrio esmerilado usando el desenfoque nativo del sistema. Se pausa automáticamente con el ahorro de batería.</string>
+    <string name="glass_material_unavailable">No disponible: este sistema no ofrece el material avanzado de HyperOS (desenfoque del sistema).</string>
 </resources>

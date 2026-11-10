@@ -22,9 +22,14 @@ import android.widget.ScrollView;
  *
  * All motion is driven directly by ScrollView scroll events while the Activity is
  * on screen; there are no timers, alarms, background work, or extra wakeups.
+ *
+ * On HyperOS devices with advanced material, {@link #setGlassMaterial(boolean)} turns the
+ * header band, hero and status card into system-blurred glass. The blur is rendered by
+ * the system (see {@link HyperOsMaterial}); without it every surface stays opaque.
  */
 public final class StickyDashboardLayout extends FrameLayout {
     private View stickyHeader;
+    private View headerBackdrop;
     private View contentRoot;
     private View heroCard;
     private CollapsingStatusCard statusCard;
@@ -37,6 +42,11 @@ public final class StickyDashboardLayout extends FrameLayout {
     private int stickyBaseRight;
     private int stickyBaseBottom;
     private int extraGapPx;
+    private float statusCardElevation;
+    /** Last requested glass state (null before the first request). */
+    private Boolean glassRequested;
+    /** Whether glass surfaces are currently shown; the inflated layout starts opaque. */
+    private boolean glassApplied;
 
     private final ViewTreeObserver.OnScrollChangedListener scrollChangedListener =
             this::syncCollapsingStatusCard;
@@ -56,6 +66,7 @@ public final class StickyDashboardLayout extends FrameLayout {
     @Override protected void onFinishInflate() {
         super.onFinishInflate();
         stickyHeader = findViewById(R.id.stickyHeader);
+        headerBackdrop = findViewById(R.id.headerBackdrop);
         contentRoot = findViewById(R.id.contentRoot);
         heroCard = findViewById(R.id.heroCard);
         statusCard = findViewById(R.id.statusCard);
@@ -63,6 +74,7 @@ public final class StickyDashboardLayout extends FrameLayout {
         currentValuePanel = findViewById(R.id.currentValuePanel);
         scrollView = findViewById(R.id.scroll);
         extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
+        if (statusCard != null) statusCardElevation = statusCard.getElevation();
 
         if (stickyHeader != null) {
             stickyBaseLeft = stickyHeader.getPaddingLeft();
@@ -106,6 +118,70 @@ public final class StickyDashboardLayout extends FrameLayout {
 
         requestLayout();
         return super.onApplyWindowInsets(insets);
+    }
+
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        syncHeaderBackdropHeight();
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    /**
+     * The glass band spans from the top of the screen to the bottom of the fixed hero.
+     * The hero height is a fixed dimension, so the band can be sized before measuring
+     * without an extra layout pass.
+     */
+    private void syncHeaderBackdropHeight() {
+        if (headerBackdrop == null || stickyHeader == null || heroCard == null) return;
+        ViewGroup.LayoutParams heroParams = heroCard.getLayoutParams();
+        ViewGroup.LayoutParams backdropParams = headerBackdrop.getLayoutParams();
+        if (heroParams == null || backdropParams == null || heroParams.height <= 0) return;
+        int desired = stickyHeader.getPaddingTop() + heroParams.height;
+        if (backdropParams.height != desired) backdropParams.height = desired;
+    }
+
+    /**
+     * Applies or removes HyperOS glass. Returns whether glass is active afterwards; when
+     * the system blur cannot be enabled the dashboard keeps its opaque surfaces.
+     */
+    public boolean setGlassMaterial(boolean wanted) {
+        if (headerBackdrop == null || heroCard == null || statusCard == null) return false;
+        if (glassRequested != null && glassRequested == wanted) return glassApplied;
+        glassRequested = wanted;
+
+        boolean glass = false;
+        if (wanted) {
+            int radius = glassBlurRadiusPx();
+            glass = HyperOsMaterial.enableBackgroundBlur(headerBackdrop, radius) &&
+                    HyperOsMaterial.enableBackgroundBlur(statusCard, radius);
+        }
+        if (!glass) {
+            HyperOsMaterial.disableBackgroundBlur(headerBackdrop);
+            HyperOsMaterial.disableBackgroundBlur(statusCard);
+        }
+        if (glass == glassApplied) return glass;
+
+        headerBackdrop.setVisibility(glass ? VISIBLE : GONE);
+        heroCard.setBackgroundResource(glass ? R.drawable.hero_glass_bg : R.drawable.hero_bg);
+        statusCard.setGlassSurface(glass);
+        // A shadow would show through a translucent card, so glass relies on the blur
+        // and the light edge for separation instead.
+        statusCard.setElevation(glass ? 0f : statusCardElevation);
+        if (statusDetailsPanel != null) {
+            // The whitelist is already clipped at the lower edge of this panel, so the
+            // opaque plate is only needed for the solid surface.
+            statusDetailsPanel.setBackgroundResource(glass ? 0 : R.drawable.status_header_bg);
+        }
+        if (currentValuePanel != null) {
+            currentValuePanel.setBackgroundResource(glass ? R.drawable.glass_tonal_bg : R.drawable.tonal_bg);
+        }
+
+        glassApplied = glass;
+        return glass;
+    }
+
+    private int glassBlurRadiusPx() {
+        int radius = Math.round(32f * getResources().getDisplayMetrics().density);
+        return Math.max(40, Math.min(200, radius));
     }
 
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {

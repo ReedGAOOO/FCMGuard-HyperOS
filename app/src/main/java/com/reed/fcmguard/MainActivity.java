@@ -63,6 +63,10 @@ public class MainActivity extends Activity {
     private Switch notificationSwitch;
     private Button permissionBtn;
     private RadioGroup appearanceGroup;
+    private StickyDashboardLayout dashboard;
+    private Switch glassSwitch;
+    private TextView glassSummary;
+    private boolean suppressGlassCallbacks = false;
     private boolean suppressSwitchCallbacks = false;
     private boolean suppressAppearanceCallbacks = false;
     private boolean notificationAccessPending = false;
@@ -123,6 +127,7 @@ public class MainActivity extends Activity {
         loadConfigIntoFields();
         setupLanguagePicker();
         setupAppearance();
+        setupGlassMaterial();
         setupSwitches();
         bindActions();
         // refreshStatus() runs in onResume(), which always follows onCreate().
@@ -139,6 +144,9 @@ public class MainActivity extends Activity {
         }
         refreshStatus(null);
         recheckFcmAutostartStatuses();
+        // Battery saver may have been toggled while we were away; apply after attach so
+        // the vendor blur is set on views that already have a render node.
+        dashboard.post(this::updateGlassMaterial);
     }
 
     @Override protected void onPause() {
@@ -178,6 +186,9 @@ public class MainActivity extends Activity {
         notificationSwitch = findViewById(R.id.notificationSwitch);
         permissionBtn = findViewById(R.id.permissionBtn);
         appearanceGroup = findViewById(R.id.appearanceGroup);
+        dashboard = findViewById(R.id.root);
+        glassSwitch = findViewById(R.id.glassSwitch);
+        glassSummary = findViewById(R.id.glassSummary);
     }
 
     private void loadConfigIntoFields() {
@@ -289,6 +300,31 @@ public class MainActivity extends Activity {
                 recreate();
             }
         });
+    }
+
+    private void setupGlassMaterial() {
+        boolean supported = HyperOsMaterial.isDeviceSupported();
+        suppressGlassCallbacks = true;
+        glassSwitch.setChecked(supported && ThemeHelper.isGlassEnabled(this));
+        suppressGlassCallbacks = false;
+        glassSwitch.setEnabled(supported);
+        glassSummary.setText(supported
+                ? R.string.glass_material_summary
+                : R.string.glass_material_unavailable);
+
+        glassSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
+            if (suppressGlassCallbacks) return;
+            ThemeHelper.setGlassEnabled(this, checked);
+            updateGlassMaterial();
+        });
+    }
+
+    private void updateGlassMaterial() {
+        if (isFinishing() || isDestroyed()) return;
+        boolean wanted = HyperOsMaterial.isDeviceSupported() &&
+                ThemeHelper.isGlassEnabled(this) &&
+                HyperOsMaterial.isAllowedNow(this);
+        dashboard.setGlassMaterial(wanted);
     }
 
     private void setupSwitches() {

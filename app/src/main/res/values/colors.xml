@@ -39,4 +39,13 @@
     <color name="primary_disabled">#AFC7F2</color>
     <color name="secondary_pressed">#E6EAF0</color>
 
+    <!-- HyperOS advanced material (glass). Fills stay >=80% opaque so text remains
+         readable even if a ROM accepts the blur call but renders no blur. -->
+    <color name="glass_header">#CCF4F6F8</color>
+    <color name="glass_surface">#D1FFFFFF</color>
+    <color name="glass_border">#CCFFFFFF</color>
+    <color name="glass_tonal">#0D1F2328</color>
+    <color name="hero_start_glass">#CCEEE9FF</color>
+    <color name="hero_center_glass">#CCF3F0FF</color>
+    <color name="hero_end_glass">#CCEAF4FF</color>
 </resources>

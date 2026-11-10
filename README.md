@@ -136,6 +136,7 @@ Also enable **Autostart** for the affected app when the ROM exposes that option.
 ## Appearance, languages, and responsive layout
 
 - System / Light / Dark appearance modes.
+- HyperOS advanced material: on devices that report system blur support, the header band and status card become frosted glass rendered by the system's own blur (no app-side bitmap blur). It turns off automatically in Battery saver, can be disabled under **Appearance**, and falls back to the opaque design everywhere else.
 - 10 native app languages: English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian.
 - Compact and large-width resource profiles.
 - CI geometry checks for 320, 360, 393, 411, 430, and 480dp widths.
