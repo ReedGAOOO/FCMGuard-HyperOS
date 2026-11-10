@@ -19,6 +19,9 @@ import java.util.Map;
 /**
  * Best-effort detector for installed apps that declare standard FCM/GCM receive
  * components. It does not inspect traffic or accounts and runs only when requested.
+ *
+ * Loading labels of other apps touches their resources, so callers must run this on a
+ * background thread.
  */
 public final class FcmAppScanner {
     private static final String ACTION_FCM = "com.google.firebase.MESSAGING_EVENT";
@@ -29,10 +32,12 @@ public final class FcmAppScanner {
     public static final class AppEntry {
         public final String packageName;
         public final String label;
+        public final int uid;
 
-        AppEntry(String packageName, String label) {
+        AppEntry(String packageName, String label, int uid) {
             this.packageName = packageName;
             this.label = label;
+            this.uid = uid;
         }
     }
 
@@ -86,7 +91,7 @@ public final class FcmAppScanner {
                 CharSequence labelCs = pm.getApplicationLabel(appInfo);
                 String label = labelCs == null ? packageName : labelCs.toString().trim();
                 if (label.isEmpty()) label = packageName;
-                result.add(new AppEntry(packageName, label));
+                result.add(new AppEntry(packageName, label, appInfo.uid));
             } catch (Throwable ignored) {}
         }
 

@@ -22,6 +22,13 @@
     <color name="status_value_purple_bg">#247E57C2</color>
     <color name="status_value_neutral_bg">#181F2328</color>
 
+    <!-- Badge text on the translucent status tints. Light values are darkened so every
+         badge reaches WCAG AA (4.5:1) for its 11.5sp bold label. -->
+    <color name="badge_text_green">#146C2E</color>
+    <color name="badge_text_yellow">#8A5300</color>
+    <color name="badge_text_red">#B3261E</color>
+    <color name="badge_text_neutral">#5A616C</color>
+
     <color name="hero_start">#EEE9FF</color>
     <color name="hero_center">#F3F0FF</color>
     <color name="hero_end">#EAF4FF</color>
@@ -31,4 +38,5 @@
     <color name="primary_pressed">#0849B8</color>
     <color name="primary_disabled">#AFC7F2</color>
     <color name="secondary_pressed">#E6EAF0</color>
+
 </resources>

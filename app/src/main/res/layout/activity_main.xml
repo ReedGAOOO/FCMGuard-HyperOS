@@ -7,15 +7,16 @@
     android:clipChildren="false"
     android:clipToPadding="false">
 
+    <!-- No background here: the root already paints @color/bg over the same area. -->
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        android:clipToPadding="false"
-        android:background="@color/bg">
+        android:clipToPadding="false">
         <include layout="@layout/dashboard_scroll_content" />
     </ScrollView>
+
 
     <FrameLayout
         android:id="@+id/stickyHeader"

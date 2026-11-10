@@ -26,7 +26,12 @@ public class GuardService extends Service {
     private static final long FALLBACK_INTERVAL_MS = 30L * 60L * 1000L;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private ContentObserver observer;
+    private String observedKey;
+    private String observedRequiredItem;
     private boolean foreground;
+    /** null until the first onStartCommand(); then the notification mode last applied. */
+    private Boolean appliedPersistentMode;
+    private boolean fallbackScheduled;
 
     private final Runnable fallbackCheck = new Runnable() {
         @Override public void run() {
@@ -43,18 +48,25 @@ public class GuardService extends Service {
 
     @Override public void onCreate() {
         super.onCreate();
-        applyExecutionMode();
-        registerObserver();
         SettingsGuard.rememberIfUseful(this);
-        handler.post(fallbackCheck);
+        // Observer, foreground state and the first check are set up in onStartCommand(),
+        // which always follows onCreate() for this started-only service.
     }
 
+    /**
+     * Idempotent: MainActivity calls startService() on every resume, so a repeated start
+     * only re-applies what actually changed instead of re-registering the observer and
+     * running a full repair each time.
+     */
     @Override public int onStartCommand(Intent intent, int flags, int startId) {
         SettingsGuard.setProtectionEnabled(this, true);
-        registerObserver();
         applyExecutionMode();
-        handler.removeCallbacks(fallbackCheck);
-        handler.post(fallbackCheck);
+        boolean configChanged = registerObserverIfNeeded();
+        if (configChanged || !fallbackScheduled) {
+            handler.removeCallbacks(fallbackCheck);
+            handler.post(fallbackCheck);
+            fallbackScheduled = true;
+        }
         return START_STICKY;
     }
 
@@ -68,7 +80,19 @@ public class GuardService extends Service {
         }
     }
 
-    private void registerObserver() {
+    /**
+     * Watches the configured key. Returns true when the key or the required item changed
+     * since the last call (including the very first call), i.e. when an immediate check
+     * is worthwhile.
+     */
+    private boolean registerObserverIfNeeded() {
+        String key = SettingsGuard.getConfiguredKey(this);
+        String requiredItem = SettingsGuard.getConfiguredRequiredItem(this);
+        boolean keyChanged = observer == null || !key.equals(observedKey);
+        boolean changed = keyChanged || !requiredItem.equals(observedRequiredItem);
+        observedRequiredItem = requiredItem;
+        if (!keyChanged) return changed;
+
         ContentResolver resolver = getContentResolver();
         try {
             if (observer != null) resolver.unregisterContentObserver(observer);
@@ -80,19 +104,24 @@ public class GuardService extends Service {
                 handler.postDelayed(repairDebounced, 400L);
             }
         };
-        resolver.registerContentObserver(
-                Settings.System.getUriFor(SettingsGuard.getConfiguredKey(this)),
-                false,
-                observer
-        );
+        resolver.registerContentObserver(Settings.System.getUriFor(key), false, observer);
+        observedKey = key;
+        return true;
     }
 
     private void applyExecutionMode() {
-        if (SettingsGuard.usePersistentNotification(this)) {
-            ensureNotificationChannel(this);
+        boolean persistent = SettingsGuard.usePersistentNotification(this);
+        boolean modeChanged = appliedPersistentMode == null || appliedPersistentMode != persistent;
+        appliedPersistentMode = persistent;
+
+        if (persistent) {
+            if (modeChanged) ensureNotificationChannel(this);
+            // Always re-enter the foreground: a startForegroundService() call must be
+            // answered with startForeground(), and it re-posts the notification after the
+            // user re-enables notifications in system settings.
             startForeground(NOTIFICATION_ID, buildNotification(getString(R.string.notification_active)));
             foreground = true;
-        } else {
+        } else if (modeChanged) {
             if (foreground) stopForeground(true);
             NotificationManager nm = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
             if (nm != null) nm.cancel(NOTIFICATION_ID);
@@ -146,6 +175,7 @@ public class GuardService extends Service {
 
     @Override public void onDestroy() {
         handler.removeCallbacksAndMessages(null);
+        fallbackScheduled = false;
         try {
             if (observer != null) getContentResolver().unregisterContentObserver(observer);
         } catch (Throwable ignored) {}

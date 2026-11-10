@@ -36,7 +36,10 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
     private static final String[] LANGUAGE_CODES = {
@@ -64,7 +67,23 @@ public class MainActivity extends Activity {
     private boolean suppressAppearanceCallbacks = false;
     private boolean notificationAccessPending = false;
     private boolean fcmListExpanded = false;
+    private boolean fcmScanInFlight = false;
+    private int fcmScanGeneration = 0;
     private List<FcmAppScanner.AppEntry> scannedFcmApps;
+    private AutostartStatusReader.Status[] scannedFcmStatuses;
+
+    /**
+     * Package-manager and AppOps queries for other apps are binder calls (and label
+     * loading touches their resources), so they never run on the UI thread.
+     */
+    private final ExecutorService backgroundExecutor = Executors.newSingleThreadExecutor(runnable -> {
+        Thread thread = new Thread(() -> {
+            android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+            runnable.run();
+        }, "fcmguard-scan");
+        thread.setDaemon(true);
+        return thread;
+    });
 
     private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
     private int languageLabelIndex = 0;
@@ -106,7 +125,7 @@ public class MainActivity extends Activity {
         setupAppearance();
         setupSwitches();
         bindActions();
-        refreshStatus(null);
+        // refreshStatus() runs in onResume(), which always follows onCreate().
     }
 
     @Override protected void onResume() {
@@ -119,14 +138,19 @@ public class MainActivity extends Activity {
             startProtectionService();
         }
         refreshStatus(null);
-        if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
-            renderFcmAppStatuses();
-        }
+        recheckFcmAutostartStatuses();
     }
 
     @Override protected void onPause() {
         stopLanguageButtonAnimation();
         super.onPause();
+    }
+
+    @Override protected void onDestroy() {
+        fcmScanGeneration++;
+        backgroundExecutor.shutdownNow();
+        languageAnimationHandler.removeCallbacksAndMessages(null);
+        super.onDestroy();
     }
 
     @Override public void onWindowFocusChanged(boolean hasFocus) {
@@ -353,7 +377,9 @@ public class MainActivity extends Activity {
     }
 
     private void toggleFcmAppsList() {
+        if (fcmScanInFlight) return;
         if (fcmListExpanded) {
+            fcmScanGeneration++; // Drop any in-flight background re-check.
             fcmListExpanded = false;
             fcmAppsContainer.setVisibility(View.GONE);
             fcmAppsStatusText.setVisibility(View.GONE);
@@ -364,12 +390,42 @@ public class MainActivity extends Activity {
     }
 
     private void scanFcmApps() {
-        scannedFcmApps = FcmAppScanner.scan(this);
+        final int generation = ++fcmScanGeneration;
+        final Context appContext = getApplicationContext();
+        fcmScanInFlight = true;
+        scanFcmAppsBtn.setEnabled(false);
+        scanFcmAppsBtn.setText(R.string.scanning_fcm_apps);
+        fcmAppsStatusText.setVisibility(View.VISIBLE);
+        fcmAppsStatusText.setText(R.string.scanning_fcm_apps);
+
+        boolean queued = runInBackground(() -> {
+            List<FcmAppScanner.AppEntry> apps = FcmAppScanner.scan(appContext);
+            AutostartStatusReader.Status[] statuses = readAutostartStatuses(appContext, apps);
+            runOnUiThread(() -> onFcmScanFinished(generation, apps, statuses));
+        });
+        if (!queued) {
+            fcmScanInFlight = false;
+            scanFcmAppsBtn.setEnabled(true);
+            updateScanButton(false);
+            fcmAppsStatusText.setVisibility(View.GONE);
+        }
+    }
+
+    private void onFcmScanFinished(
+            int generation,
+            List<FcmAppScanner.AppEntry> apps,
+            AutostartStatusReader.Status[] statuses) {
+        if (isFinishing() || isDestroyed() || generation != fcmScanGeneration) return;
+
+        fcmScanInFlight = false;
+        scanFcmAppsBtn.setEnabled(true);
+        scannedFcmApps = apps;
+        scannedFcmStatuses = statuses;
         fcmListExpanded = true;
         fcmAppsStatusText.setVisibility(View.VISIBLE);
         updateScanButton(true);
 
-        if (scannedFcmApps.isEmpty()) {
+        if (apps.isEmpty()) {
             fcmAppsContainer.removeAllViews();
             fcmAppsContainer.setVisibility(View.GONE);
             fcmAppsStatusText.setText(R.string.no_fcm_apps);
@@ -379,20 +435,63 @@ public class MainActivity extends Activity {
         renderFcmAppStatuses();
     }
 
+    /**
+     * Autostart can be changed in HyperOS while FCM Guard is in the background. Re-read
+     * the states off the UI thread and rebuild the rows only when something changed.
+     */
+    private void recheckFcmAutostartStatuses() {
+        if (!fcmListExpanded || fcmScanInFlight ||
+                scannedFcmApps == null || scannedFcmApps.isEmpty()) {
+            return;
+        }
+        final int generation = ++fcmScanGeneration;
+        final List<FcmAppScanner.AppEntry> apps = scannedFcmApps;
+        final Context appContext = getApplicationContext();
+        runInBackground(() -> {
+            AutostartStatusReader.Status[] statuses = readAutostartStatuses(appContext, apps);
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed() || generation != fcmScanGeneration ||
+                        apps != scannedFcmApps) {
+                    return;
+                }
+                if (Arrays.equals(statuses, scannedFcmStatuses)) return;
+                scannedFcmStatuses = statuses;
+                renderFcmAppStatuses();
+            });
+        });
+    }
+
+    private static AutostartStatusReader.Status[] readAutostartStatuses(
+            Context context, List<FcmAppScanner.AppEntry> apps) {
+        AutostartStatusReader.Status[] statuses = new AutostartStatusReader.Status[apps.size()];
+        for (int i = 0; i < apps.size(); i++) {
+            FcmAppScanner.AppEntry app = apps.get(i);
+            statuses[i] = AutostartStatusReader.check(context, app.packageName, app.uid);
+        }
+        return statuses;
+    }
+
+    private boolean runInBackground(Runnable task) {
+        try {
+            backgroundExecutor.execute(task);
+            return true;
+        } catch (java.util.concurrent.RejectedExecutionException ignored) {
+            return false;
+        }
+    }
+
     private void renderFcmAppStatuses() {
         if (scannedFcmApps == null || scannedFcmApps.isEmpty()) return;
+        AutostartStatusReader.Status[] statuses = scannedFcmStatuses;
+        if (statuses == null || statuses.length != scannedFcmApps.size()) return;
 
         fcmAppsContainer.removeAllViews();
         int enabledCount = 0;
         int attentionCount = 0;
         int unknownCount = 0;
 
-        AutostartStatusReader.Status[] statuses =
-                new AutostartStatusReader.Status[scannedFcmApps.size()];
         for (int i = 0; i < scannedFcmApps.size(); i++) {
-            AutostartStatusReader.Status status =
-                    AutostartStatusReader.check(this, scannedFcmApps.get(i).packageName);
-            statuses[i] = status;
+            AutostartStatusReader.Status status = statuses[i];
             if (status == AutostartStatusReader.Status.ENABLED) {
                 enabledCount++;
             } else if (status == AutostartStatusReader.Status.PARTIAL ||
@@ -494,10 +593,10 @@ public class MainActivity extends Activity {
     }
 
     private int autostartStatusTextColor(AutostartStatusReader.Status status) {
-        if (status == AutostartStatusReader.Status.ENABLED) return R.color.green;
-        if (status == AutostartStatusReader.Status.PARTIAL) return R.color.yellow;
-        if (status == AutostartStatusReader.Status.DISABLED) return R.color.red;
-        return R.color.text_secondary;
+        if (status == AutostartStatusReader.Status.ENABLED) return R.color.badge_text_green;
+        if (status == AutostartStatusReader.Status.PARTIAL) return R.color.badge_text_yellow;
+        if (status == AutostartStatusReader.Status.DISABLED) return R.color.badge_text_red;
+        return R.color.badge_text_neutral;
     }
 
     private GradientDrawable makeStatusBadgeBackground(AutostartStatusReader.Status status) {
@@ -752,22 +851,33 @@ public class MainActivity extends Activity {
         return 0;
     }
 
+    /**
+     * Called from onCreate(), onResume() and onWindowFocusChanged() because HyperOS can
+     * reset legacy-target windows after returning from system settings. Every setter is
+     * guarded so the common case (nothing changed) costs no window-manager round trip.
+     */
     @SuppressWarnings("deprecation")
     private void configureFullEdgeToEdge() {
         Window window = getWindow();
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            window.clearFlags(
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS |
-                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
-            );
-            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
-            window.setStatusBarColor(Color.TRANSPARENT);
-            window.setNavigationBarColor(Color.TRANSPARENT);
+            int translucent = WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS |
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION;
+            int currentFlags = window.getAttributes().flags;
+            if ((currentFlags & translucent) != 0) window.clearFlags(translucent);
+            if ((currentFlags & WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS) == 0) {
+                window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            }
+            if (window.getStatusBarColor() != Color.TRANSPARENT) {
+                window.setStatusBarColor(Color.TRANSPARENT);
+            }
+            if (window.getNavigationBarColor() != Color.TRANSPARENT) {
+                window.setNavigationBarColor(Color.TRANSPARENT);
+            }
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            window.setStatusBarContrastEnforced(false);
-            window.setNavigationBarContrastEnforced(false);
+            if (window.isStatusBarContrastEnforced()) window.setStatusBarContrastEnforced(false);
+            if (window.isNavigationBarContrastEnforced()) window.setNavigationBarContrastEnforced(false);
         }
 
         boolean dark = ThemeHelper.isDark(this);
@@ -780,7 +890,8 @@ public class MainActivity extends Activity {
         if (!dark && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             flags |= View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR;
         }
-        window.getDecorView().setSystemUiVisibility(flags);
+        View decor = window.getDecorView();
+        if (decor.getSystemUiVisibility() != flags) decor.setSystemUiVisibility(flags);
     }
 
     @SuppressWarnings("deprecation")

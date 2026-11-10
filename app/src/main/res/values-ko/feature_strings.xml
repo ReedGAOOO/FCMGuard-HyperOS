@@ -4,6 +4,7 @@
     <string name="fcm_apps_summary">표준 FCM/GCM 수신 구성요소를 선언한 설치 앱을 감지하고 HyperOS가 허용하는 경우 자동 시작 상태도 확인합니다.</string>
     <string name="scan_fcm_apps">FCM 앱 검색</string>
     <string name="collapse_fcm_apps">앱 목록 접기</string>
+    <string name="scanning_fcm_apps">검색 중…</string>
     <string name="open_autostart_manager">HyperOS에서 일괄 설정</string>
     <string name="fcm_apps_not_scanned">‘FCM 앱 검색’을 눌러 로컬 목록을 만드세요.</string>
     <string name="fcm_apps_found">FCM 지원 앱 %1$d개 감지됨</string>

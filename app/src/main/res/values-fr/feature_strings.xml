@@ -4,6 +4,7 @@
     <string name="fcm_apps_summary">Détecte les apps installées qui déclarent les composants FCM/GCM standard et vérifie leur état de démarrage automatique lorsque HyperOS l’expose.</string>
     <string name="scan_fcm_apps">Analyser les apps FCM</string>
     <string name="collapse_fcm_apps">Masquer la liste des apps</string>
+    <string name="scanning_fcm_apps">Analyse…</string>
     <string name="open_autostart_manager">Tout configurer dans HyperOS</string>
     <string name="fcm_apps_not_scanned">Touchez « Analyser les apps FCM » pour créer la liste locale.</string>
     <string name="fcm_apps_found">%1$d apps compatibles FCM détectées</string>

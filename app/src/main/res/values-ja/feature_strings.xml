@@ -4,6 +4,7 @@
     <string name="fcm_apps_summary">標準の FCM/GCM 受信コンポーネントを宣言するインストール済みアプリを検出し、HyperOS が公開している場合は自動起動状態も確認します。</string>
     <string name="scan_fcm_apps">FCM アプリをスキャン</string>
     <string name="collapse_fcm_apps">アプリ一覧を閉じる</string>
+    <string name="scanning_fcm_apps">スキャン中…</string>
     <string name="open_autostart_manager">HyperOS でまとめて設定</string>
     <string name="fcm_apps_not_scanned">「FCM アプリをスキャン」をタップして端末内リストを作成します。</string>
     <string name="fcm_apps_found">FCM 対応アプリを %1$d 個検出</string>

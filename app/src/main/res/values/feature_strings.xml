@@ -4,6 +4,7 @@
     <string name="fcm_apps_summary">Detect installed apps that declare standard FCM/GCM receive components, then verify their HyperOS Autostart state when the ROM exposes it.</string>
     <string name="scan_fcm_apps">Scan FCM apps</string>
     <string name="collapse_fcm_apps">Collapse app list</string>
+    <string name="scanning_fcm_apps">Scanning…</string>
     <string name="open_autostart_manager">Configure all in HyperOS</string>
     <string name="fcm_apps_not_scanned">Tap Scan FCM apps to build the local list.</string>
     <string name="fcm_apps_found">%1$d FCM-capable apps detected</string>

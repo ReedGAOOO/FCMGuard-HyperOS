@@ -4,6 +4,7 @@
     <string name="fcm_apps_summary">自動偵測宣告標準 FCM/GCM 接收元件的已安裝應用程式，並在 HyperOS 允許讀取時驗證它們的自啟動狀態。</string>
     <string name="scan_fcm_apps">掃描 FCM 應用程式</string>
     <string name="collapse_fcm_apps">收起應用程式清單</string>
+    <string name="scanning_fcm_apps">正在掃描…</string>
     <string name="open_autostart_manager">在 HyperOS 中統一設定</string>
     <string name="fcm_apps_not_scanned">點選「掃描 FCM 應用程式」建立本機清單。</string>
     <string name="fcm_apps_found">偵測到 %1$d 個支援 FCM 的應用程式</string>
