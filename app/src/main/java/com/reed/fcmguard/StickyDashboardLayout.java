@@ -43,7 +43,6 @@ public final class StickyDashboardLayout extends FrameLayout {
     private int stickyBaseRight;
     private int stickyBaseBottom;
     private int extraGapPx;
-    private float statusCardElevation;
     /** Whether glass surfaces are currently shown; the inflated layout starts opaque. */
     private boolean glassApplied;
 
@@ -74,7 +73,6 @@ public final class StickyDashboardLayout extends FrameLayout {
         currentValuePanel = findViewById(R.id.currentValuePanel);
         scrollView = findViewById(R.id.scroll);
         extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
-        if (statusCard != null) statusCardElevation = statusCard.getElevation();
 
         if (stickyHeader != null) {
             stickyBaseLeft = stickyHeader.getPaddingLeft();
@@ -163,9 +161,9 @@ public final class StickyDashboardLayout extends FrameLayout {
 
         headerBackdrop.setVisibility(glass ? VISIBLE : GONE);
         heroCard.setBackgroundResource(glass ? R.drawable.hero_glass_bg : R.drawable.hero_bg);
-        // A shadow would show through a translucent card, so glass relies on the blur
-        // and the light edge for separation instead.
-        statusCard.setElevation(glass ? 0f : statusCardElevation);
+        // The shadow stays in glass mode: the blurred backdrop is drawn on an opaque base,
+        // so the shadow cannot show through, and without it the card's lower edge
+        // disappears against white content in light mode.
         if (statusDetailsPanel != null) {
             // The whitelist is already clipped at the lower edge of this panel, so the
             // opaque plate is only needed for the solid surface.

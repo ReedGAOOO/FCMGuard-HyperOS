@@ -63,16 +63,22 @@ tap_text() {
 # notification permission prompt. Accept any such button that does not belong to
 # the app, then make sure the app is in front again.
 dismiss_system_dialogs() {
-  local pos
-  for _ in 1 2 3 4 5 6; do
+  local pos empty=0
+  # Some dialogs only appear once the activity has resumed, so keep looking until
+  # nothing has shown up for three consecutive checks.
+  for _ in $(seq 1 10); do
     pos=$(find_node 'continue|ok|allow|got it' "$PKG")
-    [ -z "$pos" ] && break
-    adb shell input tap $pos
-    log "dismissed system dialog at $pos"
-    sleep 2
+    if [ -n "$pos" ]; then
+      adb shell input tap $pos
+      log "dismissed system dialog at $pos"
+      empty=0
+      adb shell am start -n "$ACTIVITY" >/dev/null 2>&1
+    else
+      empty=$((empty + 1))
+      [ "$empty" -ge 3 ] && break
+    fi
+    sleep 1.5
   done
-  adb shell am start -n "$ACTIVITY" >/dev/null 2>&1
-  sleep 1.5
 }
 
 # Fresh process, scrolled to the top.
