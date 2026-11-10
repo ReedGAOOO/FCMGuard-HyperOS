@@ -32,15 +32,16 @@
 
 ## Quick setup
 
-1. Install the latest APK from **GitHub Releases**.
-2. Open FCM Guard and grant **Modify system settings**.
-3. Tap **Repair now** once.
-4. Enable **Automatic protection**.
-5. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
-6. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
-7. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, FCM Guard shows a clear Unknown/unavailable fallback instead of guessing.
-8. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
-9. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
+1. Install the latest APK from **GitHub Releases**. Upgrading from v1.5.x to v1.6.0 or later: uninstall the old version first, because releases are now signed with a new key.
+2. On first launch HyperOS shows a permission list (FCM Guard deliberately targets SDK 22, so the system asks you to review legacy permissions). Keep **Modify system settings** (required) and **Access list of installed apps** (used only by the FCM app scanner) on. Everything else (shortcuts, lock screen, background windows, clipboard, media volume, motion sensors, wallpaper) is unused and can stay off.
+3. Open FCM Guard. If the status still shows **Modify settings: not granted**, tap **Grant Modify system settings**.
+4. Tap **Repair now** once.
+5. Enable **Automatic protection**.
+6. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
+7. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
+8. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, FCM Guard shows a clear Unknown/unavailable fallback instead of guessing.
+9. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
+10. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
 
 > FCM Guard is mainly for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
 
