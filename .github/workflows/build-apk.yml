@@ -4,6 +4,11 @@ on:
   push:
     branches: [ main, 'feature/**' ]
   workflow_dispatch:
+    inputs:
+      publish_prerelease:
+        description: 'Publish this build as a GitHub pre-release (never becomes Latest)'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -130,9 +135,50 @@ jobs:
           path: ${{ steps.version.outputs.apk_name }}
           retention-days: 30
 
-      # Feature branches validate the APK; only main publishes or refreshes Releases.
+      # Manual test channel: publishes vX.Y.Z as a pre-release from any branch. GitHub never
+      # treats a pre-release as Latest, so releases/latest/download/... keeps serving the
+      # current stable APK. Re-running replaces the pre-release (tag moves to this commit).
+      - name: Publish APK as GitHub pre-release
+        if: github.event_name == 'workflow_dispatch' && inputs.publish_prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+          VERSION: ${{ steps.version.outputs.version }}
+          APK_NAME: ${{ steps.version.outputs.apk_name }}
+          SIGNING_SOURCE: ${{ steps.signing.outputs.source }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            if [ "$(gh release view "$TAG" --json isPrerelease --jq .isPrerelease)" != "true" ]; then
+              echo "::error::$TAG is already a stable release; refusing to replace it with a pre-release."
+              exit 1
+            fi
+            gh release delete "$TAG" --cleanup-tag --yes
+          fi
+
+          if [ "$SIGNING_SOURCE" = "ephemeral" ]; then
+            SIGNING_NOTE="⚠️ Signed with a temporary CI key: uninstall the installed FCM Guard before installing, and reinstall again for the final v${VERSION}. / 使用临时密钥签名：安装前需先卸载已安装的 FCM Guard，正式版发布后需再重装一次。"
+          else
+            SIGNING_NOTE="Signed with the release key; the final v${VERSION} installs over it. / 使用正式密钥签名，正式版可直接覆盖安装。"
+          fi
+          NOTES="Pre-release for testing. The stable release stays on the current Latest version until this build is promoted.
+          测试版：在转为正式版之前，稳定版仍为当前的 Latest 版本。
+
+          ${SIGNING_NOTE}
+
+          Commit: ${GITHUB_SHA}"
+
+          gh release create "$TAG" "$APK_NAME" \
+            --target "$GITHUB_SHA" \
+            --prerelease \
+            --latest=false \
+            --title "FCM Guard v${VERSION} (Pre-release)" \
+            --notes "$NOTES"
+
+      # Feature branches validate the APK; only main publishes or refreshes stable Releases.
       - name: Publish APKs to GitHub Release
-        if: github.ref == 'refs/heads/main' && steps.signing.outputs.source != 'ephemeral'
+        if: github.ref == 'refs/heads/main' && !inputs.publish_prerelease && steps.signing.outputs.source != 'ephemeral'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}
@@ -141,6 +187,13 @@ jobs:
           LATEST_APK_NAME: ${{ steps.version.outputs.latest_apk_name }}
         shell: bash
         run: |
+          # Promotion: a pre-release of this version is replaced by the stable build so the
+          # tag points at main and the release can become Latest.
+          if gh release view "$TAG" >/dev/null 2>&1 &&
+              [ "$(gh release view "$TAG" --json isPrerelease --jq .isPrerelease)" = "true" ]; then
+            gh release delete "$TAG" --cleanup-tag --yes
+          fi
+
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$APK_NAME" "$LATEST_APK_NAME" --clobber
           else

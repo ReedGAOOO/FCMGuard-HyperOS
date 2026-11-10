@@ -166,6 +166,8 @@ FCM Guard is an independent implementation focused on no Shizuku/root dependency
 
 GitHub Actions checks responsive layout profiles and builds a signed, R8-optimized release APK. Pushes to `main` publish/update the versioned GitHub Release; feature branches can be validated before release.
 
+To test a version before it goes stable, run **Build APK** manually (Actions → Run workflow) on the branch with **Publish this build as a GitHub pre-release** checked. The version is published as a pre-release, which GitHub never marks as Latest, so the download link below keeps serving the current stable APK. Merging to `main` later replaces the pre-release with the stable release.
+
 ### Release signing
 
 Android only installs an update over an existing install when both are signed with the same key. The release key is read from repository secrets (**Settings → Secrets and variables → Actions**):
