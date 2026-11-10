@@ -2,9 +2,11 @@ name: UI screenshots
 
 # Manual UI review on a stock Android 15 emulator (not HyperOS). Screenshots are
 # uploaded as an artifact and also pushed to the hidden ref refs/ci/ui-screenshots
-# (not a branch) so they can be fetched with git.
+# (not a branch) so they can be fetched with git. Run it directly, or from
+# "Build APK" with the "ui_screenshots" option (works on any branch).
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: write

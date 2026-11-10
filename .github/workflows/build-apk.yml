@@ -9,6 +9,10 @@ on:
         description: 'Publish this build as a GitHub pre-release (never becomes Latest)'
         type: boolean
         default: false
+      ui_screenshots:
+        description: 'Also capture UI screenshots on an Android emulator'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -202,3 +206,7 @@ jobs:
               --title "FCM Guard v${VERSION}" \
               --notes "FCM Guard v${VERSION} for China-ROM HyperOS 3. Download the APK below and install it directly on your phone."
           fi
+
+  ui-screenshots:
+    if: github.event_name == 'workflow_dispatch' && inputs.ui_screenshots
+    uses: ./.github/workflows/ui-screenshots.yml
