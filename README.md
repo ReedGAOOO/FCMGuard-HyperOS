@@ -164,7 +164,27 @@ FCM Guard is an independent implementation focused on no Shizuku/root dependency
 
 ## Build
 
-GitHub Actions checks responsive layout profiles and builds a signed debug APK. Pushes to `main` publish/update the versioned GitHub Release; feature branches can be validated before release.
+GitHub Actions checks responsive layout profiles and builds a signed, R8-optimized release APK. Pushes to `main` publish/update the versioned GitHub Release; feature branches can be validated before release.
+
+### Release signing
+
+Android only installs an update over an existing install when both are signed with the same key. The release key is read from repository secrets (**Settings → Secrets and variables → Actions**):
+
+| Secret | Value |
+| --- | --- |
+| `SIGNING_KEYSTORE_BASE64` | The keystore file, base64-encoded |
+| `SIGNING_KEYSTORE_PASSWORD` | Keystore password |
+| `SIGNING_KEY_ALIAS` | Key alias |
+| `SIGNING_KEY_PASSWORD` | Key password (optional; defaults to the keystore password) |
+
+Create a key once and keep a private backup of it:
+
+```bash
+keytool -genkeypair -v -keystore fcmguard-release.jks -alias fcmguard -keyalg RSA -keysize 4096 -validity 10000
+base64 -w0 fcmguard-release.jks
+```
+
+Without these secrets, `main` refuses to publish (a release signed with a throwaway key could not be installed over the previous version), and other branches build with a temporary key for testing only.
 
 For normal phone installation, use:
 

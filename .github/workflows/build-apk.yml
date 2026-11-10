@@ -11,6 +11,8 @@ permissions:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      HAS_SIGNING_SECRET: ${{ secrets.SIGNING_KEYSTORE_BASE64 != '' }}
     steps:
       - uses: actions/checkout@v4
 
@@ -25,38 +27,80 @@ jobs:
 
       - name: Set up Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          # The action's default ("tools platform-tools") fails on current runners:
+          # the legacy "tools" package no longer exists in the SDK repository.
+          packages: platform-tools
 
       - name: Install Android SDK packages
         run: sdkmanager "platforms;android-35" "build-tools;35.0.0"
 
-      - name: Restore stable CI signing key
-        uses: actions/cache@v4
+      # Release signing. Preferred source: repository secrets (see README, "Release
+      # signing"). The key that older releases were signed with lived only in the Actions
+      # cache; it is restored read-only as a fallback and never re-saved.
+      - name: Restore legacy CI signing key
+        if: env.HAS_SIGNING_SECRET != 'true'
+        uses: actions/cache/restore@v4
         with:
           path: ci-signing
           key: fcmguard-stable-ci-signing-v1
 
-      - name: Create stable CI signing key if missing
+      - name: Prepare signing key
+        id: signing
+        shell: bash
+        env:
+          SIGNING_KEYSTORE_BASE64: ${{ secrets.SIGNING_KEYSTORE_BASE64 }}
+          SIGNING_KEYSTORE_PASSWORD: ${{ secrets.SIGNING_KEYSTORE_PASSWORD }}
+          SIGNING_KEY_ALIAS: ${{ secrets.SIGNING_KEY_ALIAS }}
+          SIGNING_KEY_PASSWORD: ${{ secrets.SIGNING_KEY_PASSWORD }}
         run: |
-          mkdir -p ci-signing
-          if [ ! -f ci-signing/fcmguard-debug.keystore ]; then
-            keytool -genkeypair \
-              -keystore ci-signing/fcmguard-debug.keystore \
-              -storepass android \
-              -keypass android \
-              -alias fcmguarddebug \
-              -keyalg RSA \
-              -keysize 2048 \
-              -validity 10000 \
-              -dname "CN=FCM Guard Debug,O=ReedGAOOO,C=SG"
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/signing"
+          KEYSTORE="$RUNNER_TEMP/signing/release.keystore"
+
+          if [ -n "$SIGNING_KEYSTORE_BASE64" ]; then
+            printf '%s' "$SIGNING_KEYSTORE_BASE64" | base64 -d > "$KEYSTORE"
+            STORE_PASS="$SIGNING_KEYSTORE_PASSWORD"
+            ALIAS="$SIGNING_KEY_ALIAS"
+            KEY_PASS="${SIGNING_KEY_PASSWORD:-$SIGNING_KEYSTORE_PASSWORD}"
+            SOURCE=secret
+          elif [ -f ci-signing/fcmguard-debug.keystore ]; then
+            cp ci-signing/fcmguard-debug.keystore "$KEYSTORE"
+            STORE_PASS=android
+            ALIAS=fcmguarddebug
+            KEY_PASS=android
+            SOURCE=legacy-cache
+          elif [ "$GITHUB_REF" = "refs/heads/main" ]; then
+            echo "::error::No release signing key. Add the SIGNING_KEYSTORE_BASE64, SIGNING_KEYSTORE_PASSWORD and SIGNING_KEY_ALIAS repository secrets (README: Release signing). Refusing to publish a release signed with a throwaway key, because users could not upgrade over it."
+            exit 1
+          else
+            # Branch builds without secrets: throwaway key, test artifacts only.
+            STORE_PASS=$(openssl rand -hex 16)
+            echo "::add-mask::$STORE_PASS"
+            ALIAS=fcmguard-ephemeral
+            KEY_PASS="$STORE_PASS"
+            keytool -genkeypair -keystore "$KEYSTORE" -storepass "$STORE_PASS" -keypass "$KEY_PASS" \
+              -alias "$ALIAS" -keyalg RSA -keysize 2048 -validity 30 \
+              -dname "CN=FCM Guard ephemeral CI key" >/dev/null
+            SOURCE=ephemeral
           fi
+
+          {
+            echo "FCMGUARD_KEYSTORE_FILE=$KEYSTORE"
+            echo "FCMGUARD_KEYSTORE_PASSWORD=$STORE_PASS"
+            echo "FCMGUARD_KEY_ALIAS=$ALIAS"
+            echo "FCMGUARD_KEY_PASSWORD=$KEY_PASS"
+          } >> "$GITHUB_ENV"
+          echo "source=$SOURCE" >> "$GITHUB_OUTPUT"
+          echo "Signing key source: $SOURCE"
 
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
           gradle-version: '8.7'
 
-      - name: Build debug APK
-        run: gradle :app:assembleDebug --stacktrace
+      - name: Build release APK
+        run: gradle :app:assembleRelease --stacktrace
 
       - name: Read version and prepare release APKs
         id: version
@@ -70,8 +114,10 @@ jobs:
           TAG="v${VERSION}"
           APK_NAME="FCMGuard-HyperOS-${TAG}.apk"
           LATEST_APK_NAME="FCMGuard-HyperOS.apk"
-          cp app/build/outputs/apk/debug/app-debug.apk "$APK_NAME"
-          cp app/build/outputs/apk/debug/app-debug.apk "$LATEST_APK_NAME"
+          APK=app/build/outputs/apk/release/app-release.apk
+          "$ANDROID_HOME/build-tools/35.0.0/apksigner" verify --print-certs "$APK"
+          cp "$APK" "$APK_NAME"
+          cp "$APK" "$LATEST_APK_NAME"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "apk_name=$APK_NAME" >> "$GITHUB_OUTPUT"
@@ -80,13 +126,13 @@ jobs:
       - name: Upload Actions artifact
         uses: actions/upload-artifact@v4
         with:
-          name: FCMGuard-debug-apk
+          name: FCMGuard-apk
           path: ${{ steps.version.outputs.apk_name }}
           retention-days: 30
 
       # Feature branches validate the APK; only main publishes or refreshes Releases.
       - name: Publish APKs to GitHub Release
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.signing.outputs.source != 'ephemeral'
         env:
           GH_TOKEN: ${{ github.token }}
           TAG: ${{ steps.version.outputs.tag }}

@@ -167,7 +167,9 @@ FCM Guard 是独立实现，设计重点是无需 Shizuku / Root、权限尽量�
 
 ## 构建
 
-GitHub Actions 会自动检查响应式布局并构建签名后的 debug APK。push 到 `main` 时还会自动创建 / 更新对应版本的 GitHub Release；feature branch 可先进行构建验证，再合并发布。
+GitHub Actions 会自动检查响应式布局并构建经 R8 优化、已签名的 release APK。push 到 `main` 时还会自动创建 / 更新对应版本的 GitHub Release；feature branch 可先进行构建验证，再合并发布。
+
+签名密钥从仓库 Secrets（`SIGNING_KEYSTORE_BASE64`、`SIGNING_KEYSTORE_PASSWORD`、`SIGNING_KEY_ALIAS`，可选 `SIGNING_KEY_PASSWORD`）读取，生成方法见英文 README 的 *Release signing*。未配置时 `main` 会拒绝发布，以免用户因签名不一致而无法覆盖升级。
 
 手机用户建议直接使用固定最新版地址：
 

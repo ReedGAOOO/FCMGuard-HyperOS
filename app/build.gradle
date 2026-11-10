@@ -2,6 +2,10 @@ plugins {
     id 'com.android.application'
 }
 
+// Release signing comes from the environment (CI writes the keystore from a repository
+// secret). Without it, assembleRelease still works locally and produces an unsigned APK.
+def releaseKeystore = System.getenv('FCMGUARD_KEYSTORE_FILE')
+
 android {
     namespace 'com.reed.fcmguard'
     compileSdk 35
@@ -10,26 +14,37 @@ android {
         applicationId "com.reed.fcmguard"
         minSdk 21
         targetSdk 22
-        versionCode 30
-        versionName "1.5.9"
+        versionCode 31
+        versionName "1.6.0"
     }
 
     signingConfigs {
-        debug {
-            storeFile rootProject.file('ci-signing/fcmguard-debug.keystore')
-            storePassword ('and' + 'roid')
-            keyAlias 'fcmguarddebug'
-            keyPassword ('and' + 'roid')
+        if (releaseKeystore) {
+            release {
+                storeFile file(releaseKeystore)
+                storePassword System.getenv('FCMGUARD_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('FCMGUARD_KEY_ALIAS')
+                keyPassword System.getenv('FCMGUARD_KEY_PASSWORD') ?: System.getenv('FCMGUARD_KEYSTORE_PASSWORD')
+            }
         }
     }
 
     buildTypes {
-        debug {
-            signingConfig signingConfigs.debug
-        }
         release {
-            minifyEnabled false
+            // Not debuggable, R8-optimized and resource-shrunk.
+            minifyEnabled true
+            shrinkResources true
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            if (releaseKeystore) {
+                signingConfig signingConfigs.release
+            }
         }
+    }
+
+    lint {
+        // targetSdk 22 is deliberate (see README: it keeps the WRITE_SETTINGS path to
+        // Xiaomi's private whitelist key). The app is distributed outside Google Play.
+        disable.add('ExpiredTargetSdkVersion')
     }
 
     compileOptions {
