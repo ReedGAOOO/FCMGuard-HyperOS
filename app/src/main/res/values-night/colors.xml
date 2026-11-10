@@ -38,12 +38,12 @@
     <color name="primary_disabled">#45556E</color>
     <color name="secondary_pressed">#303640</color>
 
-    <!-- HyperOS advanced material (glass), dark variants. -->
-    <color name="glass_header">#CC0F1115</color>
-    <color name="glass_surface">#CC181B20</color>
+    <!-- Frosted glass, dark variants. -->
+    <color name="glass_header">#B80F1115</color>
+    <color name="glass_surface">#B3181B20</color>
     <color name="glass_border">#26FFFFFF</color>
     <color name="glass_tonal">#14FFFFFF</color>
-    <color name="hero_start_glass">#CC272337</color>
-    <color name="hero_center_glass">#CC242435</color>
-    <color name="hero_end_glass">#CC1B2838</color>
+    <color name="hero_start_glass">#99272337</color>
+    <color name="hero_center_glass">#99242435</color>
+    <color name="hero_end_glass">#991B2838</color>
 </resources>

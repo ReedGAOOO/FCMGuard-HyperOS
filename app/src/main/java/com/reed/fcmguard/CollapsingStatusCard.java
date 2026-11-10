@@ -5,6 +5,7 @@ import android.graphics.Canvas;
 import android.graphics.Outline;
 import android.graphics.Paint;
 import android.graphics.RectF;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewOutlineProvider;
@@ -26,6 +27,7 @@ public final class CollapsingStatusCard extends LinearLayout {
     private int detailsChildIndex = -1;
     private View detailsPanel;
     private View currentValuePanel;
+    private GlassBlur glassBlur;
 
     public CollapsingStatusCard(Context context) {
         super(context);
@@ -77,16 +79,30 @@ public final class CollapsingStatusCard extends LinearLayout {
     }
 
     /**
-     * Switches between the opaque surface and the translucent HyperOS glass surface.
-     * In glass mode the system blur (applied by the caller) shows through the fill;
-     * geometry, outline and the whitelist clip are unchanged.
+     * Turns the card into frosted glass: the views behind it ({@code sources}, in
+     * {@code root} coordinates) are blurred by the system and shown through a
+     * translucent fill. Geometry, outline and the whitelist clip are unchanged.
      */
-    public void setGlassSurface(boolean glass) {
-        int fill = getResources().getColor(glass ? R.color.glass_surface : R.color.surface);
-        int stroke = getResources().getColor(glass ? R.color.glass_border : R.color.floating_border);
-        if (fillPaint.getColor() == fill && strokePaint.getColor() == stroke) return;
-        fillPaint.setColor(fill);
-        strokePaint.setColor(stroke);
+    void enableGlass(View root, float radiusPx, int baseColor, View... sources) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
+        releaseGlass();
+        glassBlur = new GlassBlur(this, root, radiusPx, baseColor, sources);
+        applySurfaceColors(true);
+    }
+
+    void disableGlass() {
+        releaseGlass();
+        applySurfaceColors(false);
+    }
+
+    private void releaseGlass() {
+        if (glassBlur != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) glassBlur.release();
+        glassBlur = null;
+    }
+
+    private void applySurfaceColors(boolean glass) {
+        fillPaint.setColor(getResources().getColor(glass ? R.color.glass_surface : R.color.surface));
+        strokePaint.setColor(getResources().getColor(glass ? R.color.glass_border : R.color.floating_border));
         invalidate();
     }
 
@@ -124,6 +140,9 @@ public final class CollapsingStatusCard extends LinearLayout {
 
     @Override protected void onDraw(Canvas canvas) {
         float bottom = resolveVisualBottom();
+        if (glassBlur != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            glassBlur.draw(canvas, getWidth(), (int) Math.ceil(bottom), radiusPx);
+        }
         if (getWidth() > 0 && bottom > 0f) {
             float halfStroke = strokeWidthPx / 2f;
             surfaceRect.set(

@@ -18,14 +18,13 @@
     </ScrollView>
 
     <!--
-      HyperOS advanced-material band behind the fixed header. Hidden unless the system
-      blur is available; StickyDashboardLayout sizes it to status bar + hero height.
+      Frosted-glass band behind the fixed header. Hidden unless glass is on;
+      StickyDashboardLayout sizes it to status bar + hero height.
     -->
-    <View
+    <com.reed.fcmguard.GlassBackdropView
         android:id="@+id/headerBackdrop"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:background="@color/glass_header"
         android:visibility="gone" />
 
     <FrameLayout
@@ -50,6 +49,7 @@
             android:paddingBottom="56dp">
 
             <LinearLayout
+                android:id="@+id/heroContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
