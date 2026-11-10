@@ -24,14 +24,18 @@ shot() {
 }
 
 # Prints "x y" for the centre of the first node whose text or content-desc fully
-# matches the regex (case-insensitive); prints nothing if absent.
+# matches the regex (case-insensitive); prints nothing if absent. With a second
+# argument, nodes belonging to that package are ignored (used to find system dialogs).
 find_node() {
   adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1 || return 0
   adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1 || return 0
-  python3 - "$1" "$UI_XML" <<'PY'
+  python3 - "$1" "$UI_XML" "${2:-}" <<'PY'
 import re, sys, xml.etree.ElementTree as ET
 pattern = re.compile(sys.argv[1], re.I)
+exclude = sys.argv[3]
 for node in ET.parse(sys.argv[2]).iter('node'):
+    if exclude and node.get('package') == exclude:
+        continue
     for text in (node.get('text') or '', node.get('content-desc') or ''):
         if text and pattern.fullmatch(text.strip()):
             m = re.match(r'\[(\d+),(\d+)\]\[(\d+),(\d+)\]', node.get('bounds', ''))
@@ -54,21 +58,21 @@ tap_text() {
   return 1
 }
 
-app_has_focus() {
-  adb shell dumpsys window | grep -E 'mCurrentFocus=' | grep -q "$PKG/"
-}
-
 # Legacy (targetSdk 22) apps trigger system UI on stock Android: the permission
 # review screen, the "built for an older version of Android" warning and the
-# notification permission prompt. Accept them, then bring the app back to front.
+# notification permission prompt. Accept any such button that does not belong to
+# the app, then make sure the app is in front again.
 dismiss_system_dialogs() {
+  local pos
   for _ in 1 2 3 4 5 6; do
-    if app_has_focus; then return 0; fi
-    tap_text 'continue|ok|allow|got it' || true
+    pos=$(find_node 'continue|ok|allow|got it' "$PKG")
+    [ -z "$pos" ] && break
+    adb shell input tap $pos
+    log "dismissed system dialog at $pos"
     sleep 2
   done
   adb shell am start -n "$ACTIVITY" >/dev/null 2>&1
-  sleep 2
+  sleep 1.5
 }
 
 # Fresh process, scrolled to the top.

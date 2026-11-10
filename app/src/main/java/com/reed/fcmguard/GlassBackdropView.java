@@ -2,6 +2,7 @@ package com.reed.fcmguard;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
@@ -11,8 +12,8 @@ import android.view.View;
  * translucent page-colour tint on top. Draws nothing while glass is off.
  */
 public final class GlassBackdropView extends View {
+    private final Paint tintPaint = new Paint();
     private GlassBlur blur;
-    private int tintColor;
 
     public GlassBackdropView(Context context) {
         super(context);
@@ -30,7 +31,7 @@ public final class GlassBackdropView extends View {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
         disableGlass();
         blur = new GlassBlur(this, root, radiusPx, baseColor, sources);
-        tintColor = tint;
+        tintPaint.setColor(tint);
         invalidate();
     }
 
@@ -44,6 +45,8 @@ public final class GlassBackdropView extends View {
         super.onDraw(canvas);
         if (blur == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
         blur.draw(canvas, getWidth(), getHeight(), 0f);
-        canvas.drawColor(tintColor);
+        // drawRect, not drawColor: the dashboard root does not clip its children, so
+        // drawColor would tint the whole screen instead of just this band.
+        canvas.drawRect(0f, 0f, getWidth(), getHeight(), tintPaint);
     }
 }
