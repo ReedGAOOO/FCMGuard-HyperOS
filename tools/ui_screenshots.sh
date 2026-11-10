@@ -58,27 +58,35 @@ tap_text() {
   return 1
 }
 
-# Legacy (targetSdk 22) apps trigger system UI on stock Android: the permission
-# review screen, the "built for an older version of Android" warning and the
-# notification permission prompt. Accept any such button that does not belong to
-# the app, then make sure the app is in front again.
-dismiss_system_dialogs() {
-  local pos empty=0
-  # Some dialogs only appear once the activity has resumed, so keep looking until
-  # nothing has shown up for three consecutive checks.
-  for _ in $(seq 1 10); do
+app_is_resumed() {
+  adb shell dumpsys activity activities | grep -E 'topResumedActivity|ResumedActivity:' | head -n 1 | grep -q "$PKG/"
+}
+
+# Legacy (targetSdk 22) apps trigger system UI on stock Android: the "built for an
+# older version of Android" warning and notification prompts. Tap any such button
+# that does not belong to the app; relaunch only if the app is not resumed. Done once
+# the app has been resumed with no dialog for two consecutive checks.
+settle_app() {
+  local pos calm=0
+  for _ in $(seq 1 12); do
     pos=$(find_node 'continue|ok|allow|got it' "$PKG")
     if [ -n "$pos" ]; then
       adb shell input tap $pos
       log "dismissed system dialog at $pos"
-      empty=0
-      adb shell am start -n "$ACTIVITY" >/dev/null 2>&1
+      calm=0
+      sleep 2
+      continue
+    fi
+    if app_is_resumed; then
+      calm=$((calm + 1))
+      [ "$calm" -ge 2 ] && return 0
     else
-      empty=$((empty + 1))
-      [ "$empty" -ge 3 ] && break
+      calm=0
+      adb shell am start -n "$ACTIVITY" >/dev/null 2>&1
     fi
     sleep 1.5
   done
+  log "app did not settle"
 }
 
 # Fresh process, scrolled to the top.
@@ -86,7 +94,7 @@ launch_fresh() {
   adb shell am force-stop "$PKG"
   adb shell am start -W -n "$ACTIVITY" >/dev/null
   sleep 2
-  dismiss_system_dialogs
+  settle_app
 }
 
 # Drags the content up by $1 px and holds still before lifting, so the ScrollView
@@ -117,13 +125,16 @@ adb shell wm density
 
 adb install -r -t --bypass-low-target-sdk-block "$APK" || adb install -r -t "$APK"
 adb shell appops set "$PKG" WRITE_SETTINGS allow
+# Skip the legacy-app permission review screen (Android 10+).
+adb shell pm clear-permission-flags "$PKG" android.permission.POST_NOTIFICATIONS review-required || true
+adb logcat -c || true
 adb shell cmd uimode night no
 
 # --- Light, English, 411dp ---
 launch_fresh
 shot 01-light-initial
 tap_text 'repair now' && shot 02-light-repaired
-tap_text 'automatic protection' && sleep 2 && dismiss_system_dialogs
+tap_text 'automatic protection' && sleep 2 && settle_app
 shot 03-light-protected
 drag_up 250;  shot 04-light-scroll-250
 drag_up 250;  shot 05-light-scroll-500
@@ -159,6 +170,10 @@ launch_fresh
 shot 16-360dp-top
 drag_up 500;  shot 17-360dp-scroll-500
 adb shell wm density reset
+
+# Any crash of the app during the run ends up here.
+adb logcat -d -b crash > "$OUT/crash-log.txt" 2>/dev/null || true
+[ -s "$OUT/crash-log.txt" ] && { log "CRASH LOG:"; cat "$OUT/crash-log.txt"; } || rm -f "$OUT/crash-log.txt"
 
 # Smaller files for review; keep PNG if ImageMagick is unavailable.
 if command -v convert >/dev/null 2>&1; then
