@@ -32,14 +32,18 @@
     <string name="status_protected">Защищено</string>
     <string name="status_ready">Готово</string>
     <string name="status_attention">Требуется внимание</string>
-    <string name="status_granted">Изменение настроек: разрешено</string>
-    <string name="status_not_granted">Изменение настроек: не разрешено</string>
-    <string name="status_enabled">Автоматическая защита: включена</string>
-    <string name="status_disabled">Автоматическая защита: выключена</string>
-    <string name="present_yes">Обязательный элемент присутствует: да</string>
-    <string name="present_no">Обязательный элемент присутствует: нет</string>
-    <string name="notification_mode_foreground">Фоновый режим: foreground service</string>
-    <string name="notification_mode_quiet">Фоновый режим: тихий</string>
+    <string name="status_label_permission">Изменение настроек</string>
+    <string name="status_label_protection">Автоматическая защита</string>
+    <string name="status_label_required_item">Обязательный элемент присутствует</string>
+    <string name="status_label_background_mode">Фоновый режим</string>
+    <string name="status_value_granted">Разрешено</string>
+    <string name="status_value_not_granted">Не разрешено</string>
+    <string name="status_value_enabled">Включена</string>
+    <string name="status_value_disabled">Выключена</string>
+    <string name="status_value_yes">Да</string>
+    <string name="status_value_no">Нет</string>
+    <string name="status_value_foreground">Служба переднего плана</string>
+    <string name="status_value_quiet">Тихий</string>
 
     <string name="saved">Конфигурация сохранена</string>
     <string name="repaired">Исправлено / защищено</string>

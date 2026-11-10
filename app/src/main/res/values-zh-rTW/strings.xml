@@ -32,14 +32,18 @@
     <string name="status_protected">保護正常</string>
     <string name="status_ready">已就緒</string>
     <string name="status_attention">需要處理</string>
-    <string name="status_granted">修改系統設定：已授權</string>
-    <string name="status_not_granted">修改系統設定：未授權</string>
-    <string name="status_enabled">自動保護：已開啟</string>
-    <string name="status_disabled">自動保護：未開啟</string>
-    <string name="present_yes">必要項目存在：是</string>
-    <string name="present_no">必要項目存在：否</string>
-    <string name="notification_mode_foreground">背景模式：前景服務</string>
-    <string name="notification_mode_quiet">背景模式：靜默純背景</string>
+    <string name="status_label_permission">修改系統設定</string>
+    <string name="status_label_protection">自動保護</string>
+    <string name="status_label_required_item">必要項目存在</string>
+    <string name="status_label_background_mode">背景模式</string>
+    <string name="status_value_granted">已授權</string>
+    <string name="status_value_not_granted">未授權</string>
+    <string name="status_value_enabled">已開啟</string>
+    <string name="status_value_disabled">未開啟</string>
+    <string name="status_value_yes">是</string>
+    <string name="status_value_no">否</string>
+    <string name="status_value_foreground">前景服務</string>
+    <string name="status_value_quiet">靜默純背景</string>
 
     <string name="saved">設定已儲存</string>
     <string name="repaired">已修復 / 已保護</string>

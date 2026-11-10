@@ -46,4 +46,13 @@
     <color name="hero_start_glass">#99272337</color>
     <color name="hero_center_glass">#99242435</color>
     <color name="hero_end_glass">#991B2838</color>
+
+    <!-- Controls -->
+    <color name="ripple_on_primary">#33FFFFFF</color>
+    <color name="ripple_neutral">#29FFFFFF</color>
+    <color name="switch_track_off">#3A3F47</color>
+    <color name="switch_track_disabled">#2A2E35</color>
+    <color name="switch_thumb">#F1F3F4</color>
+    <color name="switch_thumb_ring">#33000000</color>
+    <color name="segment_selected">#353B44</color>
 </resources>

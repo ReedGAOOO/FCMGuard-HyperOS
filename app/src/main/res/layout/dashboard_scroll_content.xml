@@ -84,12 +84,13 @@
         android:background="@drawable/card_bg"
         android:layout_marginTop="@dimen/card_gap">
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/appearance_title" android:textColor="@color/text_primary" android:textSize="16sp" android:textStyle="bold" />
-        <RadioGroup android:id="@+id/appearanceGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingTop="8dp">
-            <RadioButton android:id="@+id/themeSystem" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/theme_system" android:textColor="@color/text_primary" android:textSize="12sp" />
-            <RadioButton android:id="@+id/themeLight" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/theme_light" android:textColor="@color/text_primary" android:textSize="12sp" />
-            <RadioButton android:id="@+id/themeDark" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/theme_dark" android:textColor="@color/text_primary" android:textSize="12sp" />
+        <!-- Segmented control: three equal segments inside a tonal track. -->
+        <RadioGroup android:id="@+id/appearanceGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="10dp" android:background="@drawable/segmented_group_bg">
+            <RadioButton android:id="@+id/themeSystem" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:text="@string/theme_system" android:textColor="@color/segment_text" android:textSize="13sp" />
+            <RadioButton android:id="@+id/themeLight" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:text="@string/theme_light" android:textColor="@color/segment_text" android:textSize="13sp" />
+            <RadioButton android:id="@+id/themeDark" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:text="@string/theme_dark" android:textColor="@color/segment_text" android:textSize="13sp" />
         </RadioGroup>
-        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="8dp" android:layout_marginBottom="4dp" />
+        <View android:layout_width="match_parent" android:layout_height="1dp" android:background="@color/divider" android:layout_marginTop="12dp" android:layout_marginBottom="4dp" />
         <Switch android:id="@+id/glassSwitch" android:layout_width="match_parent" android:layout_height="48dp" android:text="@string/glass_material" android:textColor="@color/text_primary" android:textSize="15sp" />
         <TextView android:id="@+id/glassSummary" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/glass_material_summary" android:textColor="@color/text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
     </LinearLayout>

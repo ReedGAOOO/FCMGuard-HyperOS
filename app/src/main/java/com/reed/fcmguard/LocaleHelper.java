@@ -82,7 +82,7 @@ public final class LocaleHelper {
                 .getString(KEY_LANG, "system"));
     }
 
-    private static String normalize(String code) {
+    static String normalize(String code) {
         if (code == null || code.trim().isEmpty() || "system".equalsIgnoreCase(code)) {
             return "system";
         }

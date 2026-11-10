@@ -32,14 +32,18 @@
     <string name="status_protected">Geschützt</string>
     <string name="status_ready">Bereit</string>
     <string name="status_attention">Aktion erforderlich</string>
-    <string name="status_granted">Systemeinstellungen ändern: erlaubt</string>
-    <string name="status_not_granted">Systemeinstellungen ändern: nicht erlaubt</string>
-    <string name="status_enabled">Automatischer Schutz: aktiviert</string>
-    <string name="status_disabled">Automatischer Schutz: deaktiviert</string>
-    <string name="present_yes">Erforderlicher Eintrag vorhanden: ja</string>
-    <string name="present_no">Erforderlicher Eintrag vorhanden: nein</string>
-    <string name="notification_mode_foreground">Hintergrundmodus: Vordergrunddienst</string>
-    <string name="notification_mode_quiet">Hintergrundmodus: still</string>
+    <string name="status_label_permission">Systemeinstellungen ändern</string>
+    <string name="status_label_protection">Automatischer Schutz</string>
+    <string name="status_label_required_item">Erforderlicher Eintrag vorhanden</string>
+    <string name="status_label_background_mode">Hintergrundmodus</string>
+    <string name="status_value_granted">Erlaubt</string>
+    <string name="status_value_not_granted">Nicht erlaubt</string>
+    <string name="status_value_enabled">Aktiviert</string>
+    <string name="status_value_disabled">Deaktiviert</string>
+    <string name="status_value_yes">Ja</string>
+    <string name="status_value_no">Nein</string>
+    <string name="status_value_foreground">Vordergrunddienst</string>
+    <string name="status_value_quiet">Still</string>
 
     <string name="saved">Konfiguration gespeichert</string>
     <string name="repaired">Repariert / geschützt</string>

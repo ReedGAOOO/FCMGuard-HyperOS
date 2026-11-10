@@ -64,16 +64,22 @@
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/subtitle" android:textColor="@color/text_secondary" android:textSize="@dimen/hero_subtitle_size" android:maxLines="2" android:ellipsize="end" android:paddingTop="3dp" />
                 </LinearLayout>
 
+                <!-- Globe + current language name; the text is set from code. -->
                 <Button
                     android:id="@+id/languageButton"
                     android:layout_width="@dimen/language_button_width"
                     android:layout_height="@dimen/language_button_height"
                     android:layout_marginLeft="@dimen/language_button_margin_start"
                     android:background="@drawable/hero_pill_bg"
-                    android:text="Language"
+                    android:drawableLeft="@drawable/ic_language"
+                    android:drawablePadding="5dp"
+                    android:paddingLeft="11dp"
+                    android:paddingRight="10dp"
+                    android:singleLine="true"
+                    android:ellipsize="end"
                     android:textAllCaps="false"
                     android:textColor="@color/blue"
-                    android:textSize="14sp"
+                    android:textSize="13sp"
                     android:textStyle="bold"
                     android:elevation="0dp"
                     android:stateListAnimator="@null" />
@@ -101,7 +107,7 @@
                 android:orientation="vertical"
                 android:paddingBottom="10dp">
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold" />
-                <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" />
+                <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" android:drawablePadding="8dp" android:gravity="center_vertical" />
             </LinearLayout>
 
             <LinearLayout
@@ -112,7 +118,11 @@
                 android:background="@drawable/status_header_bg"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp">
-                <TextView android:id="@+id/statusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:lineSpacingExtra="2dp" />
+                <TextView android:id="@+id/statusMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:paddingBottom="2dp" android:visibility="gone" />
+                <include android:id="@+id/statusRowPermission" layout="@layout/status_row" />
+                <include android:id="@+id/statusRowProtection" layout="@layout/status_row" />
+                <include android:id="@+id/statusRowItem" layout="@layout/status_row" />
+                <include android:id="@+id/statusRowMode" layout="@layout/status_row" />
             </LinearLayout>
 
             <LinearLayout

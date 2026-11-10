@@ -32,14 +32,18 @@
     <string name="status_protected">Protégé</string>
     <string name="status_ready">Prêt</string>
     <string name="status_attention">Action requise</string>
-    <string name="status_granted">Modifier les paramètres : autorisé</string>
-    <string name="status_not_granted">Modifier les paramètres : non autorisé</string>
-    <string name="status_enabled">Protection automatique : activée</string>
-    <string name="status_disabled">Protection automatique : désactivée</string>
-    <string name="present_yes">Élément requis présent : oui</string>
-    <string name="present_no">Élément requis présent : non</string>
-    <string name="notification_mode_foreground">Mode arrière-plan : service au premier plan</string>
-    <string name="notification_mode_quiet">Mode arrière-plan : silencieux</string>
+    <string name="status_label_permission">Modifier les paramètres</string>
+    <string name="status_label_protection">Protection automatique</string>
+    <string name="status_label_required_item">Élément requis présent</string>
+    <string name="status_label_background_mode">Mode arrière-plan</string>
+    <string name="status_value_granted">Autorisé</string>
+    <string name="status_value_not_granted">Non autorisé</string>
+    <string name="status_value_enabled">Activée</string>
+    <string name="status_value_disabled">Désactivée</string>
+    <string name="status_value_yes">Oui</string>
+    <string name="status_value_no">Non</string>
+    <string name="status_value_foreground">Service au premier plan</string>
+    <string name="status_value_quiet">Silencieux</string>
 
     <string name="saved">Configuration enregistrée</string>
     <string name="repaired">Réparé / protégé</string>

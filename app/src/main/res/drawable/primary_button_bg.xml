@@ -1,20 +1,20 @@
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:state_enabled="false">
-        <shape>
-            <solid android:color="@color/primary_disabled"/>
-            <corners android:radius="16dp"/>
-        </shape>
-    </item>
-    <item android:state_pressed="true">
-        <shape>
-            <solid android:color="@color/primary_pressed"/>
-            <corners android:radius="16dp"/>
-        </shape>
-    </item>
+<?xml version="1.0" encoding="utf-8"?>
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@color/ripple_on_primary">
     <item>
-        <shape>
-            <solid android:color="@color/primary_fill"/>
-            <corners android:radius="16dp"/>
-        </shape>
+        <selector>
+            <item android:state_enabled="false">
+                <shape>
+                    <solid android:color="@color/primary_disabled" />
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+            <item>
+                <shape>
+                    <solid android:color="@color/primary_fill" />
+                    <corners android:radius="16dp" />
+                </shape>
+            </item>
+        </selector>
     </item>
-</selector>
+</ripple>

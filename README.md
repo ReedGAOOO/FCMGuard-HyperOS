@@ -34,7 +34,7 @@
 
 1. Install the latest APK from **GitHub Releases**. Upgrading from v1.5.x to v1.6.0 or later: uninstall the old version first, because releases are now signed with a new key.
 2. On first launch HyperOS shows a permission list (FCM Guard deliberately targets SDK 22, so the system asks you to review legacy permissions). Keep **Modify system settings** (required) and **Access list of installed apps** (used only by the FCM app scanner) on. Everything else (shortcuts, lock screen, background windows, clipboard, media volume, motion sensors, wallpaper) is unused and can stay off.
-3. Open FCM Guard. If the status still shows **Modify settings: not granted**, tap **Grant Modify system settings**.
+3. Open FCM Guard. If the status card still shows **Modify settings** as **Not granted**, tap **Grant Modify system settings**.
 4. Tap **Repair now** once.
 5. Enable **Automatic protection**.
 6. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**.
@@ -137,7 +137,7 @@ Also enable **Autostart** for the affected app when the ROM exposes that option.
 ## Appearance, languages, and responsive layout
 
 - System / Light / Dark appearance modes.
-- HyperOS advanced material: on devices that report system blur support, the header band and status card become frosted glass rendered by the system's own blur (no app-side bitmap blur). It turns off automatically in Battery saver, can be disabled under **Appearance**, and falls back to the opaque design everywhere else.
+- Frosted-glass header and status card on Android 12+ using the system GPU blur (`RenderEffect`; no bitmap capture or CPU blur). It follows HyperOS's advanced-material device tier, pauses in Battery saver, can be turned off under **Appearance**, and falls back to the opaque design elsewhere.
 - 10 native app languages: English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian.
 - Compact and large-width resource profiles.
 - CI geometry checks for 320, 360, 393, 411, 430, and 480dp widths.

@@ -32,14 +32,18 @@
     <string name="status_protected">Protegido</string>
     <string name="status_ready">Pronto</string>
     <string name="status_attention">Requer atenção</string>
-    <string name="status_granted">Alterar definições: permitido</string>
-    <string name="status_not_granted">Alterar definições: não permitido</string>
-    <string name="status_enabled">Proteção automática: ativada</string>
-    <string name="status_disabled">Proteção automática: desativada</string>
-    <string name="present_yes">Item obrigatório presente: sim</string>
-    <string name="present_no">Item obrigatório presente: não</string>
-    <string name="notification_mode_foreground">Modo em segundo plano: serviço em primeiro plano</string>
-    <string name="notification_mode_quiet">Modo em segundo plano: silencioso</string>
+    <string name="status_label_permission">Alterar definições</string>
+    <string name="status_label_protection">Proteção automática</string>
+    <string name="status_label_required_item">Item obrigatório presente</string>
+    <string name="status_label_background_mode">Modo em segundo plano</string>
+    <string name="status_value_granted">Permitido</string>
+    <string name="status_value_not_granted">Não permitido</string>
+    <string name="status_value_enabled">Ativada</string>
+    <string name="status_value_disabled">Desativada</string>
+    <string name="status_value_yes">Sim</string>
+    <string name="status_value_no">Não</string>
+    <string name="status_value_foreground">Serviço em primeiro plano</string>
+    <string name="status_value_quiet">Silencioso</string>
 
     <string name="saved">Configuração guardada</string>
     <string name="repaired">Reparado / protegido</string>

@@ -10,5 +10,13 @@
         <item name="android:colorAccent">@color/blue</item>
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:switchStyle">@style/FcmSwitch</item>
+    </style>
+
+    <!-- HyperOS-style pill switch used by every Switch in the app. -->
+    <style name="FcmSwitch" parent="android:Widget.Material.CompoundButton.Switch">
+        <item name="android:thumb">@drawable/switch_thumb</item>
+        <item name="android:track">@drawable/switch_track</item>
+        <item name="android:splitTrack">false</item>
     </style>
 </resources>

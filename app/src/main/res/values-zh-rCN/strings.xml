@@ -32,14 +32,18 @@
     <string name="status_protected">保护正常</string>
     <string name="status_ready">已就绪</string>
     <string name="status_attention">需要处理</string>
-    <string name="status_granted">修改系统设置：已授权</string>
-    <string name="status_not_granted">修改系统设置：未授权</string>
-    <string name="status_enabled">自动保护：已开启</string>
-    <string name="status_disabled">自动保护：未开启</string>
-    <string name="present_yes">必需项存在：是</string>
-    <string name="present_no">必需项存在：否</string>
-    <string name="notification_mode_foreground">后台模式：前台服务</string>
-    <string name="notification_mode_quiet">后台模式：静默纯后台</string>
+    <string name="status_label_permission">修改系统设置</string>
+    <string name="status_label_protection">自动保护</string>
+    <string name="status_label_required_item">必需项存在</string>
+    <string name="status_label_background_mode">后台模式</string>
+    <string name="status_value_granted">已授权</string>
+    <string name="status_value_not_granted">未授权</string>
+    <string name="status_value_enabled">已开启</string>
+    <string name="status_value_disabled">未开启</string>
+    <string name="status_value_yes">是</string>
+    <string name="status_value_no">否</string>
+    <string name="status_value_foreground">前台服务</string>
+    <string name="status_value_quiet">静默纯后台</string>
 
     <string name="saved">配置已保存</string>
     <string name="repaired">已修复 / 已保护</string>

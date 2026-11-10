@@ -20,7 +20,6 @@ import android.provider.Settings;
 import android.text.Spannable;
 import android.text.SpannableStringBuilder;
 import android.text.style.BackgroundColorSpan;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.StyleSpan;
 import android.view.DisplayCutout;
 import android.view.Gravity;
@@ -45,15 +44,15 @@ public class MainActivity extends Activity {
     private static final String[] LANGUAGE_CODES = {
             "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
     };
-    private static final String[] LANGUAGE_BUTTON_LABELS = {
-            "Language", "语言", "語言", "Langue", "言語", "언어", "Idioma", "Idioma", "Sprache", "Язык"
-    };
-    private static final long LANGUAGE_LABEL_INTERVAL_MS = 2200L;
 
     private EditText keyEdit;
     private EditText itemEdit;
     private TextView statusHeadline;
-    private TextView statusText;
+    private TextView statusMessage;
+    private View statusRowPermission;
+    private View statusRowProtection;
+    private View statusRowItem;
+    private View statusRowMode;
     private TextView currentValueText;
     private TextView fcmAppsStatusText;
     private LinearLayout fcmAppsContainer;
@@ -89,16 +88,7 @@ public class MainActivity extends Activity {
         return thread;
     });
 
-    private final Handler languageAnimationHandler = new Handler(Looper.getMainLooper());
-    private int languageLabelIndex = 0;
-    private boolean languageAnimationRunning = false;
-    private final Runnable languageLabelTicker = new Runnable() {
-        @Override public void run() {
-            if (!languageAnimationRunning || languageButton == null) return;
-            animateToNextLanguageLabel();
-            languageAnimationHandler.postDelayed(this, LANGUAGE_LABEL_INTERVAL_MS);
-        }
-    };
+    private final Handler uiHandler = new Handler(Looper.getMainLooper());
     private final Runnable notificationAccessFollowUp = new Runnable() {
         @Override public void run() {
             if (!notificationAccessPending || !hasWindowFocus()) return;
@@ -136,7 +126,6 @@ public class MainActivity extends Activity {
     @Override protected void onResume() {
         super.onResume();
         configureFullEdgeToEdge();
-        startLanguageButtonAnimation();
         if (SettingsGuard.isProtectionEnabled(this) &&
                 SettingsGuard.usePersistentNotification(this) &&
                 GuardService.canShowPersistentNotification(this)) {
@@ -149,15 +138,10 @@ public class MainActivity extends Activity {
         dashboard.post(this::updateGlassMaterial);
     }
 
-    @Override protected void onPause() {
-        stopLanguageButtonAnimation();
-        super.onPause();
-    }
-
     @Override protected void onDestroy() {
         fcmScanGeneration++;
         backgroundExecutor.shutdownNow();
-        languageAnimationHandler.removeCallbacksAndMessages(null);
+        uiHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
     }
 
@@ -166,8 +150,8 @@ public class MainActivity extends Activity {
         if (hasFocus) {
             configureFullEdgeToEdge();
             if (notificationAccessPending) {
-                languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
-                languageAnimationHandler.postDelayed(notificationAccessFollowUp, 250L);
+                uiHandler.removeCallbacks(notificationAccessFollowUp);
+                uiHandler.postDelayed(notificationAccessFollowUp, 250L);
             }
         }
     }
@@ -176,7 +160,11 @@ public class MainActivity extends Activity {
         keyEdit = findViewById(R.id.keyEdit);
         itemEdit = findViewById(R.id.itemEdit);
         statusHeadline = findViewById(R.id.statusHeadline);
-        statusText = findViewById(R.id.statusText);
+        statusMessage = findViewById(R.id.statusMessage);
+        statusRowPermission = findViewById(R.id.statusRowPermission);
+        statusRowProtection = findViewById(R.id.statusRowProtection);
+        statusRowItem = findViewById(R.id.statusRowItem);
+        statusRowMode = findViewById(R.id.statusRowMode);
         currentValueText = findViewById(R.id.currentValueText);
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
@@ -197,7 +185,9 @@ public class MainActivity extends Activity {
     }
 
     private void setupLanguagePicker() {
-        languageButton.setText(LANGUAGE_BUTTON_LABELS[0]);
+        String languageName = currentLanguageName();
+        languageButton.setText(languageName);
+        languageButton.setContentDescription(getString(R.string.language) + ": " + languageName);
         languageButton.setOnClickListener(v -> {
             if (Build.VERSION.SDK_INT >= 33) {
                 try {
@@ -213,43 +203,21 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void startLanguageButtonAnimation() {
-        if (languageButton == null || languageAnimationRunning) return;
-        languageAnimationRunning = true;
-        languageAnimationHandler.removeCallbacks(languageLabelTicker);
-        languageAnimationHandler.postDelayed(languageLabelTicker, LANGUAGE_LABEL_INTERVAL_MS);
-    }
-
-    private void stopLanguageButtonAnimation() {
-        languageAnimationRunning = false;
-        languageAnimationHandler.removeCallbacks(languageLabelTicker);
-        if (languageButton != null) {
-            languageButton.animate().cancel();
-            languageButton.setAlpha(1f);
-            languageButton.setTranslationY(0f);
+    /** Native name of the language the UI is actually shown in (resolves "system"). */
+    private String currentLanguageName() {
+        String code = LocaleHelper.getLanguage(this);
+        if ("system".equals(code)) {
+            java.util.Locale shown = Build.VERSION.SDK_INT >= Build.VERSION_CODES.N
+                    ? getResources().getConfiguration().getLocales().get(0)
+                    : getResources().getConfiguration().locale;
+            code = LocaleHelper.normalize(shown == null ? null : shown.toLanguageTag());
+            if ("system".equals(code)) code = "en"; // Unsupported locales fall back to English.
         }
-    }
-
-    private void animateToNextLanguageLabel() {
-        if (languageButton == null) return;
-        languageLabelIndex = (languageLabelIndex + 1) % LANGUAGE_BUTTON_LABELS.length;
-        languageButton.animate().cancel();
-        languageButton.animate()
-                .alpha(0f)
-                .translationY(-dp(3))
-                .setDuration(140L)
-                .withEndAction(() -> {
-                    if (!languageAnimationRunning || languageButton == null) return;
-                    languageButton.setText(LANGUAGE_BUTTON_LABELS[languageLabelIndex]);
-                    languageButton.setAlpha(0f);
-                    languageButton.setTranslationY(dp(3));
-                    languageButton.animate()
-                            .alpha(1f)
-                            .translationY(0f)
-                            .setDuration(180L)
-                            .start();
-                })
-                .start();
+        String[] names = getResources().getStringArray(R.array.language_entries);
+        for (int i = 1; i < LANGUAGE_CODES.length && i < names.length; i++) {
+            if (LANGUAGE_CODES[i].equals(code)) return names[i];
+        }
+        return getString(R.string.language);
     }
 
     private void showLegacyLanguagePicker() {
@@ -372,7 +340,7 @@ public class MainActivity extends Activity {
                 ensurePersistentNotificationAccess();
             } else {
                 notificationAccessPending = false;
-                languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
+                uiHandler.removeCallbacks(notificationAccessFollowUp);
             }
             if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
             refreshStatus(null);
@@ -550,9 +518,22 @@ public class MainActivity extends Activity {
                 R.string.fcm_apps_status_summary,
                 scannedFcmApps.size(), enabledCount, attentionCount, unknownCount));
 
-        for (int i = 0; i < scannedFcmApps.size(); i++) {
-            addFcmAppRow(scannedFcmApps.get(i), statuses[i]);
+        // Attention first (Disabled, Partial), then Unknown, then Enabled; the scan
+        // order (alphabetical) is kept inside each group.
+        Integer[] order = new Integer[scannedFcmApps.size()];
+        for (int i = 0; i < order.length; i++) order[i] = i;
+        Arrays.sort(order, (a, b) -> Integer.compare(
+                attentionRank(statuses[a]), attentionRank(statuses[b])));
+        for (int index : order) {
+            addFcmAppRow(scannedFcmApps.get(index), statuses[index]);
         }
+    }
+
+    private static int attentionRank(AutostartStatusReader.Status status) {
+        if (status == AutostartStatusReader.Status.DISABLED) return 0;
+        if (status == AutostartStatusReader.Status.PARTIAL) return 1;
+        if (status == AutostartStatusReader.Status.UNKNOWN) return 2;
+        return 3;
     }
 
     private void updateScanButton(boolean expanded) {
@@ -573,7 +554,16 @@ public class MainActivity extends Activity {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setPadding(0, dp(7), 0, dp(7));
+        row.setPadding(dp(4), dp(8), dp(2), dp(8));
+        row.setMinimumHeight(dp(52));
+        row.setBackground(selectableItemBackground());
+        row.setClickable(true);
+        row.setContentDescription(app.label + ", " + getString(autostartStatusText(autostartStatus)));
+        row.setOnClickListener(v -> {
+            if (!HyperOsSettings.openAppPermissionEditor(this, app.packageName)) {
+                toast(getString(R.string.app_settings_unavailable));
+            }
+        });
 
         LinearLayout labels = new LinearLayout(this);
         labels.setOrientation(LinearLayout.VERTICAL);
@@ -591,7 +581,7 @@ public class MainActivity extends Activity {
         TextView packageName = new TextView(this);
         packageName.setText(app.packageName);
         packageName.setTextColor(getResources().getColor(R.color.text_secondary));
-        packageName.setTextSize(10.5f);
+        packageName.setTextSize(12f);
         packageName.setMaxLines(1);
         packageName.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
         packageName.setPadding(0, dp(2), dp(8), 0);
@@ -613,12 +603,26 @@ public class MainActivity extends Activity {
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT));
 
+        TextView chevron = new TextView(this);
+        chevron.setText("›");
+        chevron.setTextColor(getResources().getColor(R.color.text_secondary));
+        chevron.setTextSize(20f);
+        chevron.setPadding(dp(8), 0, dp(4), dp(2));
+        chevron.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(chevron);
+
         fcmAppsContainer.addView(row);
 
         View divider = new View(this);
         divider.setBackgroundColor(getResources().getColor(R.color.divider));
         fcmAppsContainer.addView(divider, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, dp(1)));
+    }
+
+    private android.graphics.drawable.Drawable selectableItemBackground() {
+        android.util.TypedValue value = new android.util.TypedValue();
+        getTheme().resolveAttribute(android.R.attr.selectableItemBackground, value, true);
+        return getResources().getDrawable(value.resourceId, getTheme());
     }
 
     private int autostartStatusText(AutostartStatusReader.Status status) {
@@ -676,9 +680,9 @@ public class MainActivity extends Activity {
         }
 
         notificationAccessPending = true;
-        languageAnimationHandler.removeCallbacks(notificationAccessFollowUp);
+        uiHandler.removeCallbacks(notificationAccessFollowUp);
         if (createdNow) {
-            languageAnimationHandler.postDelayed(notificationAccessFollowUp, 900L);
+            uiHandler.postDelayed(notificationAccessFollowUp, 900L);
         } else {
             notificationAccessPending = false;
             openNotificationSettings();
@@ -762,82 +766,54 @@ public class MainActivity extends Activity {
         suppressSwitchCallbacks = false;
 
         if (enabled && canWrite && present) {
-            statusHeadline.setText(R.string.status_protected);
-            statusHeadline.setTextColor(getResources().getColor(R.color.green));
+            setHeadline(R.string.status_protected, R.color.green, R.drawable.ic_status_protected);
         } else if (canWrite && present) {
-            statusHeadline.setText(R.string.status_ready);
-            statusHeadline.setTextColor(getResources().getColor(R.color.blue));
+            setHeadline(R.string.status_ready, R.color.blue, R.drawable.ic_status_ready);
         } else {
-            statusHeadline.setText(R.string.status_attention);
-            statusHeadline.setTextColor(getResources().getColor(R.color.red));
+            setHeadline(R.string.status_attention, R.color.red, R.drawable.ic_status_attention);
         }
 
-        SpannableStringBuilder status = new SpannableStringBuilder();
-        if (firstLine != null && !firstLine.trim().isEmpty()) {
-            status.append("✓ ").append(firstLine).append("\n");
-        }
-        appendStatusValueLine(
-                status,
-                canWrite ? getString(R.string.status_granted) : getString(R.string.status_not_granted),
-                canWrite ? R.color.status_value_green_bg : R.color.status_value_red_bg
-        );
-        status.append('\n');
-        appendStatusValueLine(
-                status,
-                enabled ? getString(R.string.status_enabled) : getString(R.string.status_disabled),
-                enabled ? R.color.status_value_green_bg : R.color.status_value_yellow_bg
-        );
-        status.append('\n');
-        appendStatusValueLine(
-                status,
-                present ? getString(R.string.present_yes) : getString(R.string.present_no),
-                present ? R.color.status_value_green_bg : R.color.status_value_red_bg
-        );
-        status.append('\n');
+        boolean hasMessage = firstLine != null && !firstLine.trim().isEmpty();
+        statusMessage.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
+        if (hasMessage) statusMessage.setText(firstLine.trim());
+
+        bindStatusRow(statusRowPermission, R.string.status_label_permission,
+                canWrite ? R.string.status_value_granted : R.string.status_value_not_granted,
+                canWrite ? R.color.status_value_green_bg : R.color.status_value_red_bg);
+        bindStatusRow(statusRowProtection, R.string.status_label_protection,
+                enabled ? R.string.status_value_enabled : R.string.status_value_disabled,
+                enabled ? R.color.status_value_green_bg : R.color.status_value_yellow_bg);
+        bindStatusRow(statusRowItem, R.string.status_label_required_item,
+                present ? R.string.status_value_yes : R.string.status_value_no,
+                present ? R.color.status_value_green_bg : R.color.status_value_red_bg);
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
-        appendStatusValueLine(
-                status,
-                visibleForeground
-                        ? getString(R.string.notification_mode_foreground)
-                        : getString(R.string.notification_mode_quiet),
-                visibleForeground ? R.color.status_value_green_bg : R.color.status_value_yellow_bg
-        );
-        statusText.setText(status);
+        bindStatusRow(statusRowMode, R.string.status_label_background_mode,
+                visibleForeground ? R.string.status_value_foreground : R.string.status_value_quiet,
+                visibleForeground ? R.color.status_value_green_bg : R.color.status_value_yellow_bg);
         currentValueText.setText(buildWhitelistValue(current));
         permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
     }
 
-    private void appendStatusValueLine(SpannableStringBuilder out, String text, int backgroundColorRes) {
-        int lineStart = out.length();
-        out.append(text);
-        int lineEnd = out.length();
+    private void setHeadline(int textRes, int colorRes, int iconRes) {
+        statusHeadline.setText(textRes);
+        statusHeadline.setTextColor(getResources().getColor(colorRes));
+        statusHeadline.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
+    }
 
-        int separator = Math.max(text.lastIndexOf(':'), text.lastIndexOf('：'));
-        int valueOffset = separator >= 0 ? separator + 1 : 0;
-        while (valueOffset < text.length() && Character.isWhitespace(text.charAt(valueOffset))) {
-            valueOffset++;
-        }
-        int valueStart = lineStart + valueOffset;
-        if (valueStart >= lineEnd) return;
+    /** Label on the left, value in a rounded tinted pill on the right. */
+    private void bindStatusRow(View row, int labelRes, int valueRes, int pillColorRes) {
+        TextView label = row.findViewById(R.id.statusRowLabel);
+        TextView value = row.findViewById(R.id.statusRowValue);
+        label.setText(labelRes);
+        value.setText(valueRes);
+        value.setBackground(makePill(pillColorRes, dp(9)));
+    }
 
-        out.setSpan(
-                new BackgroundColorSpan(getResources().getColor(backgroundColorRes)),
-                valueStart,
-                lineEnd,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
-        out.setSpan(
-                new ForegroundColorSpan(getResources().getColor(R.color.text_primary)),
-                valueStart,
-                lineEnd,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
-        out.setSpan(
-                new StyleSpan(Typeface.BOLD),
-                valueStart,
-                lineEnd,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-        );
+    private GradientDrawable makePill(int colorRes, int radiusPx) {
+        GradientDrawable pill = new GradientDrawable();
+        pill.setColor(getResources().getColor(colorRes));
+        pill.setCornerRadius(radiusPx);
+        return pill;
     }
 
     private CharSequence buildWhitelistValue(String current) {

@@ -32,14 +32,18 @@
     <string name="status_protected">Protected</string>
     <string name="status_ready">Ready</string>
     <string name="status_attention">Needs attention</string>
-    <string name="status_granted">Modify settings: granted</string>
-    <string name="status_not_granted">Modify settings: not granted</string>
-    <string name="status_enabled">Automatic protection: enabled</string>
-    <string name="status_disabled">Automatic protection: disabled</string>
-    <string name="present_yes">Required item present: yes</string>
-    <string name="present_no">Required item present: no</string>
-    <string name="notification_mode_foreground">Background mode: foreground service</string>
-    <string name="notification_mode_quiet">Background mode: quiet background-only</string>
+    <string name="status_label_permission">Modify settings</string>
+    <string name="status_label_protection">Automatic protection</string>
+    <string name="status_label_required_item">Required item present</string>
+    <string name="status_label_background_mode">Background mode</string>
+    <string name="status_value_granted">Granted</string>
+    <string name="status_value_not_granted">Not granted</string>
+    <string name="status_value_enabled">Enabled</string>
+    <string name="status_value_disabled">Disabled</string>
+    <string name="status_value_yes">Yes</string>
+    <string name="status_value_no">No</string>
+    <string name="status_value_foreground">Foreground service</string>
+    <string name="status_value_quiet">Quiet background-only</string>
 
     <string name="saved">Configuration saved</string>
     <string name="repaired">Repaired / protected</string>

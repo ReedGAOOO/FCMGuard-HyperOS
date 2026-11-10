@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Transparent 28dp base fixes the thumb's intrinsic size. -->
+    <item>
+        <shape android:shape="oval">
+            <solid android:color="#00000000" />
+            <size android:width="28dp" android:height="28dp" />
+        </shape>
+    </item>
+    <item android:left="2.5dp" android:top="2.5dp" android:right="2.5dp" android:bottom="2.5dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/switch_thumb_ring" />
+        </shape>
+    </item>
+    <item android:left="3dp" android:top="3dp" android:right="3dp" android:bottom="3dp">
+        <shape android:shape="oval">
+            <solid android:color="@color/switch_thumb" />
+        </shape>
+    </item>
+</layer-list>
