@@ -71,7 +71,7 @@ public final class StickyDashboardLayout extends FrameLayout {
         stickyHeader = findViewById(R.id.stickyHeader);
         headerBackdrop = findViewById(R.id.headerBackdrop);
         if (headerBackdrop != null) {
-            headerBackdrop.showSolid(getResources().getColor(R.color.bg), glassFadePx());
+            headerBackdrop.showSolid(AppColors.get(getContext(), R.attr.pal_bg), glassFadePx());
         }
         contentRoot = findViewById(R.id.contentRoot);
         heroCard = findViewById(R.id.heroCard);
@@ -151,6 +151,20 @@ public final class StickyDashboardLayout extends FrameLayout {
     }
 
     /**
+     * Window-space bottom of everything the glass setting repaints: the header band and
+     * the floating hero and status cards.
+     */
+    int glassRegionBottomInWindow() {
+        int bottom = headerBackdrop != null ? headerBackdrop.bandBottom() : 0;
+        if (stickyHeader != null) {
+            bottom = Math.max(bottom, Math.round(stickyHeader.getY()) + stickyHeader.getHeight());
+        }
+        int[] location = new int[2];
+        getLocationInWindow(location);
+        return location[1] + bottom;
+    }
+
+    /**
      * Applies or removes HyperOS glass. Returns whether glass is active afterwards; when
      * the system blur cannot be enabled the dashboard keeps its opaque surfaces.
      */
@@ -162,12 +176,12 @@ public final class StickyDashboardLayout extends FrameLayout {
 
         if (glass) {
             float radius = glassBlurRadiusPx();
-            int base = getResources().getColor(R.color.bg);
+            int base = AppColors.get(getContext(), R.attr.pal_bg);
             headerBackdrop.enableGlass(this, radius, base,
-                    getResources().getColor(R.color.glass_header), glassFadePx(), contentRoot);
+                    AppColors.get(getContext(), R.attr.pal_glass_header), glassFadePx(), contentRoot);
             statusCard.enableGlass(this, radius, base, contentRoot, heroCard);
         } else {
-            headerBackdrop.showSolid(getResources().getColor(R.color.bg), glassFadePx());
+            headerBackdrop.showSolid(AppColors.get(getContext(), R.attr.pal_bg), glassFadePx());
             statusCard.disableGlass();
             if (heroContent != null) heroContent.setAlpha(1f);
         }

@@ -3,11 +3,11 @@
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/bg"
+    android:background="?attr/pal_bg"
     android:clipChildren="false"
     android:clipToPadding="false">
 
-    <!-- No background here: the root already paints @color/bg over the same area. -->
+    <!-- No background here: the root already paints ?attr/pal_bg over the same area. -->
     <ScrollView
         android:id="@+id/scroll"
         android:layout_width="match_parent"
@@ -61,29 +61,33 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_name" android:textColor="@color/text_primary" android:textSize="@dimen/hero_title_size" android:textStyle="bold" />
-                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/subtitle" android:textColor="@color/text_secondary" android:textSize="@dimen/hero_subtitle_size" android:maxLines="2" android:ellipsize="end" android:paddingTop="3dp" />
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_name" android:textColor="?attr/pal_text_primary" android:textSize="@dimen/hero_title_size" android:textStyle="bold" />
+                    <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/subtitle" android:textColor="?attr/pal_text_secondary" android:textSize="@dimen/hero_subtitle_size" android:maxLines="2" android:ellipsize="end" android:paddingTop="3dp" />
                 </LinearLayout>
 
-                <!-- Globe + current language name; the text is set from code. -->
-                <Button
-                    android:id="@+id/languageButton"
+                <!--
+                  Two stacked capsules: globe + current language name (text set from code),
+                  and the colour palette picker.
+                -->
+                <LinearLayout
+                    android:id="@+id/heroActions"
                     android:layout_width="@dimen/language_button_width"
-                    android:layout_height="@dimen/language_button_height"
+                    android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/language_button_margin_start"
-                    android:background="@drawable/hero_pill_bg"
-                    android:drawableLeft="@drawable/ic_language"
-                    android:drawablePadding="5dp"
-                    android:paddingLeft="11dp"
-                    android:paddingRight="10dp"
-                    android:singleLine="true"
-                    android:ellipsize="end"
-                    android:textAllCaps="false"
-                    android:textColor="@color/blue"
-                    android:textSize="13sp"
-                    android:textStyle="bold"
-                    android:elevation="0dp"
-                    android:stateListAnimator="@null" />
+                    android:orientation="vertical">
+
+                    <Button
+                        android:id="@+id/languageButton"
+                        style="@style/HeroCapsule"
+                        android:drawableLeft="@drawable/ic_language" />
+
+                    <Button
+                        android:id="@+id/paletteButton"
+                        style="@style/HeroCapsule"
+                        android:layout_marginTop="@dimen/hero_capsule_gap"
+                        android:drawableLeft="@drawable/ic_palette"
+                        android:text="@string/palette_title" />
+                </LinearLayout>
             </LinearLayout>
         </LinearLayout>
 
@@ -107,8 +111,8 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:paddingBottom="10dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold" />
-                <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="@color/green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" android:drawablePadding="8dp" android:gravity="center_vertical" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_title" android:textColor="?attr/pal_text_secondary" android:textSize="11sp" android:textStyle="bold" />
+                <TextView android:id="@+id/statusHeadline" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/status_ready" android:textColor="?attr/pal_green" android:textSize="25sp" android:textStyle="bold" android:paddingTop="2dp" android:drawablePadding="8dp" android:gravity="center_vertical" />
             </LinearLayout>
 
             <LinearLayout
@@ -121,7 +125,7 @@
                 android:background="@drawable/status_header_bg"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp">
-                <TextView android:id="@+id/statusMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:paddingBottom="2dp" android:visibility="gone" />
+                <TextView android:id="@+id/statusMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?attr/pal_text_secondary" android:textSize="13sp" android:paddingBottom="2dp" android:visibility="gone" />
                 <!--
                   Status tiles in two independent columns, filled most severe first row by row
                   (1 2 / 3 4 / 5 6). While the card collapses, each column stacks behind its
@@ -157,8 +161,8 @@
                 android:orientation="vertical"
                 android:background="@drawable/tonal_bg"
                 android:layout_marginTop="13dp">
-                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/current_value_title" android:textColor="@color/text_secondary" android:textSize="10sp" android:textStyle="bold" />
-                <TextView android:id="@+id/currentValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_primary" android:textSize="12.5sp" android:lineSpacingExtra="2dp" android:textIsSelectable="true" android:paddingTop="4dp" />
+                <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/current_value_title" android:textColor="?attr/pal_text_secondary" android:textSize="10sp" android:textStyle="bold" />
+                <TextView android:id="@+id/currentValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?attr/pal_text_primary" android:textSize="12.5sp" android:lineSpacingExtra="2dp" android:textIsSelectable="true" android:paddingTop="4dp" />
             </LinearLayout>
         </com.reed.fcmguard.CollapsingStatusCard>
     </FrameLayout>

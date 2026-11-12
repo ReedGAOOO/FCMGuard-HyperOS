@@ -27,7 +27,7 @@
             android:maxLines="2"
             android:ellipsize="end"
             android:includeFontPadding="false"
-            android:textColor="@color/text_primary"
+            android:textColor="?attr/pal_text_primary"
             android:textSize="11sp" />
 
         <TextView

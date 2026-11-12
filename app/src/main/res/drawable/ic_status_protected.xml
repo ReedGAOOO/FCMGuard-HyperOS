@@ -4,10 +4,10 @@
     android:height="22dp"
     android:viewportWidth="24"
     android:viewportHeight="24">
-    <path android:fillColor="@color/green" android:pathData="M12,2a10,10 0,1 0,0.01 0z" />
+    <path android:fillColor="?attr/pal_green" android:pathData="M12,2a10,10 0,1 0,0.01 0z" />
     <path
         android:fillColor="#00000000"
-        android:strokeColor="@color/surface"
+        android:strokeColor="?attr/pal_surface"
         android:strokeWidth="2.4"
         android:strokeLineCap="round"
         android:strokeLineJoin="round"

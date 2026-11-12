@@ -58,4 +58,16 @@
     <string name="notification_channel_description">&#x81EA;&#x52D5;FCM&#x4FDD;&#x8B77;&#x306E;&#x4FE1;&#x983C;&#x6027;&#x3092;&#x7DAD;&#x6301;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;&#x4F4E;&#x512A;&#x5148;&#x5EA6;&#x901A;&#x77E5;</string>
     <string name="notification_active">&#x4FDD;&#x8B77;&#x4E2D; &#xB7; &#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x99C6;&#x52D5;</string>
     <string name="notification_repaired">&#x30DB;&#x30EF;&#x30A4;&#x30C8;&#x30EA;&#x30B9;&#x30C8;&#x4FEE;&#x5FA9;&#x6E08;&#x307F; &#xB7; FCM&#x4FDD;&#x8B77;&#x4E2D;</string>
+
+    <!-- Colour palettes (picker in the hero card). -->
+    <string name="palette_title">配色</string>
+    <string name="palette_classic">クラシック</string>
+    <string name="palette_hyper_blue">HyperOS ブルー</string>
+    <string name="palette_guardian_teal">ティール</string>
+    <string name="palette_indigo_dusk">インディゴ</string>
+    <string name="palette_google">Google クラシック</string>
+    <string name="palette_sakura">桜</string>
+    <string name="palette_sunset_amber">アンバー</string>
+    <string name="palette_graphite">グラファイト</string>
+    <string name="palette_aurora">オーロラ</string>
 </resources>

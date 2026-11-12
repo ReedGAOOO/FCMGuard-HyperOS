@@ -1,0 +1,713 @@
+[
+ {
+  "id": "classic",
+  "preview": "0-current",
+  "title": "当前配色 Current",
+  "light": {
+   "bg": "#F4F6F8",
+   "surface": "#FFFFFF",
+   "alt": "#F0F3F7",
+   "border": "#E2E6EC",
+   "divider": "#EDF0F3",
+   "text": "#1F2328",
+   "text2": "#68707D",
+   "primary": "#0B57D0",
+   "fill": "#0B57D0",
+   "hero": [
+    "#EEE9FF",
+    "#F3F0FF",
+    "#EAF4FF"
+   ],
+   "pill": "rgba(255,255,255,.95)",
+   "g": [
+    "rgba(52,168,83,.14)",
+    "#146C2E"
+   ],
+   "y": [
+    "rgba(251,188,4,.14)",
+    "#8A5300"
+   ],
+   "r": [
+    "rgba(234,67,53,.14)",
+    "#B3261E"
+   ],
+   "n": [
+    "rgba(31,35,40,.094)",
+    "#5A616C"
+   ],
+   "red": "#D93025",
+   "off": "#DCE0E6",
+   "info": "#EEF4FF",
+   "shadow": "rgba(16,24,40,.10)"
+  },
+  "dark": {
+   "bg": "#0F1115",
+   "surface": "#181B20",
+   "alt": "#22262D",
+   "border": "#30353D",
+   "divider": "#2B3037",
+   "text": "#F1F3F4",
+   "text2": "#AAB0B8",
+   "primary": "#8AB4F8",
+   "fill": "#3568C7",
+   "hero": [
+    "#272337",
+    "#242435",
+    "#1B2838"
+   ],
+   "pill": "rgba(43,47,54,.85)",
+   "g": [
+    "rgba(129,201,149,.2)",
+    "#81C995"
+   ],
+   "y": [
+    "rgba(253,214,99,.2)",
+    "#FDD663"
+   ],
+   "r": [
+    "rgba(242,139,130,.2)",
+    "#F28B82"
+   ],
+   "n": [
+    "rgba(255,255,255,.15)",
+    "#AAB0B8"
+   ],
+   "red": "#F28B82",
+   "off": "#3A3F47",
+   "info": "#172236",
+   "shadow": "rgba(0,0,0,.45)"
+  }
+ },
+ {
+  "id": "hyper_blue",
+  "preview": "A-hyperos-blue",
+  "title": "A · 澎湃蓝 HyperOS Blue",
+  "light": {
+   "bg": "#F5F6F8",
+   "surface": "#FFFFFF",
+   "alt": "#F2F3F5",
+   "border": "#E9EBEF",
+   "divider": "#EFF0F2",
+   "text": "#18191B",
+   "text2": "#666B72",
+   "primary": "#1F6FEB",
+   "fill": "#3482FF",
+   "hero": [
+    "#E4EEFF",
+    "#EEF4FF",
+    "#E8F6FF"
+   ],
+   "pill": "rgba(255,255,255,.92)",
+   "g": [
+    "rgba(25,170,95,.13)",
+    "#137A43"
+   ],
+   "y": [
+    "rgba(255,170,0,.15)",
+    "#8A5A00"
+   ],
+   "r": [
+    "rgba(240,68,56,.12)",
+    "#C4291F"
+   ],
+   "n": [
+    "rgba(24,25,27,.07)",
+    "#5C6168"
+   ],
+   "red": "#E5484D",
+   "off": "#DADDE2",
+   "info": "#EDF4FF",
+   "shadow": "rgba(20,40,80,.09)"
+  },
+  "dark": {
+   "bg": "#000000",
+   "surface": "#1C1C1E",
+   "alt": "#2C2C2E",
+   "border": "#2C2C2E",
+   "divider": "#2A2A2D",
+   "text": "#F2F2F7",
+   "text2": "#9C9CA3",
+   "primary": "#4C8DFF",
+   "fill": "#3482FF",
+   "hero": [
+    "#14203A",
+    "#121B2E",
+    "#0F2234"
+   ],
+   "pill": "rgba(44,44,46,.9)",
+   "g": [
+    "rgba(48,209,120,.18)",
+    "#4CD98A"
+   ],
+   "y": [
+    "rgba(255,193,7,.18)",
+    "#FFCC4D"
+   ],
+   "r": [
+    "rgba(255,85,85,.18)",
+    "#FF7B7B"
+   ],
+   "n": [
+    "rgba(255,255,255,.12)",
+    "#A1A1A8"
+   ],
+   "red": "#FF6B6B",
+   "off": "#3A3A3C",
+   "info": "#0F1A2E",
+   "shadow": "rgba(0,0,0,.6)"
+  }
+ },
+ {
+  "id": "guardian_teal",
+  "preview": "B-guardian-teal",
+  "title": "B · 守护青 Guardian Teal",
+  "light": {
+   "bg": "#F2F6F5",
+   "surface": "#FFFFFF",
+   "alt": "#EDF3F1",
+   "border": "#DFE8E5",
+   "divider": "#E9F0EE",
+   "text": "#15201D",
+   "text2": "#5D6B67",
+   "primary": "#0E8577",
+   "fill": "#0E8577",
+   "hero": [
+    "#DDF3EC",
+    "#EAF7F2",
+    "#E2F1F7"
+   ],
+   "pill": "rgba(255,255,255,.9)",
+   "g": [
+    "rgba(14,133,119,.12)",
+    "#0B6B5F"
+   ],
+   "y": [
+    "rgba(230,160,0,.15)",
+    "#855A00"
+   ],
+   "r": [
+    "rgba(214,69,69,.12)",
+    "#B42F2F"
+   ],
+   "n": [
+    "rgba(21,32,29,.07)",
+    "#56645F"
+   ],
+   "red": "#D64545",
+   "off": "#D5DFDC",
+   "info": "#E6F4F0",
+   "shadow": "rgba(10,50,45,.09)"
+  },
+  "dark": {
+   "bg": "#0A100F",
+   "surface": "#141B1A",
+   "alt": "#1D2725",
+   "border": "#26322F",
+   "divider": "#22302D",
+   "text": "#E8F1EF",
+   "text2": "#98ABA6",
+   "primary": "#48C9B6",
+   "fill": "#128F80",
+   "hero": [
+    "#11302A",
+    "#132925",
+    "#112630"
+   ],
+   "pill": "rgba(29,39,37,.9)",
+   "g": [
+    "rgba(72,201,182,.18)",
+    "#5DD6C3"
+   ],
+   "y": [
+    "rgba(250,196,70,.18)",
+    "#F5C451"
+   ],
+   "r": [
+    "rgba(255,120,120,.18)",
+    "#FF8A8A"
+   ],
+   "n": [
+    "rgba(255,255,255,.11)",
+    "#9FB0AC"
+   ],
+   "red": "#FF8080",
+   "off": "#2E3B38",
+   "info": "#10221F",
+   "shadow": "rgba(0,0,0,.55)"
+  }
+ },
+ {
+  "id": "indigo_dusk",
+  "preview": "C-indigo-dusk",
+  "title": "C · 暮光靛 Indigo Dusk",
+  "light": {
+   "bg": "#F4F4F9",
+   "surface": "#FFFFFF",
+   "alt": "#F0F0F7",
+   "border": "#E5E5F0",
+   "divider": "#EEEEF5",
+   "text": "#1B1A2B",
+   "text2": "#686780",
+   "primary": "#5856D6",
+   "fill": "#5856D6",
+   "hero": [
+    "#E9E6FF",
+    "#F2EDFF",
+    "#FBEDF5"
+   ],
+   "pill": "rgba(255,255,255,.9)",
+   "g": [
+    "rgba(40,160,110,.13)",
+    "#17744D"
+   ],
+   "y": [
+    "rgba(240,170,0,.15)",
+    "#855A00"
+   ],
+   "r": [
+    "rgba(224,70,100,.12)",
+    "#B8304D"
+   ],
+   "n": [
+    "rgba(27,26,43,.07)",
+    "#5F5E75"
+   ],
+   "red": "#D9455F",
+   "off": "#DCDCE8",
+   "info": "#EFEEFF",
+   "shadow": "rgba(40,30,90,.10)"
+  },
+  "dark": {
+   "bg": "#0D0D15",
+   "surface": "#181826",
+   "alt": "#222235",
+   "border": "#2C2C42",
+   "divider": "#262639",
+   "text": "#EEEEFA",
+   "text2": "#A6A5C2",
+   "primary": "#A5A4FF",
+   "fill": "#5E5CE6",
+   "hero": [
+    "#241F44",
+    "#2A2244",
+    "#311F3A"
+   ],
+   "pill": "rgba(34,34,53,.9)",
+   "g": [
+    "rgba(80,210,150,.18)",
+    "#6EDBA8"
+   ],
+   "y": [
+    "rgba(255,200,80,.18)",
+    "#FFD166"
+   ],
+   "r": [
+    "rgba(255,110,140,.18)",
+    "#FF8FA8"
+   ],
+   "n": [
+    "rgba(255,255,255,.12)",
+    "#A9A8C4"
+   ],
+   "red": "#FF7A95",
+   "off": "#33334A",
+   "info": "#1A1930",
+   "shadow": "rgba(0,0,0,.55)"
+  }
+ },
+ {
+  "id": "google",
+  "preview": "D-google-classic",
+  "title": "D · 谷歌经典 Google Classic",
+  "light": {
+   "bg": "#F8F9FA",
+   "surface": "#FFFFFF",
+   "alt": "#F1F3F4",
+   "border": "#DADCE0",
+   "divider": "#E8EAED",
+   "text": "#202124",
+   "text2": "#5F6368",
+   "primary": "#1A73E8",
+   "fill": "#1A73E8",
+   "hero": [
+    "#E8F0FE",
+    "#E6F4EA",
+    "#FEF7E0"
+   ],
+   "pill": "rgba(255,255,255,.95)",
+   "g": [
+    "rgba(30,142,62,.12)",
+    "#137333"
+   ],
+   "y": [
+    "rgba(249,171,0,.16)",
+    "#8A5100"
+   ],
+   "r": [
+    "rgba(217,48,37,.11)",
+    "#B3261E"
+   ],
+   "n": [
+    "rgba(32,33,36,.07)",
+    "#5F6368"
+   ],
+   "red": "#D93025",
+   "off": "#DADCE0",
+   "info": "#E8F0FE",
+   "shadow": "rgba(60,64,67,.12)"
+  },
+  "dark": {
+   "bg": "#202124",
+   "surface": "#292A2D",
+   "alt": "#35363A",
+   "border": "#3C4043",
+   "divider": "#3C4043",
+   "text": "#E8EAED",
+   "text2": "#9AA0A6",
+   "primary": "#8AB4F8",
+   "fill": "#1A73E8",
+   "hero": [
+    "#1C2738",
+    "#1B2B22",
+    "#2E2A1A"
+   ],
+   "pill": "rgba(53,54,58,.9)",
+   "g": [
+    "rgba(129,201,149,.18)",
+    "#81C995"
+   ],
+   "y": [
+    "rgba(253,214,99,.18)",
+    "#FDD663"
+   ],
+   "r": [
+    "rgba(242,139,130,.18)",
+    "#F6AEA9"
+   ],
+   "n": [
+    "rgba(255,255,255,.12)",
+    "#BDC1C6"
+   ],
+   "red": "#F28B82",
+   "off": "#3C4043",
+   "info": "#1E2A3D",
+   "shadow": "rgba(0,0,0,.5)"
+  }
+ },
+ {
+  "id": "sakura",
+  "preview": "E-sakura",
+  "title": "E · 樱花粉 Sakura",
+  "light": {
+   "bg": "#FAF5F7",
+   "surface": "#FFFFFF",
+   "alt": "#F7EEF2",
+   "border": "#F0E2E8",
+   "divider": "#F5EAEF",
+   "text": "#2A1E24",
+   "text2": "#76646C",
+   "primary": "#C93C70",
+   "fill": "#D6457A",
+   "hero": [
+    "#FFE3EE",
+    "#FFF0F5",
+    "#F1EBFF"
+   ],
+   "pill": "rgba(255,255,255,.92)",
+   "g": [
+    "rgba(40,160,110,.13)",
+    "#17744D"
+   ],
+   "y": [
+    "rgba(240,160,0,.15)",
+    "#855A00"
+   ],
+   "r": [
+    "rgba(220,60,60,.12)",
+    "#B42828"
+   ],
+   "n": [
+    "rgba(42,30,36,.07)",
+    "#665660"
+   ],
+   "red": "#D9383A",
+   "off": "#E8DCE2",
+   "info": "#FDEFF4",
+   "shadow": "rgba(120,40,70,.10)"
+  },
+  "dark": {
+   "bg": "#120D10",
+   "surface": "#1E161A",
+   "alt": "#2A1F24",
+   "border": "#33262C",
+   "divider": "#2E2328",
+   "text": "#F7ECF0",
+   "text2": "#B9A3AD",
+   "primary": "#FF8FB5",
+   "fill": "#D6457A",
+   "hero": [
+    "#3A1A28",
+    "#331A26",
+    "#2A1F3A"
+   ],
+   "pill": "rgba(42,31,36,.9)",
+   "g": [
+    "rgba(80,210,150,.18)",
+    "#6EDBA8"
+   ],
+   "y": [
+    "rgba(255,200,80,.18)",
+    "#FFD166"
+   ],
+   "r": [
+    "rgba(255,110,110,.18)",
+    "#FF8A8A"
+   ],
+   "n": [
+    "rgba(255,255,255,.12)",
+    "#B9A3AD"
+   ],
+   "red": "#FF7A7A",
+   "off": "#3A2D33",
+   "info": "#241820",
+   "shadow": "rgba(0,0,0,.55)"
+  }
+ },
+ {
+  "id": "sunset_amber",
+  "preview": "F-sunset-amber",
+  "title": "F · 琥珀橙 Sunset Amber",
+  "light": {
+   "bg": "#FAF7F2",
+   "surface": "#FFFFFF",
+   "alt": "#F6F0E8",
+   "border": "#EDE3D6",
+   "divider": "#F2EADF",
+   "text": "#231C14",
+   "text2": "#716555",
+   "primary": "#B85407",
+   "fill": "#D9640B",
+   "hero": [
+    "#FFE7CF",
+    "#FFF2E3",
+    "#FFF6D6"
+   ],
+   "pill": "rgba(255,255,255,.92)",
+   "g": [
+    "rgba(40,150,90,.13)",
+    "#1D6F45"
+   ],
+   "y": [
+    "rgba(230,150,0,.16)",
+    "#7A4D00"
+   ],
+   "r": [
+    "rgba(214,55,45,.12)",
+    "#B1281F"
+   ],
+   "n": [
+    "rgba(35,28,20,.07)",
+    "#655949"
+   ],
+   "red": "#D23B2E",
+   "off": "#E6DCCF",
+   "info": "#FFF2E3",
+   "shadow": "rgba(90,50,10,.10)"
+  },
+  "dark": {
+   "bg": "#110E0A",
+   "surface": "#1C1813",
+   "alt": "#27211A",
+   "border": "#322A20",
+   "divider": "#2C251D",
+   "text": "#F6EFE6",
+   "text2": "#B3A694",
+   "primary": "#FFAA5C",
+   "fill": "#C95A08",
+   "hero": [
+    "#3A2412",
+    "#33240F",
+    "#2E2A12"
+   ],
+   "pill": "rgba(39,33,26,.9)",
+   "g": [
+    "rgba(110,210,150,.18)",
+    "#7EDCA6"
+   ],
+   "y": [
+    "rgba(255,200,80,.18)",
+    "#FFD166"
+   ],
+   "r": [
+    "rgba(255,120,100,.18)",
+    "#FF8F7A"
+   ],
+   "n": [
+    "rgba(255,255,255,.12)",
+    "#B3A694"
+   ],
+   "red": "#FF7F6B",
+   "off": "#3A3228",
+   "info": "#24190D",
+   "shadow": "rgba(0,0,0,.55)"
+  }
+ },
+ {
+  "id": "graphite",
+  "preview": "G-graphite",
+  "title": "G · 石墨 Graphite",
+  "light": {
+   "bg": "#F4F4F5",
+   "surface": "#FFFFFF",
+   "alt": "#F0F0F2",
+   "border": "#E4E4E7",
+   "divider": "#ECECEE",
+   "text": "#18181B",
+   "text2": "#66666E",
+   "primary": "#27272A",
+   "fill": "#27272A",
+   "hero": [
+    "#EBEBEE",
+    "#F4F4F5",
+    "#E7E7EA"
+   ],
+   "pill": "rgba(255,255,255,.95)",
+   "g": [
+    "rgba(22,163,74,.12)",
+    "#126B33"
+   ],
+   "y": [
+    "rgba(234,179,8,.16)",
+    "#7C470C"
+   ],
+   "r": [
+    "rgba(220,38,38,.11)",
+    "#B91C1C"
+   ],
+   "n": [
+    "rgba(24,24,27,.07)",
+    "#52525B"
+   ],
+   "red": "#DC2626",
+   "off": "#DCDCE0",
+   "info": "#F0F0F2",
+   "shadow": "rgba(0,0,0,.08)"
+  },
+  "dark": {
+   "bg": "#09090B",
+   "surface": "#18181B",
+   "alt": "#232327",
+   "border": "#2E2E33",
+   "divider": "#27272A",
+   "text": "#F4F4F5",
+   "text2": "#A1A1AA",
+   "primary": "#E4E4E7",
+   "fill": "#3F3F46",
+   "hero": [
+    "#1C1C20",
+    "#202024",
+    "#1A1A1E"
+   ],
+   "pill": "rgba(39,39,42,.9)",
+   "g": [
+    "rgba(74,222,128,.16)",
+    "#4ADE80"
+   ],
+   "y": [
+    "rgba(250,204,21,.16)",
+    "#FACC15"
+   ],
+   "r": [
+    "rgba(248,113,113,.16)",
+    "#F87171"
+   ],
+   "n": [
+    "rgba(255,255,255,.1)",
+    "#A1A1AA"
+   ],
+   "red": "#F87171",
+   "off": "#3F3F46",
+   "info": "#18181B",
+   "shadow": "rgba(0,0,0,.6)"
+  }
+ },
+ {
+  "id": "aurora",
+  "preview": "H-aurora",
+  "title": "H · 极光 Aurora",
+  "light": {
+   "bg": "#F3F6FA",
+   "surface": "#FFFFFF",
+   "alt": "#EEF2F8",
+   "border": "#E1E7F0",
+   "divider": "#EBF0F6",
+   "text": "#141B2D",
+   "text2": "#5A667C",
+   "primary": "#0279B8",
+   "fill": "#0284C7",
+   "hero": [
+    "#D5F4FF",
+    "#E6E8FF",
+    "#FCE6F5"
+   ],
+   "pill": "rgba(255,255,255,.9)",
+   "g": [
+    "rgba(16,160,110,.13)",
+    "#0F7050"
+   ],
+   "y": [
+    "rgba(234,160,0,.15)",
+    "#7C5200"
+   ],
+   "r": [
+    "rgba(225,60,80,.12)",
+    "#B42339"
+   ],
+   "n": [
+    "rgba(20,27,45,.07)",
+    "#556076"
+   ],
+   "red": "#E0384F",
+   "off": "#D8E0EC",
+   "info": "#E6F6FD",
+   "shadow": "rgba(20,40,90,.10)"
+  },
+  "dark": {
+   "bg": "#070B14",
+   "surface": "#111827",
+   "alt": "#1C2536",
+   "border": "#253047",
+   "divider": "#1F2A3D",
+   "text": "#EEF2FF",
+   "text2": "#9AA6BF",
+   "primary": "#38BDF8",
+   "fill": "#0284C7",
+   "hero": [
+    "#0B2E3D",
+    "#1E1F4A",
+    "#3A1A3F"
+   ],
+   "pill": "rgba(28,37,54,.9)",
+   "g": [
+    "rgba(52,211,153,.17)",
+    "#4ADE9E"
+   ],
+   "y": [
+    "rgba(251,191,36,.17)",
+    "#FBBF24"
+   ],
+   "r": [
+    "rgba(248,113,113,.17)",
+    "#F87171"
+   ],
+   "n": [
+    "rgba(255,255,255,.1)",
+    "#9AA6BF"
+   ],
+   "red": "#F87171",
+   "off": "#2C3850",
+   "info": "#0C1A2E",
+   "shadow": "rgba(0,0,0,.6)"
+  }
+ }
+]

@@ -52,11 +52,11 @@ public final class CollapsingStatusCard extends LinearLayout {
         strokeWidthPx = getResources().getDisplayMetrics().density;
 
         fillPaint.setStyle(Paint.Style.FILL);
-        fillPaint.setColor(getResources().getColor(R.color.surface));
+        fillPaint.setColor(AppColors.get(getContext(), R.attr.pal_surface));
 
         strokePaint.setStyle(Paint.Style.STROKE);
         strokePaint.setStrokeWidth(strokeWidthPx);
-        strokePaint.setColor(getResources().getColor(R.color.floating_border));
+        strokePaint.setColor(AppColors.get(getContext(), R.attr.pal_floating_border));
 
         setOutlineProvider(new ViewOutlineProvider() {
             @Override public void getOutline(View view, Outline outline) {
@@ -101,8 +101,8 @@ public final class CollapsingStatusCard extends LinearLayout {
     }
 
     private void applySurfaceColors(boolean glass) {
-        fillPaint.setColor(getResources().getColor(glass ? R.color.glass_surface : R.color.surface));
-        strokePaint.setColor(getResources().getColor(glass ? R.color.glass_border : R.color.floating_border));
+        fillPaint.setColor(AppColors.get(getContext(), glass ? R.attr.pal_glass_surface : R.attr.pal_surface));
+        strokePaint.setColor(AppColors.get(getContext(), glass ? R.attr.pal_glass_border : R.attr.pal_floating_border));
         invalidate();
     }
 

@@ -7,7 +7,7 @@
     </item>
     <item>
         <shape>
-            <solid android:color="@color/chip_bg"/>
+            <solid android:color="?attr/pal_chip_bg"/>
             <corners android:radius="999dp"/>
         </shape>
     </item>

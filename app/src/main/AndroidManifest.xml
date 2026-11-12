@@ -47,7 +47,7 @@
             android:exported="true"
             android:resizeableActivity="true"
             android:maxAspectRatio="3.0"
-            android:configChanges="screenSize|orientation|keyboardHidden">
+            android:configChanges="screenSize|orientation|keyboardHidden|uiMode">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

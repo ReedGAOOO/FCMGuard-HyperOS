@@ -9,12 +9,12 @@
     </item>
     <item android:left="2.5dp" android:top="2.5dp" android:right="2.5dp" android:bottom="2.5dp">
         <shape android:shape="oval">
-            <solid android:color="@color/switch_thumb_ring" />
+            <solid android:color="?attr/pal_switch_thumb_ring" />
         </shape>
     </item>
     <item android:left="3dp" android:top="3dp" android:right="3dp" android:bottom="3dp">
         <shape android:shape="oval">
-            <solid android:color="@color/switch_thumb" />
+            <solid android:color="?attr/pal_switch_thumb" />
         </shape>
     </item>
 </layer-list>

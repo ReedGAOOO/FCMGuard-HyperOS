@@ -63,4 +63,16 @@
     <string name="notification_channel_description">Notificação de baixa prioridade usada para manter fiável a proteção FCM automática</string>
     <string name="notification_active">Proteção ativa · baseada em eventos</string>
     <string name="notification_repaired">Lista reparada · FCM protegido</string>
+
+    <!-- Colour palettes (picker in the hero card). -->
+    <string name="palette_title">Cores</string>
+    <string name="palette_classic">Clássico</string>
+    <string name="palette_hyper_blue">Azul HyperOS</string>
+    <string name="palette_guardian_teal">Verde-azulado</string>
+    <string name="palette_indigo_dusk">Índigo</string>
+    <string name="palette_google">Google clássico</string>
+    <string name="palette_sakura">Sakura</string>
+    <string name="palette_sunset_amber">Âmbar</string>
+    <string name="palette_graphite">Grafite</string>
+    <string name="palette_aurora">Aurora</string>
 </resources>

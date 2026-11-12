@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <gradient
+        android:startColor="?attr/pal_hero_start"
+        android:centerColor="?attr/pal_hero_center"
+        android:endColor="?attr/pal_hero_end"
+        android:angle="0" />
+    <corners android:radius="28dp" />
+</shape>

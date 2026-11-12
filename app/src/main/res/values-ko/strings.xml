@@ -58,4 +58,16 @@
     <string name="notification_channel_description">&#xC790;&#xB3D9; FCM &#xBCF4;&#xD638; &#xC548;&#xC815;&#xC131;&#xC744; &#xC720;&#xC9C0;&#xD558;&#xAE30; &#xC704;&#xD55C; &#xB0AE;&#xC740; &#xC6B0;&#xC120;&#xC21C;&#xC704; &#xC54C;&#xB9BC;</string>
     <string name="notification_active">&#xBCF4;&#xD638; &#xD65C;&#xC131; &#xB7; &#xC774;&#xBCA4;&#xD2B8; &#xAE30;&#xBC18;</string>
     <string name="notification_repaired">&#xD5C8;&#xC6A9; &#xBAA9;&#xB85D; &#xBCF5;&#xAD6C;&#xB428; &#xB7; FCM &#xBCF4;&#xD638; &#xC911;</string>
+
+    <!-- Colour palettes (picker in the hero card). -->
+    <string name="palette_title">색상</string>
+    <string name="palette_classic">클래식</string>
+    <string name="palette_hyper_blue">HyperOS 블루</string>
+    <string name="palette_guardian_teal">틸</string>
+    <string name="palette_indigo_dusk">인디고</string>
+    <string name="palette_google">Google 클래식</string>
+    <string name="palette_sakura">벚꽃</string>
+    <string name="palette_sunset_amber">앰버</string>
+    <string name="palette_graphite">그래파이트</string>
+    <string name="palette_aurora">오로라</string>
 </resources>

@@ -1,15 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="android:style/Theme.Material.NoActionBar">
-        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:windowBackground">?attr/pal_bg</item>
         <item name="android:windowLightStatusBar">false</item>
         <item name="android:windowLightNavigationBar">false</item>
-        <item name="android:statusBarColor">@color/bg</item>
-        <item name="android:navigationBarColor">@color/bg</item>
-        <item name="android:colorAccent">@color/blue</item>
-        <item name="android:textColorPrimary">@color/text_primary</item>
-        <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:statusBarColor">?attr/pal_bg</item>
+        <item name="android:navigationBarColor">?attr/pal_bg</item>
+        <item name="android:colorAccent">?attr/pal_blue</item>
+        <item name="android:textColorPrimary">?attr/pal_text_primary</item>
+        <item name="android:textColorSecondary">?attr/pal_text_secondary</item>
         <item name="android:switchStyle">@style/FcmSwitch</item>
+        <!-- Palette colours (Classic defaults); see tools/gen_palettes.py. -->
+        <item name="pal_bg">@color/bg</item>
+        <item name="pal_surface">@color/surface</item>
+        <item name="pal_surface_alt">@color/surface_alt</item>
+        <item name="pal_text_primary">@color/text_primary</item>
+        <item name="pal_text_secondary">@color/text_secondary</item>
+        <item name="pal_blue">@color/blue</item>
+        <item name="pal_green">@color/green</item>
+        <item name="pal_yellow">@color/yellow</item>
+        <item name="pal_red">@color/red</item>
+        <item name="pal_border">@color/border</item>
+        <item name="pal_chip_bg">@color/chip_bg</item>
+        <item name="pal_info_bg">@color/info_bg</item>
+        <item name="pal_divider">@color/divider</item>
+        <item name="pal_status_value_blue_bg">@color/status_value_blue_bg</item>
+        <item name="pal_status_value_green_bg">@color/status_value_green_bg</item>
+        <item name="pal_status_value_yellow_bg">@color/status_value_yellow_bg</item>
+        <item name="pal_status_value_red_bg">@color/status_value_red_bg</item>
+        <item name="pal_status_value_purple_bg">@color/status_value_purple_bg</item>
+        <item name="pal_status_value_neutral_bg">@color/status_value_neutral_bg</item>
+        <item name="pal_badge_text_green">@color/badge_text_green</item>
+        <item name="pal_badge_text_yellow">@color/badge_text_yellow</item>
+        <item name="pal_badge_text_red">@color/badge_text_red</item>
+        <item name="pal_badge_text_neutral">@color/badge_text_neutral</item>
+        <item name="pal_hero_start">@color/hero_start</item>
+        <item name="pal_hero_center">@color/hero_center</item>
+        <item name="pal_hero_end">@color/hero_end</item>
+        <item name="pal_hero_pill">@color/hero_pill</item>
+        <item name="pal_floating_border">@color/floating_border</item>
+        <item name="pal_primary_fill">@color/primary_fill</item>
+        <item name="pal_primary_pressed">@color/primary_pressed</item>
+        <item name="pal_primary_disabled">@color/primary_disabled</item>
+        <item name="pal_secondary_pressed">@color/secondary_pressed</item>
+        <item name="pal_glass_header">@color/glass_header</item>
+        <item name="pal_glass_surface">@color/glass_surface</item>
+        <item name="pal_glass_border">@color/glass_border</item>
+        <item name="pal_glass_tonal">@color/glass_tonal</item>
+        <item name="pal_hero_start_glass">@color/hero_start_glass</item>
+        <item name="pal_hero_center_glass">@color/hero_center_glass</item>
+        <item name="pal_hero_end_glass">@color/hero_end_glass</item>
+        <item name="pal_ripple_on_primary">@color/ripple_on_primary</item>
+        <item name="pal_ripple_neutral">@color/ripple_neutral</item>
+        <item name="pal_switch_track_off">@color/switch_track_off</item>
+        <item name="pal_switch_track_disabled">@color/switch_track_disabled</item>
+        <item name="pal_switch_thumb">@color/switch_thumb</item>
+        <item name="pal_switch_thumb_ring">@color/switch_thumb_ring</item>
+        <item name="pal_segment_selected">@color/segment_selected</item>
     </style>
 
     <!-- HyperOS-style pill switch used by every Switch in the app. -->

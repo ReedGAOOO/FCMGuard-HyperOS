@@ -60,6 +60,11 @@ public final class GlassBackdropView extends View {
         invalidate();
     }
 
+    /** How far down the band currently draws, in this view's coordinates. */
+    int bandBottom() {
+        return bandHeight > 0 ? Math.min(bandHeight, getHeight()) : getHeight();
+    }
+
     void setBandHeight(int heightPx) {
         if (heightPx == bandHeight) return;
         bandHeight = heightPx;

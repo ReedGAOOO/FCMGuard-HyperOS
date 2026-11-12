@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/ripple_neutral">
+    android:color="?attr/pal_ripple_neutral">
     <item>
         <shape>
-            <solid android:color="@color/hero_pill" />
+            <solid android:color="?attr/pal_hero_pill" />
             <corners android:radius="999dp" />
         </shape>
     </item>

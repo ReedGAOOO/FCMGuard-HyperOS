@@ -51,6 +51,11 @@ for name, width in profiles:
     assert d["status_expanded_top"] < d["hero_height"], (
         f"{name}: floating status card no longer overlaps the hero"
     )
+    capsules_bottom = d["hero_inner_padding"] + 2 * d["hero_capsule_height"] + d["hero_capsule_gap"]
+    assert capsules_bottom + 6 <= d["status_expanded_top"], (
+        f"{name}: language/palette capsules run into the status card ({capsules_bottom}dp)"
+    )
+    assert d["hero_capsule_height"] >= 32, f"{name}: hero capsules too small to tap"
 
 layout = ET.parse(ROOT / "app/src/main/res/layout/activity_main.xml").getroot()
 android_id = "{http://schemas.android.com/apk/res/android}id"
@@ -64,6 +69,8 @@ for required in (
     "@+id/statusDetailsPanel",
     "@+id/currentValuePanel",
     "@+id/scroll",
+    "@+id/languageButton",
+    "@+id/paletteButton",
 ):
     assert required in ids, f"missing required dashboard id: {required}"
 

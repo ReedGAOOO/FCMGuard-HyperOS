@@ -186,6 +186,44 @@ shot 16-360dp-top
 drag_up 500;  shot 17-360dp-scroll-500
 adb shell wm density reset
 
+# --- Colour palettes: hero capsule, picker, every palette in light and dark ---
+# Animations are off for deterministic shots; turn them on here so the page crossfade
+# runs, and record one palette switch to check it frame by frame.
+pick_palette() {
+  tap_text 'colors' >/dev/null || return 1
+  sleep 1
+  tap_text "$1" || { adb shell input keyevent 4; return 1; }
+  shot "$2" 1.8
+}
+adb shell settings put global animator_duration_scale 1
+adb shell cmd uimode night no
+launch_fresh
+tap_text 'colors' && shot 18-palette-picker-light 1.2
+adb shell screenrecord --time-limit 6 /sdcard/palette-switch.mp4 >/dev/null 2>&1 &
+REC=$!
+sleep 0.5
+tap_text 'aurora'
+wait "$REC" || true
+adb pull /sdcard/palette-switch.mp4 "$OUT/palette-switch.mp4" >/dev/null 2>&1 || log "no screen recording"
+shot 19-palette-aurora-light 0.5
+n=20
+for p in 'hyperos blue' 'guardian teal' 'indigo dusk' 'google classic' 'sakura' 'sunset amber' 'graphite'; do
+  pick_palette "$p" "$n-palette-${p// /-}-light"
+  n=$((n + 1))
+done
+# System dark mode while the app is open: handled in-process with the same crossfade.
+adb shell cmd uimode night yes
+shot 27-palette-graphite-dark 3
+tap_text 'colors' && shot 28-palette-picker-dark 1.2
+adb shell input keyevent 4
+n=29
+for p in 'aurora' 'hyperos blue' 'guardian teal' 'indigo dusk' 'google classic' 'sakura' 'sunset amber' 'classic'; do
+  pick_palette "$p" "$n-palette-${p// /-}-dark"
+  n=$((n + 1))
+done
+adb shell cmd uimode night no
+adb shell settings put global animator_duration_scale 0
+
 # Any crash of the app during the run ends up here.
 adb logcat -d -b crash > "$OUT/crash-log.txt" 2>/dev/null || true
 [ -s "$OUT/crash-log.txt" ] && { log "CRASH LOG:"; cat "$OUT/crash-log.txt"; } || rm -f "$OUT/crash-log.txt"

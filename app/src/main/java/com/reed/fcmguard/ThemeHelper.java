@@ -7,6 +7,7 @@ public final class ThemeHelper {
     private static final String PREFS = "guard_state";
     private static final String KEY_MODE = "appearance_mode";
     private static final String KEY_GLASS = "hyperos_glass_material";
+    private static final String KEY_PALETTE = "ui_palette";
 
     public static final String MODE_SYSTEM = "system";
     public static final String MODE_LIGHT = "light";
@@ -44,6 +45,20 @@ public final class ThemeHelper {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit()
                 .putString(KEY_MODE, normalized)
+                .apply();
+    }
+
+    /** Id of the selected colour palette (see {@link Palettes}). */
+    public static String getPalette(Context context) {
+        String id = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .getString(KEY_PALETTE, Palettes.DEFAULT);
+        return Palettes.IDS[Palettes.indexOf(id)];
+    }
+
+    public static void setPalette(Context context, String id) {
+        context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+                .edit()
+                .putString(KEY_PALETTE, Palettes.IDS[Palettes.indexOf(id)])
                 .apply();
     }
 

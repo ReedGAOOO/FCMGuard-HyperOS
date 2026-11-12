@@ -63,4 +63,16 @@
     <string name="notification_channel_description">用於維持自動 FCM 保護可靠性的低優先級通知</string>
     <string name="notification_active">保護已啟動 · 事件驅動</string>
     <string name="notification_repaired">白名單已修復 · FCM 已保護</string>
+
+    <!-- Colour palettes (picker in the hero card). -->
+    <string name="palette_title">配色</string>
+    <string name="palette_classic">經典</string>
+    <string name="palette_hyper_blue">澎湃藍</string>
+    <string name="palette_guardian_teal">守護青</string>
+    <string name="palette_indigo_dusk">暮光靛</string>
+    <string name="palette_google">Google 經典</string>
+    <string name="palette_sakura">櫻花粉</string>
+    <string name="palette_sunset_amber">琥珀橙</string>
+    <string name="palette_graphite">石墨</string>
+    <string name="palette_aurora">極光</string>
 </resources>

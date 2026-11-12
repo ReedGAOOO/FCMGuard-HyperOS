@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ripple xmlns:android="http://schemas.android.com/apk/res/android"
-    android:color="@color/ripple_on_primary">
+    android:color="?attr/pal_ripple_on_primary">
     <item>
         <selector>
             <item android:state_enabled="false">
                 <shape>
-                    <solid android:color="@color/primary_disabled" />
+                    <solid android:color="?attr/pal_primary_disabled" />
                     <corners android:radius="16dp" />
                 </shape>
             </item>
             <item>
                 <shape>
-                    <solid android:color="@color/primary_fill" />
+                    <solid android:color="?attr/pal_primary_fill" />
                     <corners android:radius="16dp" />
                 </shape>
             </item>

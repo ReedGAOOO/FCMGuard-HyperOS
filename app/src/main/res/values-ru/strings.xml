@@ -63,4 +63,16 @@
     <string name="notification_channel_description">Низкоприоритетное уведомление для надёжной автоматической защиты FCM</string>
     <string name="notification_active">Защита активна · по событиям</string>
     <string name="notification_repaired">Список исправлен · FCM защищён</string>
+
+    <!-- Colour palettes (picker in the hero card). -->
+    <string name="palette_title">Цвета</string>
+    <string name="palette_classic">Классика</string>
+    <string name="palette_hyper_blue">Синий HyperOS</string>
+    <string name="palette_guardian_teal">Бирюзовый</string>
+    <string name="palette_indigo_dusk">Индиго</string>
+    <string name="palette_google">Google классика</string>
+    <string name="palette_sakura">Сакура</string>
+    <string name="palette_sunset_amber">Янтарь</string>
+    <string name="palette_graphite">Графит</string>
+    <string name="palette_aurora">Аврора</string>
 </resources>

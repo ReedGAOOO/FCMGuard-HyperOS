@@ -8,9 +8,16 @@ import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
+import android.graphics.drawable.LayerDrawable;
+import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -30,7 +37,9 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -55,6 +64,7 @@ public class MainActivity extends Activity {
     private TextView fcmAppsStatusText;
     private LinearLayout fcmAppsContainer;
     private Button languageButton;
+    private Button paletteButton;
     private Button scanFcmAppsBtn;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
@@ -66,6 +76,8 @@ public class MainActivity extends Activity {
     private boolean suppressGlassCallbacks = false;
     private boolean suppressSwitchCallbacks = false;
     private boolean suppressAppearanceCallbacks = false;
+    /** Night bit of the configuration this page was built for. */
+    private int shownNightMode;
     private boolean notificationAccessPending = false;
     private boolean fcmListExpanded = false;
     private boolean fcmScanInFlight = false;
@@ -106,19 +118,39 @@ public class MainActivity extends Activity {
     }
 
     @Override protected void onCreate(Bundle savedInstanceState) {
+        // The palette overlays the pal_* colours of AppTheme before anything is inflated.
+        getTheme().applyStyle(Palettes.STYLES[Palettes.current(this)], true);
         super.onCreate(savedInstanceState);
+        shownNightMode = getResources().getConfiguration().uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        // A recreated activity can keep its window, so set the background explicitly.
+        getWindow().setBackgroundDrawable(new ColorDrawable(AppColors.get(this, R.attr.pal_bg)));
         LocaleHelper.migrateLegacyPreference(this);
         configureFullEdgeToEdge();
         setContentView(R.layout.activity_main);
+        PageTransition.playPending(this);
         applySystemBarInsets();
         bindViews();
         loadConfigIntoFields();
         setupLanguagePicker();
+        setupPalettePicker();
         setupAppearance();
         setupGlassMaterial();
         setupSwitches();
         bindActions();
         // refreshStatus() runs in onResume(), which always follows onCreate().
+    }
+
+    /**
+     * uiMode is handled here (see the manifest) so that a system dark-mode switch while
+     * the page follows the system crossfades like an in-app switch instead of flashing.
+     */
+    @Override public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        int night = newConfig.uiMode & Configuration.UI_MODE_NIGHT_MASK;
+        if (night != shownNightMode && ThemeHelper.MODE_SYSTEM.equals(ThemeHelper.getMode(this))) {
+            shownNightMode = night;
+            PageTransition.recreate(this);
+        }
     }
 
     @Override protected void onResume() {
@@ -168,6 +200,7 @@ public class MainActivity extends Activity {
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
         languageButton = findViewById(R.id.languageButton);
+        paletteButton = findViewById(R.id.paletteButton);
         scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
@@ -232,18 +265,150 @@ public class MainActivity extends Activity {
         AlertDialog dialog = new AlertDialog.Builder(this)
                 .setTitle(R.string.language)
                 .setSingleChoiceItems(R.array.language_entries, checked, (d, which) -> {
-                    if (which >= 0 && which < LANGUAGE_CODES.length) {
-                        LocaleHelper.setLanguage(this, LANGUAGE_CODES[which]);
-                    }
                     d.dismiss();
-                    if (Build.VERSION.SDK_INT < 33) recreate();
+                    if (which < 0 || which >= LANGUAGE_CODES.length || LANGUAGE_CODES[which].equals(lang)) {
+                        return;
+                    }
+                    LocaleHelper.setLanguage(this, LANGUAGE_CODES[which]);
+                    if (Build.VERSION.SDK_INT < 33) PageTransition.recreate(this);
                 })
                 .setNegativeButton(android.R.string.cancel, null)
                 .create();
         dialog.show();
     }
 
+    private void setupPalettePicker() {
+        int index = Palettes.current(this);
+        paletteButton.setContentDescription(
+                getString(R.string.palette_title) + ": " + getString(Palettes.NAMES[index]));
+        paletteButton.setOnClickListener(v -> showPalettePicker());
+    }
+
+    /** Palette list: a swatch of each palette (light or dark, as shown now), its name and a check. */
+    private void showPalettePicker() {
+        int current = Palettes.current(this);
+        LinearLayout content = new LinearLayout(this);
+        content.setOrientation(LinearLayout.VERTICAL);
+        content.setPadding(0, dp(20), 0, dp(12));
+
+        TextView title = new TextView(this);
+        title.setText(R.string.palette_title);
+        title.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
+        title.setTextSize(19f);
+        title.setTypeface(Typeface.DEFAULT_BOLD);
+        title.setPadding(dp(24), 0, dp(24), dp(10));
+        content.addView(title);
+
+        LinearLayout list = new LinearLayout(this);
+        list.setOrientation(LinearLayout.VERTICAL);
+        list.setPadding(dp(10), 0, dp(10), 0);
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(list);
+        content.addView(scroll);
+
+        AlertDialog dialog = new AlertDialog.Builder(this).setView(content).create();
+        for (int i = 0; i < Palettes.IDS.length; i++) {
+            final int index = i;
+            list.addView(makePaletteRow(i, i == current, v -> {
+                dialog.dismiss();
+                if (index == Palettes.current(this)) return;
+                ThemeHelper.setPalette(this, Palettes.IDS[index]);
+                PageTransition.recreate(this);
+            }));
+        }
+        GradientDrawable sheet = new GradientDrawable();
+        sheet.setColor(AppColors.get(this, R.attr.pal_surface));
+        sheet.setCornerRadius(dp(26));
+        if (dialog.getWindow() != null) {
+            dialog.getWindow().setBackgroundDrawable(
+                    new android.graphics.drawable.InsetDrawable(sheet, dp(16), dp(24), dp(16), dp(24)));
+        }
+        dialog.show();
+    }
+
+    private View makePaletteRow(int index, boolean selected, View.OnClickListener onClick) {
+        // Colours of that palette, resolved on a scratch theme: AppTheme + the palette overlay.
+        Resources.Theme theme = getResources().newTheme();
+        theme.applyStyle(R.style.AppTheme, true);
+        theme.applyStyle(Palettes.STYLES[index], true);
+
+        LinearLayout row = new LinearLayout(this);
+        row.setOrientation(LinearLayout.HORIZONTAL);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setMinimumHeight(dp(56));
+        row.setPadding(dp(14), dp(6), dp(14), dp(6));
+        GradientDrawable mask = new GradientDrawable();
+        mask.setColor(Color.WHITE);
+        mask.setCornerRadius(dp(16));
+        GradientDrawable fill = new GradientDrawable();
+        fill.setColor(selected ? AppColors.get(this, R.attr.pal_surface_alt) : Color.TRANSPARENT);
+        fill.setCornerRadius(dp(16));
+        row.setBackground(new RippleDrawable(
+                ColorStateList.valueOf(AppColors.get(this, R.attr.pal_ripple_neutral)), fill, mask));
+        row.setOnClickListener(onClick);
+
+        View swatch = new View(this);
+        swatch.setBackground(makePaletteSwatch(theme));
+        swatch.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(swatch, new LinearLayout.LayoutParams(dp(36), dp(36)));
+
+        TextView name = new TextView(this);
+        name.setText(Palettes.NAMES[index]);
+        name.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
+        name.setTextSize(15f);
+        if (selected) name.setTypeface(Typeface.DEFAULT_BOLD);
+        name.setSingleLine(true);
+        LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
+        nameParams.leftMargin = dp(14);
+        row.addView(name, nameParams);
+
+        TextView check = new TextView(this);
+        check.setText("\u2713");
+        check.setTextColor(AppColors.get(this, R.attr.pal_blue));
+        check.setTextSize(17f);
+        check.setTypeface(Typeface.DEFAULT_BOLD);
+        check.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
+        check.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(check);
+
+        row.setContentDescription(getString(Palettes.NAMES[index]));
+        row.setSelected(selected);
+        return row;
+    }
+
+    /** Round swatch: the palette's hero gradient with its accent as a centre dot. */
+    private Drawable makePaletteSwatch(Resources.Theme theme) {
+        GradientDrawable hero = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] {
+                AppColors.get(theme, R.attr.pal_hero_start),
+                AppColors.get(theme, R.attr.pal_hero_center),
+                AppColors.get(theme, R.attr.pal_hero_end)
+        });
+        hero.setShape(GradientDrawable.OVAL);
+        hero.setStroke(dp(1), AppColors.get(theme, R.attr.pal_border));
+
+        GradientDrawable dot = new GradientDrawable();
+        dot.setShape(GradientDrawable.OVAL);
+        dot.setColor(AppColors.get(theme, R.attr.pal_primary_fill));
+        dot.setStroke(dp(2), AppColors.get(theme, R.attr.pal_surface));
+
+        LayerDrawable swatch = new LayerDrawable(new Drawable[] {hero, dot});
+        swatch.setLayerInset(1, dp(10), dp(10), dp(10), dp(10));
+        return swatch;
+    }
+
     private void setupAppearance() {
+        // Segment labels: primary when selected, secondary otherwise (palette-aware).
+        ColorStateList segmentText = new ColorStateList(
+                new int[][] {{android.R.attr.state_checked}, {}},
+                new int[] {
+                        AppColors.get(this, R.attr.pal_text_primary),
+                        AppColors.get(this, R.attr.pal_text_secondary)
+                });
+        for (int id : new int[] {R.id.themeSystem, R.id.themeLight, R.id.themeDark}) {
+            ((RadioButton) findViewById(id)).setTextColor(segmentText);
+        }
+
         String mode = ThemeHelper.getMode(this);
         suppressAppearanceCallbacks = true;
         if (ThemeHelper.MODE_DARK.equals(mode)) {
@@ -264,7 +429,7 @@ public class MainActivity extends Activity {
 
             if (!next.equals(ThemeHelper.getMode(this))) {
                 ThemeHelper.setMode(this, next);
-                recreate();
+                PageTransition.recreate(this);
             }
         });
     }
@@ -282,7 +447,7 @@ public class MainActivity extends Activity {
         glassSwitch.setOnCheckedChangeListener((buttonView, checked) -> {
             if (suppressGlassCallbacks) return;
             ThemeHelper.setGlassEnabled(this, checked);
-            updateGlassMaterial();
+            PageTransition.crossfade(this, dashboard.glassRegionBottomInWindow(), this::updateGlassMaterial);
         });
     }
 
@@ -539,7 +704,7 @@ public class MainActivity extends Activity {
         if (scanFcmAppsBtn == null) return;
         if (expanded) {
             scanFcmAppsBtn.setText(R.string.collapse_fcm_apps);
-            scanFcmAppsBtn.setTextColor(getResources().getColor(R.color.blue));
+            scanFcmAppsBtn.setTextColor(AppColors.get(this, R.attr.pal_blue));
             scanFcmAppsBtn.setBackgroundResource(R.drawable.secondary_button_bg);
         } else {
             scanFcmAppsBtn.setText(R.string.scan_fcm_apps);
@@ -571,7 +736,7 @@ public class MainActivity extends Activity {
 
         TextView label = new TextView(this);
         label.setText(app.label);
-        label.setTextColor(getResources().getColor(R.color.text_primary));
+        label.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
         label.setTextSize(14f);
         label.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         label.setMaxLines(1);
@@ -579,7 +744,7 @@ public class MainActivity extends Activity {
 
         TextView packageName = new TextView(this);
         packageName.setText(app.packageName);
-        packageName.setTextColor(getResources().getColor(R.color.text_secondary));
+        packageName.setTextColor(AppColors.get(this, R.attr.pal_text_secondary));
         packageName.setTextSize(12f);
         packageName.setMaxLines(1);
         packageName.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
@@ -591,7 +756,7 @@ public class MainActivity extends Activity {
 
         TextView badge = new TextView(this);
         badge.setText(autostartStatusText(autostartStatus));
-        badge.setTextColor(getResources().getColor(autostartStatusTextColor(autostartStatus)));
+        badge.setTextColor(AppColors.get(this, autostartStatusTextColor(autostartStatus)));
         badge.setTextSize(11.5f);
         badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         badge.setGravity(Gravity.CENTER);
@@ -604,7 +769,7 @@ public class MainActivity extends Activity {
 
         TextView chevron = new TextView(this);
         chevron.setText("›");
-        chevron.setTextColor(getResources().getColor(R.color.text_secondary));
+        chevron.setTextColor(AppColors.get(this, R.attr.pal_text_secondary));
         chevron.setTextSize(20f);
         chevron.setPadding(dp(8), 0, dp(4), dp(2));
         chevron.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
@@ -613,7 +778,7 @@ public class MainActivity extends Activity {
         fcmAppsContainer.addView(row);
 
         View divider = new View(this);
-        divider.setBackgroundColor(getResources().getColor(R.color.divider));
+        divider.setBackgroundColor(AppColors.get(this, R.attr.pal_divider));
         fcmAppsContainer.addView(divider, new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT, dp(1)));
     }
@@ -632,25 +797,25 @@ public class MainActivity extends Activity {
     }
 
     private int autostartStatusTextColor(AutostartStatusReader.Status status) {
-        if (status == AutostartStatusReader.Status.ENABLED) return R.color.badge_text_green;
-        if (status == AutostartStatusReader.Status.PARTIAL) return R.color.badge_text_yellow;
-        if (status == AutostartStatusReader.Status.DISABLED) return R.color.badge_text_red;
-        return R.color.badge_text_neutral;
+        if (status == AutostartStatusReader.Status.ENABLED) return R.attr.pal_badge_text_green;
+        if (status == AutostartStatusReader.Status.PARTIAL) return R.attr.pal_badge_text_yellow;
+        if (status == AutostartStatusReader.Status.DISABLED) return R.attr.pal_badge_text_red;
+        return R.attr.pal_badge_text_neutral;
     }
 
     private GradientDrawable makeStatusBadgeBackground(AutostartStatusReader.Status status) {
         int color;
         if (status == AutostartStatusReader.Status.ENABLED) {
-            color = R.color.status_value_green_bg;
+            color = R.attr.pal_status_value_green_bg;
         } else if (status == AutostartStatusReader.Status.PARTIAL) {
-            color = R.color.status_value_yellow_bg;
+            color = R.attr.pal_status_value_yellow_bg;
         } else if (status == AutostartStatusReader.Status.DISABLED) {
-            color = R.color.status_value_red_bg;
+            color = R.attr.pal_status_value_red_bg;
         } else {
-            color = R.color.status_value_neutral_bg;
+            color = R.attr.pal_status_value_neutral_bg;
         }
         GradientDrawable background = new GradientDrawable();
-        background.setColor(getResources().getColor(color));
+        background.setColor(AppColors.get(this, color));
         background.setCornerRadius(dp(12));
         return background;
     }
@@ -776,11 +941,11 @@ public class MainActivity extends Activity {
         boolean selfOk = selfWhitelisted && !selfAutostartOff;
 
         if (enabled && canWrite && present && selfOk) {
-            setHeadline(R.string.status_protected, R.color.green, R.drawable.ic_status_protected);
+            setHeadline(R.string.status_protected, R.attr.pal_green, R.drawable.ic_status_protected);
         } else if (canWrite && present && selfOk) {
-            setHeadline(R.string.status_ready, R.color.blue, R.drawable.ic_status_ready);
+            setHeadline(R.string.status_ready, R.attr.pal_blue, R.drawable.ic_status_ready);
         } else {
-            setHeadline(R.string.status_attention, R.color.red, R.drawable.ic_status_attention);
+            setHeadline(R.string.status_attention, R.attr.pal_red, R.drawable.ic_status_attention);
         }
 
         boolean hasMessage = firstLine != null && !firstLine.trim().isEmpty();
@@ -825,7 +990,7 @@ public class MainActivity extends Activity {
 
     private void setHeadline(int textRes, int colorRes, int iconRes) {
         statusHeadline.setText(textRes);
-        statusHeadline.setTextColor(getResources().getColor(colorRes));
+        statusHeadline.setTextColor(AppColors.get(this, colorRes));
         statusHeadline.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
     }
 
@@ -857,8 +1022,8 @@ public class MainActivity extends Activity {
 
     /** The tint composited over the card surface: opaque, so stacked rows hide each other. */
     private int opaqueTint(int tintRes) {
-        int tint = getResources().getColor(tintRes);
-        int base = getResources().getColor(R.color.surface);
+        int tint = AppColors.get(this, tintRes);
+        int base = AppColors.get(this, R.attr.pal_surface);
         float a = Color.alpha(tint) / 255f;
         return Color.rgb(
                 Math.round(Color.red(tint) * a + Color.red(base) * (1f - a)),
@@ -875,26 +1040,26 @@ public class MainActivity extends Activity {
         TextView label = row.findViewById(R.id.statusRowLabel);
         TextView value = row.findViewById(R.id.statusRowValue);
         TextView chevron = row.findViewById(R.id.statusRowChevron);
-        int tintRes = tone == TONE_GOOD ? R.color.status_value_green_bg
-                : tone == TONE_WARN ? R.color.status_value_yellow_bg
-                : tone == TONE_NEUTRAL ? R.color.status_value_neutral_bg : R.color.status_value_red_bg;
-        int valueColorRes = tone == TONE_GOOD ? R.color.badge_text_green
-                : tone == TONE_WARN ? R.color.badge_text_yellow
-                : tone == TONE_NEUTRAL ? R.color.badge_text_neutral : R.color.badge_text_red;
+        int tintRes = tone == TONE_GOOD ? R.attr.pal_status_value_green_bg
+                : tone == TONE_WARN ? R.attr.pal_status_value_yellow_bg
+                : tone == TONE_NEUTRAL ? R.attr.pal_status_value_neutral_bg : R.attr.pal_status_value_red_bg;
+        int valueColorRes = tone == TONE_GOOD ? R.attr.pal_badge_text_green
+                : tone == TONE_WARN ? R.attr.pal_badge_text_yellow
+                : tone == TONE_NEUTRAL ? R.attr.pal_badge_text_neutral : R.attr.pal_badge_text_red;
 
         label.setText(labelRes);
         value.setText(valueRes);
-        value.setTextColor(getResources().getColor(valueColorRes));
-        chevron.setTextColor(getResources().getColor(valueColorRes));
+        value.setTextColor(AppColors.get(this, valueColorRes));
+        chevron.setTextColor(AppColors.get(this, valueColorRes));
         chevron.setVisibility(action != null ? View.VISIBLE : View.GONE);
 
         GradientDrawable bar = new GradientDrawable();
         bar.setColor(opaqueTint(tintRes));
         bar.setCornerRadius(dp(10));
         if (action != null) {
-            row.setBackground(new android.graphics.drawable.RippleDrawable(
-                    android.content.res.ColorStateList.valueOf(
-                            getResources().getColor(R.color.ripple_neutral)),
+            row.setBackground(new RippleDrawable(
+                    ColorStateList.valueOf(
+                            AppColors.get(this, R.attr.pal_ripple_neutral)),
                     bar, null));
             row.setOnClickListener(action);
         } else {
@@ -919,7 +1084,7 @@ public class MainActivity extends Activity {
 
     private GradientDrawable makePill(int colorRes, int radiusPx) {
         GradientDrawable pill = new GradientDrawable();
-        pill.setColor(getResources().getColor(colorRes));
+        pill.setColor(AppColors.get(this, colorRes));
         pill.setCornerRadius(radiusPx);
         return pill;
     }
@@ -928,7 +1093,7 @@ public class MainActivity extends Activity {
         if (current == null || current.trim().isEmpty()) {
             SpannableStringBuilder missing = new SpannableStringBuilder(getString(R.string.missing_current));
             missing.setSpan(
-                    new BackgroundColorSpan(getResources().getColor(R.color.status_value_red_bg)),
+                    new BackgroundColorSpan(AppColors.get(this, R.attr.pal_status_value_red_bg)),
                     0,
                     missing.length(),
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -949,7 +1114,7 @@ public class MainActivity extends Activity {
             int colorRes = packageChipColor(packageName);
             if (colorRes != 0) {
                 out.setSpan(
-                        new BackgroundColorSpan(getResources().getColor(colorRes)),
+                        new BackgroundColorSpan(AppColors.get(this, colorRes)),
                         start,
                         end,
                         Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
@@ -966,8 +1131,8 @@ public class MainActivity extends Activity {
     }
 
     private int packageChipColor(String packageName) {
-        if ("com.google.android.gms".equals(packageName)) return R.color.status_value_blue_bg;
-        if (getPackageName().equals(packageName)) return R.color.status_value_purple_bg;
+        if ("com.google.android.gms".equals(packageName)) return R.attr.pal_status_value_blue_bg;
+        if (getPackageName().equals(packageName)) return R.attr.pal_status_value_purple_bg;
         return 0;
     }
 
