@@ -20,12 +20,13 @@
     <!--
       Band behind the fixed header (frosted glass, or the page colour when glass is off).
       Its bottom edge is a gradient, so content scrolling up fades out instead of being
-      cut off. StickyDashboardLayout sizes it to status bar + hero height + fade.
+      cut off. It spans the dashboard; StickyDashboardLayout sets how far down it draws
+      (bottom of the docked status card + fade).
     -->
     <com.reed.fcmguard.GlassBackdropView
         android:id="@+id/headerBackdrop"
         android:layout_width="match_parent"
-        android:layout_height="0dp" />
+        android:layout_height="match_parent" />
 
     <FrameLayout
         android:id="@+id/stickyHeader"

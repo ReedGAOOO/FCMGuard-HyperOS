@@ -24,6 +24,8 @@ public final class GlassBackdropView extends View {
     private float solidFadePx;
     private int solidShaderHeight = -1;
     private boolean solid;
+    /** Height actually drawn, from the top; the view itself spans the whole dashboard. */
+    private int bandHeight = -1;
 
     public GlassBackdropView(Context context) {
         super(context);
@@ -58,6 +60,13 @@ public final class GlassBackdropView extends View {
         invalidate();
     }
 
+    void setBandHeight(int heightPx) {
+        if (heightPx == bandHeight) return;
+        bandHeight = heightPx;
+        solidShaderHeight = -1;
+        invalidate();
+    }
+
     private void releaseBlur() {
         if (blur != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) blur.release();
         blur = null;
@@ -66,7 +75,7 @@ public final class GlassBackdropView extends View {
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
         int width = getWidth();
-        int height = getHeight();
+        int height = bandHeight > 0 ? Math.min(bandHeight, getHeight()) : getHeight();
         if (width <= 0 || height <= 0) return;
 
         // Everything is drawn within this view's bounds: the dashboard root does not clip

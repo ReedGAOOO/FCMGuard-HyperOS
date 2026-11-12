@@ -121,23 +121,26 @@ public final class StickyDashboardLayout extends FrameLayout {
         return super.onApplyWindowInsets(insets);
     }
 
-    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        syncHeaderBackdropHeight();
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-    }
-
     /**
-     * The glass band spans from the top of the screen to the bottom of the fixed hero, plus
-     * a fade zone in which it blends into the content below. The hero height is a fixed
-     * dimension, so the band can be sized before measuring without an extra layout pass.
+     * The header band covers everything down to the bottom edge of the docked status card
+     * and then fades out, so content scrolling up dissolves just before it slides under
+     * the card instead of being cut off. While the card is expanded or still collapsing,
+     * the fade zone is hidden behind it.
      */
-    private void syncHeaderBackdropHeight() {
-        if (headerBackdrop == null || stickyHeader == null || heroCard == null) return;
-        ViewGroup.LayoutParams heroParams = heroCard.getLayoutParams();
-        ViewGroup.LayoutParams backdropParams = headerBackdrop.getLayoutParams();
-        if (heroParams == null || backdropParams == null || heroParams.height <= 0) return;
-        int desired = stickyHeader.getPaddingTop() + heroParams.height + glassFadePx();
-        if (backdropParams.height != desired) backdropParams.height = desired;
+    private void syncHeaderBand() {
+        if (headerBackdrop == null || heroCard == null || statusCard == null ||
+                statusDetailsPanel == null || currentValuePanel == null) {
+            return;
+        }
+        ViewGroup.LayoutParams rawParams = statusCard.getLayoutParams();
+        int sideInset = rawParams instanceof ViewGroup.MarginLayoutParams
+                ? Math.max(0, ((ViewGroup.MarginLayoutParams) rawParams).leftMargin) : 0;
+        int dockedTop = heroCard.getTop() + sideInset;
+        int bottomGap = Math.max(0, statusCard.getHeight() - currentValuePanel.getBottom());
+        int dockedVisualBottom = Math.min(statusCard.getHeight(),
+                statusDetailsPanel.getBottom() + bottomGap);
+        int dockedBottom = dockedTop + dockedVisualBottom;
+        headerBackdrop.setBandHeight(Math.max(heroCard.getBottom(), dockedBottom) + glassFadePx());
     }
 
     /**
@@ -182,7 +185,7 @@ public final class StickyDashboardLayout extends FrameLayout {
 
     /** Height of the gradient over which content fades out under the header band. */
     private int glassFadePx() {
-        return Math.round(36f * getResources().getDisplayMetrics().density);
+        return Math.round(40f * getResources().getDisplayMetrics().density);
     }
 
     private float glassBlurRadiusPx() {
@@ -192,6 +195,7 @@ public final class StickyDashboardLayout extends FrameLayout {
     @Override protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         syncScrollableTopOffset();
+        syncHeaderBand();
         syncCollapsingStatusCard();
     }
 
