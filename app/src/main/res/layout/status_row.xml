@@ -1,12 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- One status line: label on the left, rounded value pill on the right. -->
+<!--
+  One status line as a full-width rounded bar tinted by its state (green / yellow / red):
+  label on the left, value on the right, and a chevron when the bar opens a fix.
+  The tinted background is set from code.
+-->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginTop="4dp"
     android:orientation="horizontal"
     android:gravity="center_vertical"
-    android:minHeight="22dp"
-    android:paddingTop="2dp">
+    android:minHeight="28dp"
+    android:paddingLeft="12dp"
+    android:paddingTop="3dp"
+    android:paddingRight="10dp"
+    android:paddingBottom="3dp">
 
     <TextView
         android:id="@+id/statusRowLabel"
@@ -14,19 +22,24 @@
         android:layout_height="wrap_content"
         android:layout_weight="1"
         android:paddingRight="8dp"
-        android:textColor="@color/text_secondary"
+        android:textColor="@color/text_primary"
         android:textSize="13sp" />
 
     <TextView
         android:id="@+id/statusRowValue"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:paddingLeft="8dp"
-        android:paddingTop="1dp"
-        android:paddingRight="8dp"
-        android:paddingBottom="1dp"
         android:singleLine="true"
-        android:textColor="@color/text_primary"
-        android:textSize="12sp"
+        android:textSize="13sp"
         android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/statusRowChevron"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="6dp"
+        android:text="›"
+        android:textSize="16sp"
+        android:importantForAccessibility="no"
+        android:visibility="gone" />
 </LinearLayout>

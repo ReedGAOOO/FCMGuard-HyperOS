@@ -63,10 +63,17 @@ public final class SettingsGuard {
     }
 
     public static boolean hasRequiredItem(Context context, String value) {
-        String required = getConfiguredRequiredItem(context);
-        if (required == null || required.trim().isEmpty() || value == null || value.trim().isEmpty()) return false;
+        return containsPackage(value, getConfiguredRequiredItem(context));
+    }
+
+    /** True when the comma-separated whitelist {@code value} contains {@code packageName}. */
+    public static boolean containsPackage(String value, String packageName) {
+        if (packageName == null || packageName.trim().isEmpty() || value == null || value.trim().isEmpty()) {
+            return false;
+        }
+        String wanted = packageName.trim();
         for (String part : value.split(",")) {
-            if (required.equals(part.trim())) return true;
+            if (wanted.equals(part.trim())) return true;
         }
         return false;
     }

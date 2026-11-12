@@ -20,6 +20,7 @@
         </intent>
         <package android:name="com.google.android.gms" />
         <package android:name="com.miui.securitycenter" />
+        <package android:name="com.miui.powerkeeper" />
     </queries>
 
     <application

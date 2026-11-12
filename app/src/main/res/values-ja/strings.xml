@@ -41,6 +41,11 @@
     <string name="status_value_no">なし</string>
     <string name="status_value_foreground">フォアグラウンドサービス</string>
     <string name="status_value_quiet">静音バックグラウンド</string>
+    <string name="status_label_self">FCM Guard 本体</string>
+    <string name="status_value_self_whitelisted">ホワイトリスト登録済み</string>
+    <string name="status_value_self_not_whitelisted">ホワイトリスト未登録</string>
+    <string name="status_value_self_autostart_off">自動起動オフ</string>
+    <string name="status_value_self_restricted">制限あり</string>
     <string name="saved">&#x8A2D;&#x5B9A;&#x3092;&#x4FDD;&#x5B58;&#x3057;&#x307E;&#x3057;&#x305F;</string>
     <string name="repaired">&#x4FEE;&#x5FA9; / &#x4FDD;&#x8B77;&#x3057;&#x307E;&#x3057;&#x305F;</string>
     <string name="already_protected">&#x3059;&#x3067;&#x306B;&#x4FDD;&#x8B77;&#x3055;&#x308C;&#x3066;&#x3044;&#x307E;&#x3059;</string>

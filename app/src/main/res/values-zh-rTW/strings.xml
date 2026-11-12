@@ -44,6 +44,11 @@
     <string name="status_value_no">否</string>
     <string name="status_value_foreground">前景服務</string>
     <string name="status_value_quiet">靜默純背景</string>
+    <string name="status_label_self">FCM Guard 本身</string>
+    <string name="status_value_self_whitelisted">已在白名單</string>
+    <string name="status_value_self_not_whitelisted">不在白名單</string>
+    <string name="status_value_self_autostart_off">自啟動未開啟</string>
+    <string name="status_value_self_restricted">受限制</string>
 
     <string name="saved">設定已儲存</string>
     <string name="repaired">已修復 / 已保護</string>

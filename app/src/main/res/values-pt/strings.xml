@@ -44,6 +44,11 @@
     <string name="status_value_no">Não</string>
     <string name="status_value_foreground">Serviço em primeiro plano</string>
     <string name="status_value_quiet">Silencioso</string>
+    <string name="status_label_self">O próprio FCM Guard</string>
+    <string name="status_value_self_whitelisted">Na lista branca</string>
+    <string name="status_value_self_not_whitelisted">Fora da lista branca</string>
+    <string name="status_value_self_autostart_off">Início automático desativado</string>
+    <string name="status_value_self_restricted">Restrito</string>
 
     <string name="saved">Configuração guardada</string>
     <string name="repaired">Reparado / protegido</string>

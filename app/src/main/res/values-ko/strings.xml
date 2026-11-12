@@ -41,6 +41,11 @@
     <string name="status_value_no">아니요</string>
     <string name="status_value_foreground">포그라운드 서비스</string>
     <string name="status_value_quiet">조용한 백그라운드</string>
+    <string name="status_label_self">FCM Guard 자체</string>
+    <string name="status_value_self_whitelisted">화이트리스트 등록됨</string>
+    <string name="status_value_self_not_whitelisted">화이트리스트 미등록</string>
+    <string name="status_value_self_autostart_off">자동 시작 꺼짐</string>
+    <string name="status_value_self_restricted">제한됨</string>
     <string name="saved">&#xC124;&#xC815;&#xC744; &#xC800;&#xC7A5;&#xD588;&#xC2B5;&#xB2C8;&#xB2E4;</string>
     <string name="repaired">&#xBCF5;&#xAD6C; / &#xBCF4;&#xD638; &#xC644;&#xB8CC;</string>
     <string name="already_protected">&#xC774;&#xBBF8; &#xBCF4;&#xD638; &#xC911;&#xC785;&#xB2C8;&#xB2E4;</string>

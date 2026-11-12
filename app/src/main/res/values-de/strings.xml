@@ -44,6 +44,11 @@
     <string name="status_value_no">Nein</string>
     <string name="status_value_foreground">Vordergrunddienst</string>
     <string name="status_value_quiet">Still</string>
+    <string name="status_label_self">FCM Guard selbst</string>
+    <string name="status_value_self_whitelisted">Auf der Whitelist</string>
+    <string name="status_value_self_not_whitelisted">Nicht auf der Whitelist</string>
+    <string name="status_value_self_autostart_off">Autostart aus</string>
+    <string name="status_value_self_restricted">Eingeschränkt</string>
 
     <string name="saved">Konfiguration gespeichert</string>
     <string name="repaired">Repariert / geschützt</string>

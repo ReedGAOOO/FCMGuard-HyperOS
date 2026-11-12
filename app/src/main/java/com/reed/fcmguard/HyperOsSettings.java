@@ -25,6 +25,32 @@ public final class HyperOsSettings {
         return launch(context, new Intent(Settings.ACTION_APPLICATION_SETTINGS));
     }
 
+    /**
+     * Opens the per-app battery policy page (where "No restrictions" is chosen), falling
+     * back to Android's app details page, which on HyperOS also links to battery saver.
+     */
+    public static boolean openBatterySettings(Context context, String packageName, CharSequence label) {
+        Intent hidden = new Intent("miui.intent.action.HIDDEN_APPS_CONFIG_ACTIVITY");
+        hidden.putExtra("package_name", packageName);
+        hidden.putExtra("package_label", label);
+        if (launch(context, hidden)) return true;
+
+        Intent explicit = new Intent();
+        explicit.setComponent(new ComponentName(
+                "com.miui.powerkeeper",
+                "com.miui.powerkeeper.ui.HiddenAppsConfigActivity"
+        ));
+        explicit.putExtra("package_name", packageName);
+        explicit.putExtra("package_label", label);
+        if (launch(context, explicit)) return true;
+
+        Intent details = new Intent(
+                Settings.ACTION_APPLICATION_DETAILS_SETTINGS,
+                Uri.parse("package:" + packageName)
+        );
+        return launch(context, details);
+    }
+
     public static boolean openAppPermissionEditor(Context context, String packageName) {
         String[] activityNames = {
                 "com.miui.permcenter.permissions.PermissionsEditorActivity",

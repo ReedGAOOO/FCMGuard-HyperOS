@@ -123,6 +123,7 @@
                 <include android:id="@+id/statusRowPermission" layout="@layout/status_row" />
                 <include android:id="@+id/statusRowProtection" layout="@layout/status_row" />
                 <include android:id="@+id/statusRowItem" layout="@layout/status_row" />
+                <include android:id="@+id/statusRowSelf" layout="@layout/status_row" />
                 <include android:id="@+id/statusRowMode" layout="@layout/status_row" />
             </LinearLayout>
 

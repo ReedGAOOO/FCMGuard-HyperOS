@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
     private View statusRowPermission;
     private View statusRowProtection;
     private View statusRowItem;
+    private View statusRowSelf;
     private View statusRowMode;
     private TextView currentValueText;
     private TextView fcmAppsStatusText;
@@ -164,6 +165,7 @@ public class MainActivity extends Activity {
         statusRowPermission = findViewById(R.id.statusRowPermission);
         statusRowProtection = findViewById(R.id.statusRowProtection);
         statusRowItem = findViewById(R.id.statusRowItem);
+        statusRowSelf = findViewById(R.id.statusRowSelf);
         statusRowMode = findViewById(R.id.statusRowMode);
         currentValueText = findViewById(R.id.currentValueText);
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
@@ -765,9 +767,20 @@ public class MainActivity extends Activity {
         notificationSwitch.setChecked(notification);
         suppressSwitchCallbacks = false;
 
-        if (enabled && canWrite && present) {
+        // FCM Guard itself must not be frozen by HyperOS, or nothing repairs the whitelist
+        // when GMS is removed: it should be on the no-restrict list (HyperOS keeps apps set
+        // to battery "No restrictions" there) and its Autostart must not be off. An
+        // unreadable Autostart state is not treated as off.
+        String self = getPackageName();
+        boolean selfWhitelisted = SettingsGuard.containsPackage(current, self);
+        AutostartStatusReader.Status selfAutostart = AutostartStatusReader.check(this, self);
+        boolean selfAutostartOff = selfAutostart == AutostartStatusReader.Status.DISABLED ||
+                selfAutostart == AutostartStatusReader.Status.PARTIAL;
+        boolean selfOk = selfWhitelisted && !selfAutostartOff;
+
+        if (enabled && canWrite && present && selfOk) {
             setHeadline(R.string.status_protected, R.color.green, R.drawable.ic_status_protected);
-        } else if (canWrite && present) {
+        } else if (canWrite && present && selfOk) {
             setHeadline(R.string.status_ready, R.color.blue, R.drawable.ic_status_ready);
         } else {
             setHeadline(R.string.status_attention, R.color.red, R.drawable.ic_status_attention);
@@ -779,17 +792,36 @@ public class MainActivity extends Activity {
 
         bindStatusRow(statusRowPermission, R.string.status_label_permission,
                 canWrite ? R.string.status_value_granted : R.string.status_value_not_granted,
-                canWrite ? R.color.status_value_green_bg : R.color.status_value_red_bg);
+                canWrite ? TONE_GOOD : TONE_BAD,
+                canWrite ? null : v -> openWriteSettings());
         bindStatusRow(statusRowProtection, R.string.status_label_protection,
                 enabled ? R.string.status_value_enabled : R.string.status_value_disabled,
-                enabled ? R.color.status_value_green_bg : R.color.status_value_yellow_bg);
+                enabled ? TONE_GOOD : TONE_WARN, null);
         bindStatusRow(statusRowItem, R.string.status_label_required_item,
                 present ? R.string.status_value_yes : R.string.status_value_no,
-                present ? R.color.status_value_green_bg : R.color.status_value_red_bg);
+                present ? TONE_GOOD : TONE_BAD, null);
+
+        int selfValue;
+        View.OnClickListener selfAction;
+        if (selfOk) {
+            selfValue = R.string.status_value_self_whitelisted;
+            selfAction = null;
+        } else if (!selfWhitelisted) {
+            selfValue = selfAutostartOff
+                    ? R.string.status_value_self_restricted
+                    : R.string.status_value_self_not_whitelisted;
+            selfAction = v -> openOwnBatterySettings();
+        } else {
+            selfValue = R.string.status_value_self_autostart_off;
+            selfAction = v -> openOwnAutostartSettings();
+        }
+        bindStatusRow(statusRowSelf, R.string.status_label_self, selfValue,
+                selfOk ? TONE_GOOD : TONE_BAD, selfAction);
+
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
         bindStatusRow(statusRowMode, R.string.status_label_background_mode,
                 visibleForeground ? R.string.status_value_foreground : R.string.status_value_quiet,
-                visibleForeground ? R.color.status_value_green_bg : R.color.status_value_yellow_bg);
+                visibleForeground ? TONE_GOOD : TONE_WARN, null);
         currentValueText.setText(buildWhitelistValue(current));
         permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
     }
@@ -800,13 +832,55 @@ public class MainActivity extends Activity {
         statusHeadline.setCompoundDrawablesRelativeWithIntrinsicBounds(iconRes, 0, 0, 0);
     }
 
-    /** Label on the left, value in a rounded tinted pill on the right. */
-    private void bindStatusRow(View row, int labelRes, int valueRes, int pillColorRes) {
+    private static final int TONE_GOOD = 0;
+    private static final int TONE_WARN = 1;
+    private static final int TONE_BAD = 2;
+
+    /**
+     * One status line as a full-width rounded bar tinted by its state. Bars with an
+     * action get ripple feedback and a chevron, and open the setting that fixes them.
+     */
+    private void bindStatusRow(View row, int labelRes, int valueRes, int tone,
+            View.OnClickListener action) {
         TextView label = row.findViewById(R.id.statusRowLabel);
         TextView value = row.findViewById(R.id.statusRowValue);
+        TextView chevron = row.findViewById(R.id.statusRowChevron);
+        int tintRes = tone == TONE_GOOD ? R.color.status_value_green_bg
+                : tone == TONE_WARN ? R.color.status_value_yellow_bg : R.color.status_value_red_bg;
+        int valueColorRes = tone == TONE_GOOD ? R.color.badge_text_green
+                : tone == TONE_WARN ? R.color.badge_text_yellow : R.color.badge_text_red;
+
         label.setText(labelRes);
         value.setText(valueRes);
-        value.setBackground(makePill(pillColorRes, dp(9)));
+        value.setTextColor(getResources().getColor(valueColorRes));
+        chevron.setTextColor(getResources().getColor(valueColorRes));
+        chevron.setVisibility(action != null ? View.VISIBLE : View.GONE);
+
+        GradientDrawable bar = makePill(tintRes, dp(10));
+        if (action != null) {
+            row.setBackground(new android.graphics.drawable.RippleDrawable(
+                    android.content.res.ColorStateList.valueOf(
+                            getResources().getColor(R.color.ripple_neutral)),
+                    bar, null));
+            row.setOnClickListener(action);
+        } else {
+            row.setBackground(bar);
+            row.setOnClickListener(null);
+            row.setClickable(false);
+        }
+    }
+
+    private void openOwnBatterySettings() {
+        if (!HyperOsSettings.openBatterySettings(this, getPackageName(), getString(R.string.app_name))) {
+            toast(getString(R.string.app_settings_unavailable));
+        }
+    }
+
+    private void openOwnAutostartSettings() {
+        if (!HyperOsSettings.openAppPermissionEditor(this, getPackageName()) &&
+                !HyperOsSettings.openAutoStartManager(this)) {
+            toast(getString(R.string.autostart_manager_unavailable));
+        }
     }
 
     private GradientDrawable makePill(int colorRes, int radiusPx) {
