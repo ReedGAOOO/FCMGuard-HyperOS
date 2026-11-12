@@ -6,7 +6,7 @@
     <string name="label_item">Erforderlicher Eintrag</string>
     <string name="save_configuration">Konfiguration speichern</string>
     <string name="grant_modify">Ändern von Systemeinstellungen erlauben</string>
-    <string name="repair_now">Jetzt reparieren</string>
+    <string name="protect_now">Schützen</string>
     <string name="wake_fcm">FCM jetzt aktivieren</string>
     <string name="open_fcm_diag">FCM-Diagnose öffnen</string>
     <string name="status_title">Status</string>

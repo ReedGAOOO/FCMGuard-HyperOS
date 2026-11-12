@@ -6,7 +6,7 @@
     <string name="label_item">Required item</string>
     <string name="save_configuration">Save configuration</string>
     <string name="grant_modify">Grant Modify system settings</string>
-    <string name="repair_now">Repair now</string>
+    <string name="protect_now">Protect now</string>
     <string name="wake_fcm">Wake FCM now</string>
     <string name="open_fcm_diag">Open FCM diagnostics</string>
     <string name="status_title">Status</string>

@@ -6,7 +6,7 @@
     <string name="label_item">Обязательный элемент</string>
     <string name="save_configuration">Сохранить конфигурацию</string>
     <string name="grant_modify">Разрешить изменение системных настроек</string>
-    <string name="repair_now">Исправить сейчас</string>
+    <string name="protect_now">Защитить</string>
     <string name="wake_fcm">Активировать FCM</string>
     <string name="open_fcm_diag">Открыть диагностику FCM</string>
     <string name="status_title">Состояние</string>

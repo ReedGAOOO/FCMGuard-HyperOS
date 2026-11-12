@@ -41,7 +41,8 @@ final class ThemePanel {
     private static final long OPEN_MS = 480L;
     private static final long CLOSE_MS = 280L;
     private static final float SCRIM_ALPHA = 0.32f;
-    private static final int COLUMNS = 3;
+    /** Cards visible across the panel; the fraction shows the next card, inviting a swipe. */
+    private static final float VISIBLE_CARDS = 2.25f;
 
     private final Activity activity;
     private final View anchor;
@@ -54,6 +55,8 @@ final class ThemePanel {
     private ThemePreviewView[] previews;
     private TextView[] names;
     private ValueAnimator animator;
+    private SnapRow carousel;
+    private int pendingScrollX = -1;
     private boolean open;
 
     ThemePanel(Activity activity, View anchor, Listener listener) {
@@ -65,6 +68,15 @@ final class ThemePanel {
 
     boolean isOpen() {
         return open;
+    }
+
+    /** Horizontal position of the theme strip, kept across the page being recreated. */
+    int scrollX() {
+        return carousel != null ? carousel.getScrollX() : 0;
+    }
+
+    void restoreScrollX(int x) {
+        pendingScrollX = x;
     }
 
     /** Opens the panel; without animation when restoring it after the page was recreated. */
@@ -177,7 +189,7 @@ final class ThemePanel {
 
         LinearLayout column = new LinearLayout(context);
         column.setOrientation(LinearLayout.VERTICAL);
-        column.setPadding(dp(18), dp(18), dp(18), dp(16));
+        column.setPadding(0, dp(18), 0, dp(16));
         content = column;
 
         TextView title = new TextView(context);
@@ -185,58 +197,62 @@ final class ThemePanel {
         title.setTextColor(AppColors.get(context, R.attr.pal_text_primary));
         title.setTextSize(22f);
         title.setTypeface(Fonts.title());
-        title.setPadding(dp(4), 0, dp(4), 0);
+        title.setPadding(dp(22), 0, dp(22), 0);
         column.addView(title);
 
         TextView hint = new TextView(context);
         hint.setText(R.string.theme_preview_hint);
         hint.setTextColor(AppColors.get(context, R.attr.pal_text_secondary));
         hint.setTextSize(12.5f);
-        hint.setPadding(dp(4), dp(2), dp(4), dp(14));
+        hint.setPadding(dp(22), dp(2), dp(22), dp(14));
         column.addView(hint);
 
-        LinearLayout grid = new LinearLayout(context);
-        grid.setOrientation(LinearLayout.VERTICAL);
-        ScrollView scroll = new ScrollView(context);
-        scroll.setVerticalScrollBarEnabled(false);
-        scroll.setOverScrollMode(View.OVER_SCROLL_NEVER);
-        scroll.addView(grid);
-        column.addView(scroll);
+        int[] insets = systemBarInsets();
+        int side = dp(12);
+        int cardWidth = Math.min(activity.getResources().getDisplayMetrics().widthPixels - 2 * side, dp(440));
+        int edge = dp(18);
+        int gap = dp(12);
+        int cellWidth = Math.round((cardWidth - edge - 2 * gap) / VISIBLE_CARDS);
+
+        LinearLayout strip = new LinearLayout(context);
+        strip.setOrientation(LinearLayout.HORIZONTAL);
+        strip.setPadding(edge, dp(4), edge, dp(2));
+        carousel = new SnapRow(context, cellWidth + gap);
+        carousel.setHorizontalScrollBarEnabled(false);
+        carousel.setOverScrollMode(View.OVER_SCROLL_NEVER);
+        carousel.setClipToPadding(false);
+        carousel.addView(strip);
+        column.addView(carousel, new LinearLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
         int count = Palettes.IDS.length;
         previews = new ThemePreviewView[count];
         names = new TextView[count];
-        LinearLayout row = null;
         for (int i = 0; i < count; i++) {
-            if (i % COLUMNS == 0) {
-                row = new LinearLayout(context);
-                row.setOrientation(LinearLayout.HORIZONTAL);
-                LinearLayout.LayoutParams rowParams = new LinearLayout.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                if (i > 0) rowParams.topMargin = dp(12);
-                grid.addView(row, rowParams);
-            }
             LinearLayout.LayoutParams cellParams = new LinearLayout.LayoutParams(
-                    0, ViewGroup.LayoutParams.WRAP_CONTENT, 1f);
-            if (i % COLUMNS > 0) cellParams.leftMargin = dp(8);
-            row.addView(makeCell(i), cellParams);
+                    cellWidth, ViewGroup.LayoutParams.WRAP_CONTENT);
+            if (i > 0) cellParams.leftMargin = gap;
+            strip.addView(makeCell(i), cellParams);
         }
-        // Keep the grid's last row complete so cells keep their width.
-        while (row != null && row.getChildCount() < COLUMNS) {
-            LinearLayout.LayoutParams spacer = new LinearLayout.LayoutParams(0, 1, 1f);
-            spacer.leftMargin = dp(8);
-            row.addView(new View(context), spacer);
-        }
-        select(Palettes.current(activity));
+        int current = Palettes.current(activity);
+        select(current);
+        // Restored scroll (after a theme switch) keeps the strip where it was, so the
+        // crossfade lines up; a fresh open shows the current theme second from the left.
+        final int scrollX = pendingScrollX >= 0 ? pendingScrollX : Math.max(0, current - 1) * (cellWidth + gap);
+        pendingScrollX = -1;
+        carousel.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
+            @Override public boolean onPreDraw() {
+                carousel.getViewTreeObserver().removeOnPreDrawListener(this);
+                carousel.scrollTo(Math.min(scrollX, carousel.maxScroll()), 0);
+                return true;
+            }
+        });
 
         card.addView(column, new FrameLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
 
-        int[] insets = systemBarInsets();
-        int side = dp(12);
-        int width = activity.getResources().getDisplayMetrics().widthPixels - 2 * side;
         FrameLayout.LayoutParams cardParams = new FrameLayout.LayoutParams(
-                Math.min(width, dp(440)), ViewGroup.LayoutParams.WRAP_CONTENT,
+                cardWidth, ViewGroup.LayoutParams.WRAP_CONTENT,
                 Gravity.TOP | Gravity.CENTER_HORIZONTAL);
         cardParams.topMargin = insets[0] + dp(6);
         cardParams.bottomMargin = insets[1] + dp(12);
@@ -275,11 +291,11 @@ final class ThemePanel {
 
         TextView name = new TextView(context);
         name.setText(Palettes.NAMES[index]);
-        name.setTextSize(12.5f);
+        name.setTextSize(13.5f);
         name.setGravity(Gravity.CENTER);
         name.setSingleLine(true);
         name.setEllipsize(TextUtils.TruncateAt.END);
-        name.setPadding(0, dp(5), 0, 0);
+        name.setPadding(0, dp(7), 0, 0);
         name.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         cell.addView(name, new LinearLayout.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -344,6 +360,50 @@ final class ThemePanel {
 
     private static float clamp(float value) {
         return Math.max(0f, Math.min(1f, value));
+    }
+
+    /**
+     * Horizontal strip that settles with a card at its left edge: a fling moves one card
+     * (two when fast), a slow drag settles on the nearest.
+     */
+    private static final class SnapRow extends android.widget.HorizontalScrollView {
+        private final int step;
+        private boolean flung;
+
+        SnapRow(Context context, int step) {
+            super(context);
+            this.step = step;
+        }
+
+        int maxScroll() {
+            View child = getChildAt(0);
+            return child == null ? 0 : Math.max(0, child.getWidth() - getWidth());
+        }
+
+        @Override public void fling(int velocityX) {
+            flung = true;
+            float position = getScrollX() / (float) step;
+            int skip = Math.abs(velocityX) > 6000 * getResources().getDisplayMetrics().density / 2.75f ? 2 : 1;
+            int target = velocityX > 0
+                    ? (int) Math.floor(position) + skip
+                    : (int) Math.ceil(position) - skip;
+            settle(target);
+        }
+
+        @Override public boolean onTouchEvent(MotionEvent event) {
+            int action = event.getActionMasked();
+            if (action == MotionEvent.ACTION_DOWN) flung = false;
+            boolean handled = super.onTouchEvent(event);
+            if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) && !flung) {
+                settle(Math.round(getScrollX() / (float) step));
+            }
+            return handled;
+        }
+
+        private void settle(int index) {
+            int x = Math.max(0, Math.min(index * step, maxScroll()));
+            if (x != getScrollX()) smoothScrollTo(x, 0);
+        }
     }
 
     /** Card whose clip and shadow outline morph from the capsule's bounds to its own. */

@@ -21,13 +21,16 @@ final class ThemePreviewView extends View {
     static final float ASPECT = 1.36f;
 
     private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final Paint textPaint = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.SUBPIXEL_TEXT_FLAG);
+    private final String appName;
+    private final String headline;
     private final RectF rect = new RectF();
     private final RectF page = new RectF();
     private final Path clip = new Path();
     private final Path check = new Path();
     private final float dp;
 
-    private int bg, surface, tonal, border, text, text2, pill, accent, fill;
+    private int bg, surface, tonal, border, text, text2, pill, accent, fill, tonalButton, tonalButtonText;
     private int heroStart, heroCenter, heroEnd;
     private int tileGood, tileWarn, tileBad, tileNeutral, good, warn, bad, neutral;
     private LinearGradient heroShader;
@@ -37,6 +40,8 @@ final class ThemePreviewView extends View {
     ThemePreviewView(Context context) {
         super(context);
         dp = context.getResources().getDisplayMetrics().density;
+        appName = context.getString(R.string.app_name);
+        headline = context.getString(R.string.status_protected);
         setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
     }
 
@@ -50,6 +55,8 @@ final class ThemePreviewView extends View {
         pill = AppColors.get(theme, R.attr.pal_hero_pill);
         accent = AppColors.get(theme, R.attr.pal_blue);
         fill = AppColors.get(theme, R.attr.pal_primary_fill);
+        tonalButton = over(AppColors.get(theme, R.attr.pal_button_tonal), surface);
+        tonalButtonText = AppColors.get(theme, R.attr.pal_button_tonal_text);
         heroStart = AppColors.get(theme, R.attr.pal_hero_start);
         heroCenter = AppColors.get(theme, R.attr.pal_hero_center);
         heroEnd = AppColors.get(theme, R.attr.pal_hero_end);
@@ -116,8 +123,9 @@ final class ThemePreviewView extends View {
         float heroLeft = rect.left;
         float heroTop = rect.top;
         float heroRight = rect.right;
-        bar(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.06f, pw * 0.36f, ph * 0.04f, text);
-        bar(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.125f, pw * 0.27f, ph * 0.022f, text2);
+        drawText(canvas, appName, heroLeft + pw * 0.07f, heroTop + ph * 0.1f, pw * 0.5f, ph * 0.062f,
+                Fonts.title(), text);
+        bar(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.135f, pw * 0.34f, ph * 0.02f, text2);
         float capW = pw * 0.21f;
         float capH = ph * 0.05f;
         for (int i = 0; i < 2; i++) {
@@ -144,7 +152,8 @@ final class ThemePreviewView extends View {
         float cardRight = rect.right - pw * 0.05f;
         paint.setColor(good);
         canvas.drawCircle(cardLeft + ph * 0.017f, cardTop + ph * 0.06f, ph * 0.017f, paint);
-        bar(canvas, cardLeft + ph * 0.045f, cardTop + ph * 0.045f, pw * 0.36f, ph * 0.03f, good);
+        drawText(canvas, headline, cardLeft + ph * 0.045f, cardTop + ph * 0.075f, pw * 0.5f, ph * 0.042f,
+                android.graphics.Typeface.DEFAULT_BOLD, good);
         float tileW = (cardRight - cardLeft - gap) / 2f;
         int[] tiles = {tileBad, tileNeutral, tileWarn, tileGood};
         int[] values = {bad, neutral, warn, good};
@@ -163,8 +172,8 @@ final class ThemePreviewView extends View {
         bar(canvas, cardLeft + tileW * 0.12f, stripTop + stripH * 0.36f, (cardRight - cardLeft) * 0.6f,
                 stripH * 0.28f, withAlpha(text, 0.7f));
 
-        // Next card (cut off by the page edge): a switch row and the primary button.
-        // bar() reuses rect, so the card's bounds are kept in locals.
+        // Protection card (cut off by the page edge): title with the tonal "Protect now"
+        // pill on its right, then the switch row. bar() reuses rect, so bounds are locals.
         float nextLeft = page.left + pw * 0.05f;
         float nextRight = page.right - pw * 0.05f;
         float nextTop = cardBottom + ph * 0.035f;
@@ -173,20 +182,24 @@ final class ThemePreviewView extends View {
         canvas.drawRoundRect(rect, 9f * dp, 9f * dp, paint);
         float innerLeft = nextLeft + pw * 0.07f;
         float innerRight = nextRight - pw * 0.07f;
-        float rowTop = nextTop + ph * 0.05f;
+        float headerTop = nextTop + ph * 0.035f;
+        float pillW = pw * 0.3f;
+        float pillH = ph * 0.055f;
+        float pillLeft = innerRight - pillW;
+        bar(canvas, innerLeft, headerTop + (pillH - ph * 0.032f) / 2f, pw * 0.3f, ph * 0.032f, text);
+        bar(canvas, pillLeft, headerTop, pillW, pillH, tonalButton);
+        paint.setColor(tonalButtonText);
+        canvas.drawCircle(pillLeft + pillH * 0.62f, headerTop + pillH / 2f, pillH * 0.2f, paint);
+        bar(canvas, pillLeft + pillH * 1.05f, headerTop + pillH * 0.38f, pillW * 0.5f, pillH * 0.24f, tonalButtonText);
+        float rowTop = headerTop + pillH + ph * 0.04f;
         float switchW = pw * 0.17f;
         float switchH = ph * 0.05f;
         float switchLeft = innerRight - switchW;
-        bar(canvas, innerLeft, rowTop + (switchH - ph * 0.03f) / 2f, pw * 0.38f, ph * 0.03f, text);
+        bar(canvas, innerLeft, rowTop + (switchH - ph * 0.026f) / 2f, pw * 0.4f, ph * 0.026f, withAlpha(text, 0.85f));
         bar(canvas, switchLeft, rowTop, switchW, switchH, fill);
         paint.setColor(Color.WHITE);
         canvas.drawCircle(switchLeft + switchW - switchH / 2f, rowTop + switchH / 2f, switchH * 0.38f, paint);
-        float buttonTop = rowTop + switchH + ph * 0.04f;
-        float buttonH = ph * 0.075f;
-        bar(canvas, innerLeft, buttonTop, innerRight - innerLeft, buttonH, fill);
-        float labelW = (innerRight - innerLeft) * 0.36f;
-        bar(canvas, (innerLeft + innerRight - labelW) / 2f, buttonTop + buttonH * 0.38f,
-                labelW, buttonH * 0.24f, Color.WHITE);
+        bar(canvas, innerLeft, rowTop + switchH + ph * 0.025f, (innerRight - innerLeft) * 0.82f, ph * 0.02f, withAlpha(text2, 0.6f));
 
         canvas.restoreToCount(save);
         stroke(canvas, page, pageRadius, border);
@@ -210,6 +223,17 @@ final class ThemePreviewView extends View {
             canvas.drawPath(check, paint);
             paint.setStyle(Paint.Style.FILL);
         }
+    }
+
+    /** Single line of text with its baseline at {@code baseline}, shrunk to fit {@code maxWidth}. */
+    private void drawText(Canvas canvas, String value, float left, float baseline, float maxWidth,
+            float size, android.graphics.Typeface typeface, int color) {
+        textPaint.setTypeface(typeface);
+        textPaint.setColor(color);
+        textPaint.setTextSize(size);
+        float width = textPaint.measureText(value);
+        if (width > maxWidth) textPaint.setTextSize(size * maxWidth / width);
+        canvas.drawText(value, left, baseline, textPaint);
     }
 
     private void bar(Canvas canvas, float left, float top, float width, float height, int color) {

@@ -51,6 +51,35 @@ def blend(top, bottom, amount):
     return f"#{mix(r, R):02X}{mix(g, G):02X}{mix(b, B):02X}"
 
 
+def luminance(value):
+    r, g, b, _ = rgba(value)
+    c = [x / 255 for x in (r, g, b)]
+    c = [x / 12.92 if x <= 0.03928 else ((x + 0.055) / 1.055) ** 2.4 for x in c]
+    return 0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]
+
+
+def contrast(a, b):
+    la, lb = luminance(a), luminance(b)
+    return (max(la, lb) + 0.05) / (min(la, lb) + 0.05)
+
+
+def readable(text, background, dark, target=4.6):
+    """`text` moved toward white (dark) or black (light) until it reaches `target` on `background`."""
+    toward = "#FFFFFF" if dark else "#000000"
+    for step in range(0, 101, 2):
+        candidate = blend(toward, text, step / 100)
+        if contrast(candidate, background) >= target:
+            return candidate
+    raise SystemExit(f"no readable shade of {text} on {background}")
+
+
+def tonal(t, dark):
+    """Accent-tinted secondary button: translucent accent fill and a label that reads on it."""
+    fill = argb(t["primary"], 0.2 if dark else 0.12)
+    on_surface = blend(t["primary"], t["surface"], 0.2 if dark else 0.12)
+    return fill, readable(t["primary"], on_surface, dark)
+
+
 def colours(t, dark):
     """Maps a palette's tokens onto the app's colour names."""
     return {
@@ -91,6 +120,8 @@ def colours(t, dark):
         "switch_track_off": t["off"],
         "switch_track_disabled": blend(t["off"], t["surface"], 0.5),
         "segment_selected": blend("#FFFFFF", t["alt"], 0.08) if dark else t["surface"],
+        "button_tonal": tonal(t, dark)[0],
+        "button_tonal_text": tonal(t, dark)[1],
     }
 
 

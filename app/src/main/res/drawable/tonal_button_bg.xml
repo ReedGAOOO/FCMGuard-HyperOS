@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Accent-tinted pill for the main action next to a card title (Protect now). -->
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="?attr/pal_ripple_neutral">
+    <item>
+        <shape>
+            <solid android:color="?attr/pal_button_tonal" />
+            <corners android:radius="999dp" />
+        </shape>
+    </item>
+</ripple>

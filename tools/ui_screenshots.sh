@@ -133,7 +133,7 @@ adb shell cmd uimode night no
 # --- Light, English, 411dp ---
 launch_fresh
 shot 01-light-initial
-tap_text 'repair now' && shot 02-light-repaired
+tap_text 'protect now' && shot 02-light-repaired
 tap_text 'automatic protection' && sleep 2 && settle_app
 shot 03-light-protected
 drag_up 250;  shot 04-light-scroll-250
@@ -186,6 +186,45 @@ shot 16-360dp-top
 drag_up 500;  shot 17-360dp-scroll-500
 adb shell wm density reset
 
+# Taps a theme in the Theme panel's horizontal strip, swiping the strip toward it first
+# when it is off screen or cut off at an edge.
+THEMES="classic|hyperos blue|guardian teal|indigo dusk|google classic|sakura|sunset amber|graphite|aurora"
+tap_theme() {
+  local step plan
+  for step in 1 2 3 4 5 6 7 8; do
+    adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1
+    adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1 || return 1
+    plan=$(python3 - "$1" "$UI_XML" "$THEMES" <<'PY'
+import re, sys, xml.etree.ElementTree as ET
+target, order = sys.argv[1].lower(), sys.argv[3].split("|")
+seen = {}
+for node in ET.parse(sys.argv[2]).iter("node"):
+    text = (node.get("text") or "").strip().lower()
+    m = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
+    if text in order and m and text not in seen:
+        x1, y1, x2, y2 = map(int, m.groups())
+        seen[text] = ((x1 + x2) // 2, (y1 + y2) // 2, x2 - x1)
+if not seen:
+    sys.exit()
+y = min(v[1] for v in seen.values()) - 250
+if target in seen and 140 < seen[target][0] < 940 and seen[target][2] > 150:
+    print("tap", seen[target][0], seen[target][1])
+elif order.index(target) > max(order.index(k) for k in seen) or (target in seen and seen[target][0] >= 940):
+    print("swipe 900", y, "300", y)
+else:
+    print("swipe 180", y, "780", y)
+PY
+)
+    case "$plan" in
+      tap*) adb shell input $plan; log "tapped theme '$1'"; return 0 ;;
+      swipe*) adb shell input $plan 350; sleep 1 ;;
+      *) log "theme strip not on screen"; return 1 ;;
+    esac
+  done
+  log "theme not reached: '$1'"
+  return 1
+}
+
 # --- Themes: the panel that grows out of the Theme capsule, every theme in both modes ---
 # Animations are off for deterministic shots; turn them on here so the panel morph and
 # the page crossfade run, and record them to check frame by frame. The panel stays open
@@ -198,7 +237,7 @@ REC=$!
 sleep 0.5
 tap_text 'theme'
 sleep 1.2
-tap_text 'aurora'
+tap_theme 'aurora'
 sleep 1.8
 adb shell input keyevent 4
 wait "$REC" || true
@@ -207,7 +246,7 @@ shot 18-theme-aurora-light 0.5
 tap_text 'theme' && shot 19-theme-panel-light 1.2
 n=20
 for p in 'hyperos blue' 'guardian teal' 'indigo dusk' 'google classic' 'sakura' 'sunset amber' 'graphite'; do
-  tap_text "$p" && shot "$n-theme-${p// /-}-light" 2.2
+  tap_theme "$p" && shot "$n-theme-${p// /-}-light" 2.2
   n=$((n + 1))
 done
 # System dark mode with the panel open: recreated in-process, panel restored.
@@ -215,7 +254,7 @@ adb shell cmd uimode night yes
 shot 27-theme-graphite-dark 3
 n=28
 for p in 'aurora' 'hyperos blue' 'guardian teal' 'indigo dusk' 'google classic' 'sakura' 'sunset amber' 'classic'; do
-  tap_text "$p" && shot "$n-theme-${p// /-}-dark" 2.2
+  tap_theme "$p" && shot "$n-theme-${p// /-}-dark" 2.2
   n=$((n + 1))
 done
 adb shell input keyevent 4

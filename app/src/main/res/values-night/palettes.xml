@@ -41,6 +41,8 @@
         <item name="pal_switch_track_off">#3A3A3C</item>
         <item name="pal_switch_track_disabled">#2B2B2D</item>
         <item name="pal_segment_selected">#3D3D3F</item>
+        <item name="pal_button_tonal">#334C8DFF</item>
+        <item name="pal_button_tonal_text">#619BFF</item>
     </style>
     <style name="Palette.GuardianTeal" parent="">
         <item name="pal_bg">#0A100F</item>
@@ -80,6 +82,8 @@
         <item name="pal_switch_track_off">#2E3B38</item>
         <item name="pal_switch_track_disabled">#212B29</item>
         <item name="pal_segment_selected">#2F3836</item>
+        <item name="pal_button_tonal">#3348C9B6</item>
+        <item name="pal_button_tonal_text">#48C9B6</item>
     </style>
     <style name="Palette.IndigoDusk" parent="">
         <item name="pal_bg">#0D0D15</item>
@@ -119,6 +123,8 @@
         <item name="pal_switch_track_off">#33334A</item>
         <item name="pal_switch_track_disabled">#262638</item>
         <item name="pal_segment_selected">#343445</item>
+        <item name="pal_button_tonal">#33A5A4FF</item>
+        <item name="pal_button_tonal_text">#A5A4FF</item>
     </style>
     <style name="Palette.Google" parent="">
         <item name="pal_bg">#202124</item>
@@ -158,6 +164,8 @@
         <item name="pal_switch_track_off">#3C4043</item>
         <item name="pal_switch_track_disabled">#323538</item>
         <item name="pal_segment_selected">#45464A</item>
+        <item name="pal_button_tonal">#338AB4F8</item>
+        <item name="pal_button_tonal_text">#8CB6F8</item>
     </style>
     <style name="Palette.Sakura" parent="">
         <item name="pal_bg">#120D10</item>
@@ -197,6 +205,8 @@
         <item name="pal_switch_track_off">#3A2D33</item>
         <item name="pal_switch_track_disabled">#2C2226</item>
         <item name="pal_segment_selected">#3B3136</item>
+        <item name="pal_button_tonal">#33FF8FB5</item>
+        <item name="pal_button_tonal_text">#FF8FB5</item>
     </style>
     <style name="Palette.SunsetAmber" parent="">
         <item name="pal_bg">#110E0A</item>
@@ -236,6 +246,8 @@
         <item name="pal_switch_track_off">#3A3228</item>
         <item name="pal_switch_track_disabled">#2B251E</item>
         <item name="pal_segment_selected">#38332C</item>
+        <item name="pal_button_tonal">#33FFAA5C</item>
+        <item name="pal_button_tonal_text">#FFAA5C</item>
     </style>
     <style name="Palette.Graphite" parent="">
         <item name="pal_bg">#09090B</item>
@@ -275,6 +287,8 @@
         <item name="pal_switch_track_off">#3F3F46</item>
         <item name="pal_switch_track_disabled">#2C2C30</item>
         <item name="pal_segment_selected">#353538</item>
+        <item name="pal_button_tonal">#33E4E4E7</item>
+        <item name="pal_button_tonal_text">#E4E4E7</item>
     </style>
     <style name="Palette.Aurora" parent="">
         <item name="pal_bg">#070B14</item>
@@ -314,5 +328,7 @@
         <item name="pal_switch_track_off">#2C3850</item>
         <item name="pal_switch_track_disabled">#1E283C</item>
         <item name="pal_segment_selected">#2E3646</item>
+        <item name="pal_button_tonal">#3338BDF8</item>
+        <item name="pal_button_tonal_text">#38BDF8</item>
     </style>
 </resources>

@@ -25,6 +25,8 @@
         <item name="pal_info_bg">@color/info_bg</item>
         <item name="pal_divider">@color/divider</item>
         <item name="pal_status_value_blue_bg">@color/status_value_blue_bg</item>
+        <item name="pal_button_tonal">@color/button_tonal</item>
+        <item name="pal_button_tonal_text">@color/button_tonal_text</item>
         <item name="pal_status_value_green_bg">@color/status_value_green_bg</item>
         <item name="pal_status_value_yellow_bg">@color/status_value_yellow_bg</item>
         <item name="pal_status_value_red_bg">@color/status_value_red_bg</item>

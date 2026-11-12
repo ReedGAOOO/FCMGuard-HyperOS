@@ -16,6 +16,9 @@
 
     <!-- Translucent status/value accents used inside the floating status card. -->
     <color name="status_value_blue_bg">#244285F4</color>
+    <!-- Accent-tinted secondary button (Protect now); label kept at 4.5:1 or more. -->
+    <color name="button_tonal">#1F0B57D0</color>
+    <color name="button_tonal_text">#0B57D0</color>
     <color name="status_value_green_bg">#2434A853</color>
     <color name="status_value_yellow_bg">#24FBBC04</color>
     <color name="status_value_red_bg">#24EA4335</color>

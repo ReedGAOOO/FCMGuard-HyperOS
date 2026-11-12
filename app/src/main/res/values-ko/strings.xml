@@ -6,7 +6,7 @@
     <string name="label_item">&#xD544;&#xC218; &#xD56D;&#xBAA9;</string>
     <string name="save_configuration">&#xC124;&#xC815; &#xC800;&#xC7A5;</string>
     <string name="grant_modify">&#xC2DC;&#xC2A4;&#xD15C; &#xC124;&#xC815; &#xBCC0;&#xACBD; &#xD5C8;&#xC6A9;</string>
-    <string name="repair_now">&#xC9C0;&#xAE08; &#xBCF5;&#xAD6C;</string>
+    <string name="protect_now">지금 보호</string>
     <string name="wake_fcm">FCM &#xC9C0;&#xAE08; &#xB2E4;&#xC2DC; &#xC5F0;&#xACB0;</string>
     <string name="open_fcm_diag">FCM &#xC9C4;&#xB2E8; &#xC5F4;&#xAE30;</string>
     <string name="status_title">&#xC0C1;&#xD0DC;</string>

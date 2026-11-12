@@ -6,7 +6,7 @@
     <string name="label_item">Élément requis</string>
     <string name="save_configuration">Enregistrer la configuration</string>
     <string name="grant_modify">Autoriser la modification des paramètres système</string>
-    <string name="repair_now">Réparer maintenant</string>
+    <string name="protect_now">Protéger</string>
     <string name="wake_fcm">Réveiller FCM</string>
     <string name="open_fcm_diag">Ouvrir le diagnostic FCM</string>
     <string name="status_title">État</string>

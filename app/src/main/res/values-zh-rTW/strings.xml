@@ -6,7 +6,7 @@
     <string name="label_item">必要項目</string>
     <string name="save_configuration">儲存設定</string>
     <string name="grant_modify">授予「修改系統設定」</string>
-    <string name="repair_now">立即修復</string>
+    <string name="protect_now">立即守護</string>
     <string name="wake_fcm">立即喚醒 FCM</string>
     <string name="open_fcm_diag">開啟 FCM 診斷</string>
     <string name="status_title">狀態</string>

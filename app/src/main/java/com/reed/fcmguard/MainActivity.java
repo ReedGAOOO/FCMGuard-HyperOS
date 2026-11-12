@@ -47,6 +47,7 @@ import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
     private static final String STATE_THEME_PANEL = "theme_panel_open";
+    private static final String STATE_THEME_SCROLL = "theme_panel_scroll";
     private static final String[] LANGUAGE_CODES = {
             "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
     };
@@ -137,7 +138,9 @@ public class MainActivity extends Activity {
         setupSwitches();
         bindActions();
         if (savedInstanceState != null && savedInstanceState.getBoolean(STATE_THEME_PANEL)) {
-            themePanel.show(false); // Recreated for a theme switch: keep the picker open.
+            // Recreated for a theme switch: keep the picker open, scrolled where it was.
+            themePanel.restoreScrollX(savedInstanceState.getInt(STATE_THEME_SCROLL, -1));
+            themePanel.show(false);
         }
         // refreshStatus() runs in onResume(), which always follows onCreate().
     }
@@ -309,6 +312,7 @@ public class MainActivity extends Activity {
     @Override protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putBoolean(STATE_THEME_PANEL, themePanel != null && themePanel.isOpen());
+        if (themePanel != null) outState.putInt(STATE_THEME_SCROLL, themePanel.scrollX());
     }
 
     private void setupAppearance() {
@@ -436,7 +440,7 @@ public class MainActivity extends Activity {
 
         permissionBtn.setOnClickListener(v -> openWriteSettings());
 
-        findViewById(R.id.repairBtn).setOnClickListener(v -> {
+        findViewById(R.id.protectNowBtn).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
             SettingsGuard.Result result = SettingsGuard.repair(this);
             if (result.changed) FcmReconnect.kick(this);

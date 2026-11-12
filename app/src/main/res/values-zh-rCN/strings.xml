@@ -6,7 +6,7 @@
     <string name="label_item">必需项</string>
     <string name="save_configuration">保存配置</string>
     <string name="grant_modify">授予“修改系统设置”</string>
-    <string name="repair_now">立即修复</string>
+    <string name="protect_now">立即守护</string>
     <string name="wake_fcm">立即唤醒 FCM</string>
     <string name="open_fcm_diag">打开 FCM 诊断</string>
     <string name="status_title">状态</string>

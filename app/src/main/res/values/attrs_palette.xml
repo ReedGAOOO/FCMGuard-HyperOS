@@ -15,6 +15,8 @@
     <attr name="pal_info_bg" format="color" />
     <attr name="pal_divider" format="color" />
     <attr name="pal_status_value_blue_bg" format="color" />
+    <attr name="pal_button_tonal" format="color" />
+    <attr name="pal_button_tonal_text" format="color" />
     <attr name="pal_status_value_green_bg" format="color" />
     <attr name="pal_status_value_yellow_bg" format="color" />
     <attr name="pal_status_value_red_bg" format="color" />

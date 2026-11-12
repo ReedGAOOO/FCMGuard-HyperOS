@@ -16,6 +16,9 @@
 
     <!-- Slightly stronger alpha in dark mode keeps the accent chips legible. -->
     <color name="status_value_blue_bg">#338AB4F8</color>
+    <!-- Accent-tinted secondary button (Protect now); label kept at 4.5:1 or more. -->
+    <color name="button_tonal">#338AB4F8</color>
+    <color name="button_tonal_text">#8AB4F8</color>
     <color name="status_value_green_bg">#3381C995</color>
     <color name="status_value_yellow_bg">#33FDD663</color>
     <color name="status_value_red_bg">#33F28B82</color>
