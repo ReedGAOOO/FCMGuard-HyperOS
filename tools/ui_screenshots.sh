@@ -155,11 +155,12 @@ if [ -n "$front" ]; then
     set -- $front
     adb shell input swipe "$1" "$2" $(( $1 + 120 )) $(( $2 + 40 )) 1500
     shot 06d-light-sprung-back 1.5
-    # Three flicks back to back, each starting while the previous one is still settling:
-    # every flick must cycle the stack (not scroll the page or get dropped).
+    # Two flicks back to back, the second starting while the first is still settling: both
+    # must cycle the stack (not scroll the page or get dropped), so the column's third tile
+    # ends up in front. (Three would cycle a three-tile column back to the start.)
     set -- $front
     shot 06e-light-before-rapid 0.3
-    for _ in 1 2 3; do adb shell input swipe "$1" "$2" $(( $1 + 700 )) "$2" 80; done
+    for _ in 1 2; do adb shell input swipe "$1" "$2" $(( $1 + 700 )) "$2" 80; done
     shot 06f-light-after-rapid 1.5
   fi
 fi
