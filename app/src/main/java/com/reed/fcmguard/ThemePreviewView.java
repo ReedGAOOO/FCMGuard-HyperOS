@@ -27,7 +27,7 @@ final class ThemePreviewView extends View {
     private final Path check = new Path();
     private final float dp;
 
-    private int bg, surface, border, text, text2, pill, accent, fill, off;
+    private int bg, surface, tonal, border, text, text2, pill, accent, fill;
     private int heroStart, heroCenter, heroEnd;
     private int tileGood, tileWarn, tileBad, tileNeutral, good, warn, bad, neutral;
     private LinearGradient heroShader;
@@ -43,13 +43,13 @@ final class ThemePreviewView extends View {
     void setTheme(Resources.Theme theme) {
         bg = AppColors.get(theme, R.attr.pal_bg);
         surface = AppColors.get(theme, R.attr.pal_surface);
+        tonal = AppColors.get(theme, R.attr.pal_surface_alt);
         border = AppColors.get(theme, R.attr.pal_floating_border);
         text = AppColors.get(theme, R.attr.pal_text_primary);
         text2 = AppColors.get(theme, R.attr.pal_text_secondary);
         pill = AppColors.get(theme, R.attr.pal_hero_pill);
         accent = AppColors.get(theme, R.attr.pal_blue);
         fill = AppColors.get(theme, R.attr.pal_primary_fill);
-        off = AppColors.get(theme, R.attr.pal_switch_track_off);
         heroStart = AppColors.get(theme, R.attr.pal_hero_start);
         heroCenter = AppColors.get(theme, R.attr.pal_hero_center);
         heroEnd = AppColors.get(theme, R.attr.pal_hero_end);
@@ -128,48 +128,65 @@ final class ThemePreviewView extends View {
             bar(canvas, heroRight - pw * 0.05f - capW + capH * 1.05f, top + capH * 0.38f, capW * 0.42f, capH * 0.24f, accent);
         }
 
-        // Floating status card: headline and four tinted tiles.
-        rect.set(page.left + pw * 0.09f, page.top + ph * 0.24f, page.right - pw * 0.09f, page.top + ph * 0.66f);
+        // Floating status card: headline, four tinted tiles and the tonal whitelist strip.
+        float gap = pw * 0.03f;
+        float tileH = ph * 0.105f;
+        float cardTop = page.top + ph * 0.24f;
+        float tilesTop = cardTop + ph * 0.11f;
+        float stripTop = tilesTop + 2f * tileH + gap + ph * 0.025f;
+        float stripH = ph * 0.055f;
+        float cardBottom = stripTop + stripH + ph * 0.03f;
+        rect.set(page.left + pw * 0.09f, cardTop, page.right - pw * 0.09f, cardBottom);
         paint.setColor(surface);
         canvas.drawRoundRect(rect, 8f * dp, 8f * dp, paint);
         stroke(canvas, rect, 8f * dp, border);
         float cardLeft = rect.left + pw * 0.05f;
         float cardRight = rect.right - pw * 0.05f;
-        float cardTop = rect.top;
         paint.setColor(good);
         canvas.drawCircle(cardLeft + ph * 0.017f, cardTop + ph * 0.06f, ph * 0.017f, paint);
         bar(canvas, cardLeft + ph * 0.045f, cardTop + ph * 0.045f, pw * 0.36f, ph * 0.03f, good);
-        float gap = pw * 0.03f;
         float tileW = (cardRight - cardLeft - gap) / 2f;
-        float tileH = ph * 0.105f;
         int[] tiles = {tileBad, tileNeutral, tileWarn, tileGood};
         int[] values = {bad, neutral, warn, good};
         for (int i = 0; i < 4; i++) {
             float left = cardLeft + (i % 2) * (tileW + gap);
-            float top = cardTop + ph * 0.11f + (i / 2) * (tileH + gap);
+            float top = tilesTop + (i / 2) * (tileH + gap);
             rect.set(left, top, left + tileW, top + tileH);
             paint.setColor(tiles[i]);
             canvas.drawRoundRect(rect, 4.5f * dp, 4.5f * dp, paint);
             bar(canvas, left + tileW * 0.12f, top + tileH * 0.24f, tileW * 0.62f, tileH * 0.16f, withAlpha(text2, 0.75f));
             bar(canvas, left + tileW * 0.12f, top + tileH * 0.56f, tileW * 0.42f, tileH * 0.2f, values[i]);
         }
+        rect.set(cardLeft, stripTop, cardRight, stripTop + stripH);
+        paint.setColor(tonal);
+        canvas.drawRoundRect(rect, 4.5f * dp, 4.5f * dp, paint);
+        bar(canvas, cardLeft + tileW * 0.12f, stripTop + stripH * 0.36f, (cardRight - cardLeft) * 0.6f,
+                stripH * 0.28f, withAlpha(text, 0.7f));
 
-        // Next card (cut off by the page edge): a switch and the primary button.
-        rect.set(page.left + pw * 0.05f, page.top + ph * 0.70f, page.right - pw * 0.05f, page.bottom + 12f * dp);
+        // Next card (cut off by the page edge): a switch row and the primary button.
+        // bar() reuses rect, so the card's bounds are kept in locals.
+        float nextLeft = page.left + pw * 0.05f;
+        float nextRight = page.right - pw * 0.05f;
+        float nextTop = cardBottom + ph * 0.035f;
+        rect.set(nextLeft, nextTop, nextRight, page.bottom + 12f * dp);
         paint.setColor(surface);
         canvas.drawRoundRect(rect, 9f * dp, 9f * dp, paint);
-        float rowTop = rect.top + ph * 0.05f;
-        bar(canvas, rect.left + pw * 0.07f, rowTop + ph * 0.008f, pw * 0.38f, ph * 0.03f, text);
+        float innerLeft = nextLeft + pw * 0.07f;
+        float innerRight = nextRight - pw * 0.07f;
+        float rowTop = nextTop + ph * 0.05f;
         float switchW = pw * 0.17f;
         float switchH = ph * 0.05f;
-        float switchLeft = rect.right - pw * 0.07f - switchW;
+        float switchLeft = innerRight - switchW;
+        bar(canvas, innerLeft, rowTop + (switchH - ph * 0.03f) / 2f, pw * 0.38f, ph * 0.03f, text);
         bar(canvas, switchLeft, rowTop, switchW, switchH, fill);
         paint.setColor(Color.WHITE);
         canvas.drawCircle(switchLeft + switchW - switchH / 2f, rowTop + switchH / 2f, switchH * 0.38f, paint);
-        float buttonTop = rowTop + ph * 0.09f;
-        bar(canvas, rect.left + pw * 0.07f, buttonTop, rect.width() - pw * 0.14f, ph * 0.07f, fill);
-        bar(canvas, rect.centerX() - pw * 0.12f, buttonTop + ph * 0.025f, pw * 0.24f, ph * 0.02f, Color.WHITE);
-        bar(canvas, rect.left + pw * 0.07f, buttonTop + ph * 0.1f, rect.width() * 0.5f, ph * 0.03f, off);
+        float buttonTop = rowTop + switchH + ph * 0.04f;
+        float buttonH = ph * 0.075f;
+        bar(canvas, innerLeft, buttonTop, innerRight - innerLeft, buttonH, fill);
+        float labelW = (innerRight - innerLeft) * 0.36f;
+        bar(canvas, (innerLeft + innerRight - labelW) / 2f, buttonTop + buttonH * 0.38f,
+                labelW, buttonH * 0.24f, Color.WHITE);
 
         canvas.restoreToCount(save);
         stroke(canvas, page, pageRadius, border);
