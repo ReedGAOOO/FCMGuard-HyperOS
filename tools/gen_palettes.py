@@ -116,7 +116,7 @@ def colours(t, dark):
         "badge_text_red": t["r"][1],
         "badge_text_neutral": t["n"][1],
         "glass_header": argb(t["bg"], 0.72),
-        "glass_surface": argb(t["surface"], 0.70 if dark else 0.75),
+        "glass_surface": argb(t["surface"], 0.62 if dark else 0.66),  # Lets the blurred hero show through.
         "switch_track_off": t["off"],
         "switch_track_disabled": blend(t["off"], t["surface"], 0.5),
         "segment_selected": blend("#FFFFFF", t["alt"], 0.08) if dark else t["surface"],

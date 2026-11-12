@@ -7,6 +7,7 @@ import android.graphics.Paint;
 import android.graphics.RectF;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewOutlineProvider;
 import android.widget.LinearLayout;
@@ -166,6 +167,18 @@ public final class CollapsingStatusCard extends LinearLayout {
         canvas.clipRect(0f, 0f, getWidth(), resolveVisualBottom());
         super.dispatchDraw(canvas);
         canvas.restoreToCount(save);
+    }
+
+    /**
+     * The card is a physical cover: a touch on its visible surface that no tile or button
+     * takes stops here, instead of reaching the hero capsules drawn (blurred) underneath.
+     * Below the visible lower edge the touch passes through to the page.
+     */
+    @Override public boolean onTouchEvent(MotionEvent event) {
+        if (event.getActionMasked() == MotionEvent.ACTION_DOWN) {
+            return event.getY() < resolveVisualBottom();
+        }
+        return true;
     }
 
     /**

@@ -36,7 +36,6 @@ public final class StickyDashboardLayout extends FrameLayout {
     private GlassBackdropView headerBackdrop;
     private View contentRoot;
     private View heroCard;
-    private View heroContent;
     private CollapsingStatusCard statusCard;
     private View statusDetailsPanel;
     private View currentValuePanel;
@@ -75,7 +74,6 @@ public final class StickyDashboardLayout extends FrameLayout {
         }
         contentRoot = findViewById(R.id.contentRoot);
         heroCard = findViewById(R.id.heroCard);
-        heroContent = findViewById(R.id.heroContent);
         statusCard = findViewById(R.id.statusCard);
         statusDetailsPanel = findViewById(R.id.statusDetailsPanel);
         currentValuePanel = findViewById(R.id.currentValuePanel);
@@ -183,7 +181,6 @@ public final class StickyDashboardLayout extends FrameLayout {
         } else {
             headerBackdrop.showSolid(AppColors.get(getContext(), R.attr.pal_bg), glassFadePx());
             statusCard.disableGlass();
-            if (heroContent != null) heroContent.setAlpha(1f);
         }
 
         heroCard.setBackgroundResource(glass ? R.drawable.hero_glass_bg : R.drawable.hero_bg);
@@ -265,7 +262,7 @@ public final class StickyDashboardLayout extends FrameLayout {
         if (statusCard.getTranslationY() != translation) {
             statusCard.setTranslationY(translation);
         }
-        if (glassApplied) syncGlass(travelled, collapseDistance);
+        if (glassApplied) syncGlass();
 
         if (statusDetailsPanel == null || currentValuePanel == null) return;
 
@@ -303,16 +300,12 @@ public final class StickyDashboardLayout extends FrameLayout {
 
     /**
      * Glass backdrops show the content behind them, so they are re-drawn whenever that
-     * content moves. The hero text fades out as the card docks over it, leaving only the
-     * tinted gradient behind the glass.
+     * content moves. The hero stays fully drawn: as the card docks over it, the card's
+     * frosted surface blurs the hero text instead of the text fading out.
      */
-    private void syncGlass(int travelled, int collapseDistance) {
+    private void syncGlass() {
         headerBackdrop.invalidate();
         statusCard.invalidate();
-        if (heroContent == null) return;
-        float fadeDistance = Math.max(1f, collapseDistance * 0.6f);
-        float alpha = 1f - smootherStep(clamp01(travelled / fadeDistance));
-        if (heroContent.getAlpha() != alpha) heroContent.setAlpha(alpha);
     }
 
     private static float computePanelProgress(int scrollY, int collapseDistance, int coverDistance) {

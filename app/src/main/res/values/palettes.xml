@@ -37,7 +37,7 @@
         <item name="pal_badge_text_red">#C4291F</item>
         <item name="pal_badge_text_neutral">#5C6168</item>
         <item name="pal_glass_header">#B8F5F6F8</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#DADDE2</item>
         <item name="pal_switch_track_disabled">#ECEEF0</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -78,7 +78,7 @@
         <item name="pal_badge_text_red">#B42F2F</item>
         <item name="pal_badge_text_neutral">#56645F</item>
         <item name="pal_glass_header">#B8F2F6F5</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#D5DFDC</item>
         <item name="pal_switch_track_disabled">#EAEFEE</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -119,7 +119,7 @@
         <item name="pal_badge_text_red">#B8304D</item>
         <item name="pal_badge_text_neutral">#5F5E75</item>
         <item name="pal_glass_header">#B8F4F4F9</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#DCDCE8</item>
         <item name="pal_switch_track_disabled">#EEEEF4</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -160,7 +160,7 @@
         <item name="pal_badge_text_red">#B3261E</item>
         <item name="pal_badge_text_neutral">#5F6368</item>
         <item name="pal_glass_header">#B8F8F9FA</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#DADCE0</item>
         <item name="pal_switch_track_disabled">#ECEEF0</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -201,7 +201,7 @@
         <item name="pal_badge_text_red">#B42828</item>
         <item name="pal_badge_text_neutral">#665660</item>
         <item name="pal_glass_header">#B8FAF5F7</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#E8DCE2</item>
         <item name="pal_switch_track_disabled">#F4EEF0</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -242,7 +242,7 @@
         <item name="pal_badge_text_red">#B1281F</item>
         <item name="pal_badge_text_neutral">#655949</item>
         <item name="pal_glass_header">#B8FAF7F2</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#E6DCCF</item>
         <item name="pal_switch_track_disabled">#F2EEE7</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -283,7 +283,7 @@
         <item name="pal_badge_text_red">#B91C1C</item>
         <item name="pal_badge_text_neutral">#52525B</item>
         <item name="pal_glass_header">#B8F4F4F5</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#DCDCE0</item>
         <item name="pal_switch_track_disabled">#EEEEF0</item>
         <item name="pal_segment_selected">#FFFFFF</item>
@@ -324,7 +324,7 @@
         <item name="pal_badge_text_red">#B42339</item>
         <item name="pal_badge_text_neutral">#556076</item>
         <item name="pal_glass_header">#B8F3F6FA</item>
-        <item name="pal_glass_surface">#BFFFFFFF</item>
+        <item name="pal_glass_surface">#A8FFFFFF</item>
         <item name="pal_switch_track_off">#D8E0EC</item>
         <item name="pal_switch_track_disabled">#ECF0F6</item>
         <item name="pal_segment_selected">#FFFFFF</item>

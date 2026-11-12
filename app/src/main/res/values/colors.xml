@@ -44,7 +44,7 @@
 
     <!-- Frosted glass (system GPU blur behind these translucent fills). -->
     <color name="glass_header">#B8F4F6F8</color>
-    <color name="glass_surface">#BFFFFFFF</color>
+    <color name="glass_surface">#A8FFFFFF</color>
     <color name="glass_border">#CCFFFFFF</color>
     <color name="glass_tonal">#0D1F2328</color>
     <color name="hero_start_glass">#99EEE9FF</color>

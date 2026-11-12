@@ -43,7 +43,7 @@
 
     <!-- Frosted glass, dark variants. -->
     <color name="glass_header">#B80F1115</color>
-    <color name="glass_surface">#B3181B20</color>
+    <color name="glass_surface">#9E181B20</color>
     <color name="glass_border">#26FFFFFF</color>
     <color name="glass_tonal">#14FFFFFF</color>
     <color name="hero_start_glass">#99272337</color>
