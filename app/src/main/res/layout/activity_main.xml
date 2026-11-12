@@ -116,6 +116,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:clipChildren="false"
+                android:clipToPadding="false"
                 android:background="@drawable/status_header_bg"
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp">
@@ -128,7 +130,9 @@
                 <com.reed.fcmguard.StatusTileStack
                     android:id="@+id/statusTileStack"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
                     <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="4dp">
                         <include android:id="@+id/statusTile1" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
                         <Space android:layout_width="6dp" android:layout_height="match_parent" />

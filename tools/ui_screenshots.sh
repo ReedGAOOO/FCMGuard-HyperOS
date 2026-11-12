@@ -140,6 +140,20 @@ drag_up 250;  shot 04-light-scroll-250
 drag_up 250;  shot 05-light-scroll-500
 drag_up 200;  shot 06-light-scroll-700
 drag_up 300;  shot 06b-light-scroll-1000
+# Fully stacked: throw the front row out with a fast swipe, then try a short slow drag
+# that should spring back. The most severe tile is in the front row.
+front=$(find_node 'fcm guard whitelist|modify settings')
+if [ -n "$front" ]; then
+  set -- $front
+  adb shell input swipe "$1" "$2" $(( $1 + 700 )) "$2" 90
+  shot 06c-light-swiped-out 1.5
+  front=$(find_node 'modify settings|automatic protection|required item present|background mode|fcm guard autostart')
+  if [ -n "$front" ]; then
+    set -- $front
+    adb shell input swipe "$1" "$2" $(( $1 + 120 )) $(( $2 + 40 )) 1500
+    shot 06d-light-sprung-back 1.5
+  fi
+fi
 if scroll_until_visible 'scan fcm apps'; then
   tap_text 'scan fcm apps' && shot 07-light-fcm-scan 4
 fi
