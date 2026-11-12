@@ -1,7 +1,9 @@
 package com.reed.fcmguard;
 
 import android.annotation.TargetApi;
+import android.graphics.BlendMode;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Outline;
 import android.graphics.RecordingCanvas;
 import android.graphics.RenderEffect;
@@ -31,14 +33,45 @@ final class GlassBlur {
     private final View root;
     private final View[] sources;
     private final int baseColor;
+    private final RenderEffect blurEffect;
+    private int tintColor;
+    private float bottomFadePx;
+    private int effectHeight = -1;
 
     GlassBlur(View target, View root, float radiusPx, int baseColor, View... sources) {
         this.target = target;
         this.root = root;
         this.baseColor = baseColor;
         this.sources = sources;
-        node.setRenderEffect(RenderEffect.createBlurEffect(
-                radiusPx, radiusPx, Shader.TileMode.CLAMP));
+        blurEffect = RenderEffect.createBlurEffect(radiusPx, radiusPx, Shader.TileMode.CLAMP);
+        node.setRenderEffect(blurEffect);
+    }
+
+    /** Uniform tint laid over the backdrop inside the node (a flat colour is unchanged by blur). */
+    void setTint(int color) {
+        tintColor = color;
+    }
+
+    /**
+     * Fades the whole glass layer to transparent over the bottom {@code fadePx}, so the
+     * frosted area blends into the sharp content below instead of ending in a hard line.
+     * Done inside the node's effect chain (blur, then DST_IN with a gradient), so it needs
+     * no extra offscreen layer.
+     */
+    void setBottomFade(float fadePx) {
+        bottomFadePx = Math.max(0f, fadePx);
+        effectHeight = -1;
+    }
+
+    private void updateEffect(int height) {
+        if (bottomFadePx <= 0f || height == effectHeight) return;
+        effectHeight = height;
+        float fadeStart = Math.max(0f, height - bottomFadePx);
+        LinearGradient mask = new LinearGradient(
+                0f, fadeStart, 0f, height,
+                0xFF000000, 0x00000000, Shader.TileMode.CLAMP);
+        node.setRenderEffect(RenderEffect.createBlendModeEffect(
+                blurEffect, RenderEffect.createShaderEffect(mask), BlendMode.DST_IN));
     }
 
     /**
@@ -49,6 +82,7 @@ final class GlassBlur {
         if (width <= 0 || height <= 0 || !canvas.isHardwareAccelerated()) return;
 
         node.setPosition(0, 0, width, height);
+        updateEffect(height);
         if (cornerRadius > 0f) {
             outline.setRoundRect(0, 0, width, height, cornerRadius);
             node.setOutline(outline);
@@ -72,6 +106,7 @@ final class GlassBlur {
                 source.draw(recording);
                 recording.restoreToCount(save);
             }
+            if (tintColor != 0) recording.drawColor(tintColor);
         } finally {
             node.endRecording();
         }

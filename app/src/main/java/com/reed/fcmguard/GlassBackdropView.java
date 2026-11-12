@@ -2,18 +2,28 @@ package com.reed.fcmguard;
 
 import android.content.Context;
 import android.graphics.Canvas;
+import android.graphics.LinearGradient;
 import android.graphics.Paint;
+import android.graphics.Shader;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 
 /**
- * Full-width frosted band behind the fixed dashboard header: blurred scroll content with a
- * translucent page-colour tint on top. Draws nothing while glass is off.
+ * Full-width band behind the fixed dashboard header. Content scrolling up passes under it
+ * and fades out over the band's bottom edge instead of being cut off by a hard line.
+ *
+ * Glass mode: blurred scroll content with a translucent page-colour tint (system GPU blur,
+ * see {@link GlassBlur}). Solid mode: the page colour. Both fade to transparent over the
+ * bottom {@code fadePx}.
  */
 public final class GlassBackdropView extends View {
-    private final Paint tintPaint = new Paint();
+    private final Paint solidPaint = new Paint();
     private GlassBlur blur;
+    private int solidColor;
+    private float solidFadePx;
+    private int solidShaderHeight = -1;
+    private boolean solid;
 
     public GlassBackdropView(Context context) {
         super(context);
@@ -27,26 +37,51 @@ public final class GlassBackdropView extends View {
         super(context, attrs, defStyleAttr);
     }
 
-    void enableGlass(View root, float radiusPx, int baseColor, int tint, View... sources) {
+    void enableGlass(View root, float radiusPx, int baseColor, int tint, float bottomFadePx,
+            View... sources) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
-        disableGlass();
+        releaseBlur();
+        solid = false;
         blur = new GlassBlur(this, root, radiusPx, baseColor, sources);
-        tintPaint.setColor(tint);
+        blur.setTint(tint);
+        blur.setBottomFade(bottomFadePx);
         invalidate();
     }
 
-    void disableGlass() {
+    /** Opaque page-colour band with the same bottom fade, used when glass is off. */
+    void showSolid(int color, float bottomFadePx) {
+        releaseBlur();
+        solid = true;
+        solidColor = color;
+        solidFadePx = Math.max(0f, bottomFadePx);
+        solidShaderHeight = -1;
+        invalidate();
+    }
+
+    private void releaseBlur() {
         if (blur != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) blur.release();
         blur = null;
-        invalidate();
     }
 
     @Override protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
-        if (blur == null || Build.VERSION.SDK_INT < Build.VERSION_CODES.S) return;
-        blur.draw(canvas, getWidth(), getHeight(), 0f);
-        // drawRect, not drawColor: the dashboard root does not clip its children, so
-        // drawColor would tint the whole screen instead of just this band.
-        canvas.drawRect(0f, 0f, getWidth(), getHeight(), tintPaint);
+        int width = getWidth();
+        int height = getHeight();
+        if (width <= 0 || height <= 0) return;
+
+        // Everything is drawn within this view's bounds: the dashboard root does not clip
+        // its children, so an unbounded call such as drawColor() would cover the screen.
+        if (blur != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+            blur.draw(canvas, width, height, 0f);
+        } else if (solid) {
+            if (solidShaderHeight != height) {
+                solidShaderHeight = height;
+                float fadeStart = Math.max(0f, height - solidFadePx);
+                solidPaint.setShader(new LinearGradient(
+                        0f, fadeStart, 0f, height,
+                        solidColor, solidColor & 0x00FFFFFF, Shader.TileMode.CLAMP));
+            }
+            canvas.drawRect(0f, 0f, width, height, solidPaint);
+        }
     }
 }

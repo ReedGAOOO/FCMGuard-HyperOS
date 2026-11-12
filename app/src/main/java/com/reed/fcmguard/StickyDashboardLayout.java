@@ -65,6 +65,9 @@ public final class StickyDashboardLayout extends FrameLayout {
         super.onFinishInflate();
         stickyHeader = findViewById(R.id.stickyHeader);
         headerBackdrop = findViewById(R.id.headerBackdrop);
+        if (headerBackdrop != null) {
+            headerBackdrop.showSolid(getResources().getColor(R.color.bg), glassFadePx());
+        }
         contentRoot = findViewById(R.id.contentRoot);
         heroCard = findViewById(R.id.heroCard);
         heroContent = findViewById(R.id.heroContent);
@@ -124,16 +127,16 @@ public final class StickyDashboardLayout extends FrameLayout {
     }
 
     /**
-     * The glass band spans from the top of the screen to the bottom of the fixed hero.
-     * The hero height is a fixed dimension, so the band can be sized before measuring
-     * without an extra layout pass.
+     * The glass band spans from the top of the screen to the bottom of the fixed hero, plus
+     * a fade zone in which it blends into the content below. The hero height is a fixed
+     * dimension, so the band can be sized before measuring without an extra layout pass.
      */
     private void syncHeaderBackdropHeight() {
         if (headerBackdrop == null || stickyHeader == null || heroCard == null) return;
         ViewGroup.LayoutParams heroParams = heroCard.getLayoutParams();
         ViewGroup.LayoutParams backdropParams = headerBackdrop.getLayoutParams();
         if (heroParams == null || backdropParams == null || heroParams.height <= 0) return;
-        int desired = stickyHeader.getPaddingTop() + heroParams.height;
+        int desired = stickyHeader.getPaddingTop() + heroParams.height + glassFadePx();
         if (backdropParams.height != desired) backdropParams.height = desired;
     }
 
@@ -151,15 +154,14 @@ public final class StickyDashboardLayout extends FrameLayout {
             float radius = glassBlurRadiusPx();
             int base = getResources().getColor(R.color.bg);
             headerBackdrop.enableGlass(this, radius, base,
-                    getResources().getColor(R.color.glass_header), contentRoot);
+                    getResources().getColor(R.color.glass_header), glassFadePx(), contentRoot);
             statusCard.enableGlass(this, radius, base, contentRoot, heroCard);
         } else {
-            headerBackdrop.disableGlass();
+            headerBackdrop.showSolid(getResources().getColor(R.color.bg), glassFadePx());
             statusCard.disableGlass();
             if (heroContent != null) heroContent.setAlpha(1f);
         }
 
-        headerBackdrop.setVisibility(glass ? VISIBLE : GONE);
         heroCard.setBackgroundResource(glass ? R.drawable.hero_glass_bg : R.drawable.hero_bg);
         // The shadow stays in glass mode: the blurred backdrop is drawn on an opaque base,
         // so the shadow cannot show through, and without it the card's lower edge
@@ -176,6 +178,11 @@ public final class StickyDashboardLayout extends FrameLayout {
         glassApplied = glass;
         syncCollapsingStatusCard();
         return glass;
+    }
+
+    /** Height of the gradient over which content fades out under the header band. */
+    private int glassFadePx() {
+        return Math.round(36f * getResources().getDisplayMetrics().density);
     }
 
     private float glassBlurRadiusPx() {
