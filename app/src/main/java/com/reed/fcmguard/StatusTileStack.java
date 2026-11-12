@@ -17,20 +17,21 @@ import android.view.animation.DecelerateInterpolator;
 import android.widget.LinearLayout;
 
 /**
- * Rows of status tiles that collapse into a stack, like stacked notifications.
+ * One column of status tiles that collapses into a stack, like stacked notifications.
+ * Each column is independent (see {@link StatusTileColumns}).
  *
- * Stacking: as the stack progress goes from 0 to 1, every row slides into its slot in the
- * stack: the front slot at the first row's position, the others behind it, slightly
+ * Stacking: as the stack progress goes from 0 to 1, every tile slides into its slot in the
+ * stack: the front slot at the first tile's position, the others behind it, slightly
  * smaller and fainter, with only a thin edge peeking out below.
  *
- * Swiping: once fully stacked, the front row can be dragged in any direction. The drag
+ * Swiping: once fully stacked, the front tile can be dragged in any direction. The drag
  * follows a rubber-band curve, so it takes a deliberate fling (or a long drag) to throw the
- * row out; otherwise it springs back. A thrown-out row goes to the back of the stack while
- * the rows behind it move forward. When the stack unfolds completely, the original order
- * (most severe first) is restored.
+ * tile out; otherwise it springs back. A thrown-out tile goes to the back of the stack
+ * while the tiles behind it move forward. When the stack unfolds completely, the original
+ * order (most severe first) is restored.
  *
  * Only RenderNode properties change while stacking, dragging and animating: no layout pass.
- * Tiles must have opaque backgrounds so a row hides the rows behind it.
+ * Tiles must have opaque backgrounds so a tile hides the tiles behind it.
  */
 public final class StatusTileStack extends LinearLayout {
     private static final float SCALE_STEP = 0.05f;
@@ -180,7 +181,7 @@ public final class StatusTileStack extends LinearLayout {
         invalidate();
     }
 
-    /** Back slots first, front slot last: the front row is on top and gets touches first. */
+    /** Back slots first, front slot last: the front tile is on top and gets touches first. */
     private void updateDrawOrder() {
         int count = drawOrder.length;
         for (int i = 0; i < count; i++) drawOrder[i] = i;
@@ -296,7 +297,7 @@ public final class StatusTileStack extends LinearLayout {
             pastThreshold = past;
             if (past) performHapticFeedback(HapticFeedbackConstants.CLOCK_TICK);
         }
-        // The rows behind lean forward a little as the front row is pulled away.
+        // The tiles behind lean forward a little as the front tile is pulled away.
         float pull = Math.min(1f, (float) Math.hypot(rawX, rawY) / (row.getWidth() * DISMISS_DISTANCE_FRACTION));
         for (int i = 0; i < slot.length; i++) {
             if (i != dragChild) slot[i] = Math.round(slot[i]) - 0.25f * pull;
@@ -362,7 +363,7 @@ public final class StatusTileStack extends LinearLayout {
         gestureAnimator.start();
     }
 
-    /** Throws the front row out along (dirX, dirY), then files it at the back. */
+    /** Throws the front tile out along (dirX, dirY), then files it at the back. */
     private void throwOut(float dirX, float dirY) {
         final int thrown = dragChild;
         View row = getChildAt(thrown);
@@ -400,7 +401,7 @@ public final class StatusTileStack extends LinearLayout {
         advanceRows(thrown);
     }
 
-    /** Every row behind the thrown one moves one slot forward. */
+    /** Every tile behind the thrown one moves one slot forward. */
     private void advanceRows(int thrown) {
         final float[] startSlots = slot.clone();
         final float[] endSlots = roundedSlots();
@@ -424,7 +425,7 @@ public final class StatusTileStack extends LinearLayout {
         slotAnimator.start();
     }
 
-    /** The thrown row fades in at the back of the stack. */
+    /** The thrown tile fades in at the back of the stack. */
     private void fileAtBack(final int thrown) {
         final float backSlot = slot.length - 1;
         slot[thrown] = backSlot + 0.6f;
@@ -513,17 +514,13 @@ public final class StatusTileStack extends LinearLayout {
         return Math.signum(banded) * offset;
     }
 
-    private static void setTileContentAlpha(View row, float alpha) {
-        if (!(row instanceof ViewGroup)) return;
-        ViewGroup tiles = (ViewGroup) row;
-        for (int t = 0; t < tiles.getChildCount(); t++) {
-            View tile = tiles.getChildAt(t);
-            if (!(tile instanceof ViewGroup)) continue;
-            ViewGroup content = (ViewGroup) tile;
-            for (int c = 0; c < content.getChildCount(); c++) {
-                View child = content.getChildAt(c);
-                if (child.getAlpha() != alpha) child.setAlpha(alpha);
-            }
+    /** Fades a tile's text (its direct children) while keeping its background. */
+    private static void setTileContentAlpha(View tile, float alpha) {
+        if (!(tile instanceof ViewGroup)) return;
+        ViewGroup content = (ViewGroup) tile;
+        for (int c = 0; c < content.getChildCount(); c++) {
+            View child = content.getChildAt(c);
+            if (child.getAlpha() != alpha) child.setAlpha(alpha);
         }
     }
 

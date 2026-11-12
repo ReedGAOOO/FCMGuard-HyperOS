@@ -20,8 +20,9 @@ import android.widget.ScrollView;
  * its own white rounded surface and is drawn above the whitelist panel, so the
  * status text remains readable while the whitelist disappears beneath it.
  *
- * After that, the status tile rows stack behind the first row (StatusTileStack), so the
- * docked card keeps only its headline, the most important row and two peeking edges.
+ * After that, each column of status tiles stacks behind its first tile (StatusTileColumns),
+ * so the docked card keeps only its headline, the two most important tiles and their
+ * peeking edges.
  *
  * All motion is driven directly by ScrollView scroll events while the Activity is
  * on screen; there are no timers, alarms, background work, or extra wakeups.
@@ -39,7 +40,7 @@ public final class StickyDashboardLayout extends FrameLayout {
     private CollapsingStatusCard statusCard;
     private View statusDetailsPanel;
     private View currentValuePanel;
-    private StatusTileStack tileStack;
+    private StatusTileColumns tileStack;
     private ScrollView scrollView;
 
     private int stickyBaseLeft;
@@ -78,7 +79,7 @@ public final class StickyDashboardLayout extends FrameLayout {
         statusCard = findViewById(R.id.statusCard);
         statusDetailsPanel = findViewById(R.id.statusDetailsPanel);
         currentValuePanel = findViewById(R.id.currentValuePanel);
-        tileStack = findViewById(R.id.statusTileStack);
+        tileStack = findViewById(R.id.statusTileColumns);
         scrollView = findViewById(R.id.scroll);
         extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
 
@@ -265,8 +266,8 @@ public final class StickyDashboardLayout extends FrameLayout {
             currentValuePanel.setTranslationY(panelTranslation);
         }
 
-        // Third stage: once the whitelist is (almost) hidden, the tile rows stack behind
-        // the first row like stacked notifications.
+        // Third stage: once the whitelist is (almost) hidden, each tile column stacks behind
+        // its first tile like stacked notifications.
         float stackShrink = 0f;
         if (tileStack != null) {
             int stackDistance = tileStack.collapsibleHeight();
