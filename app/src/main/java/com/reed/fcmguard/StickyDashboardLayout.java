@@ -4,7 +4,9 @@ import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
 import android.view.DisplayCutout;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewParent;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.view.WindowInsets;
@@ -49,6 +51,9 @@ public final class StickyDashboardLayout extends FrameLayout {
     private int extraGapPx;
     /** Whether glass surfaces are currently shown; the inflated layout starts opaque. */
     private boolean glassApplied;
+    /** Receiver of the current gesture when it started on the visible status card. */
+    private View cardGestureTarget;
+    private final float[] touchOffset = new float[2];
 
     private final ViewTreeObserver.OnScrollChangedListener scrollChangedListener =
             this::syncCollapsingStatusCard;
@@ -146,6 +151,71 @@ public final class StickyDashboardLayout extends FrameLayout {
                 statusDetailsPanel.getBottom() + bottomGap) - stackedAway;
         int dockedBottom = dockedTop + dockedVisualBottom;
         headerBackdrop.setBandHeight(Math.max(heroCard.getBottom(), dockedBottom) + glassFadePx());
+    }
+
+    /**
+     * Touches that start on the visible status card go to the card first (tiles, the
+     * Protect now button, stack swipes); what the card leaves goes straight to the page
+     * scroll. They never reach the hero capsules, which stay drawn (blurred) under a
+     * docked card, and dragging on the card still scrolls the page as before.
+     */
+    @Override public boolean dispatchTouchEvent(MotionEvent event) {
+        int action = event.getActionMasked();
+        if (action == MotionEvent.ACTION_DOWN) {
+            cardGestureTarget = null;
+            if (statusCard != null && scrollView != null && onVisibleStatusCard(event)) {
+                if (dispatchTo(statusCard, event)) cardGestureTarget = statusCard;
+                else if (dispatchTo(scrollView, event)) cardGestureTarget = scrollView;
+                else cardGestureTarget = this; // Nothing wants it: swallow the gesture.
+                return true;
+            }
+            return super.dispatchTouchEvent(event);
+        }
+        if (cardGestureTarget == null) return super.dispatchTouchEvent(event);
+        View target = cardGestureTarget;
+        if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
+            cardGestureTarget = null;
+        }
+        if (target != this) dispatchTo(target, event);
+        return true;
+    }
+
+    private boolean onVisibleStatusCard(MotionEvent event) {
+        if (statusCard.getVisibility() != VISIBLE || statusCard.getWidth() <= 0) return false;
+        offsetOf(statusCard, touchOffset);
+        float x = event.getX() - touchOffset[0];
+        float y = event.getY() - touchOffset[1];
+        return x >= 0f && x < statusCard.getWidth() && y >= 0f && y < statusCard.visualBottom();
+    }
+
+    /** Delivers {@code event} to a descendant in that view's own coordinates. */
+    private boolean dispatchTo(View child, MotionEvent event) {
+        offsetOf(child, touchOffset);
+        MotionEvent local = MotionEvent.obtain(event);
+        local.offsetLocation(-touchOffset[0], -touchOffset[1]);
+        boolean handled = child.dispatchTouchEvent(local);
+        local.recycle();
+        return handled;
+    }
+
+    /** Top-left of {@code view} in this layout's coordinates (positions, translations, scrolls). */
+    private void offsetOf(View view, float[] out) {
+        float x = 0f;
+        float y = 0f;
+        View current = view;
+        while (current != null && current != this) {
+            x += current.getLeft() + current.getTranslationX();
+            y += current.getTop() + current.getTranslationY();
+            ViewParent parent = current.getParent();
+            if (!(parent instanceof View)) break;
+            current = (View) parent;
+            if (current != this) {
+                x -= current.getScrollX();
+                y -= current.getScrollY();
+            }
+        }
+        out[0] = x;
+        out[1] = y;
     }
 
     /**

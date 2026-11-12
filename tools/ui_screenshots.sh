@@ -69,7 +69,7 @@ app_is_resumed() {
 settle_app() {
   local pos calm=0
   for _ in $(seq 1 12); do
-    pos=$(find_node 'continue|ok|allow|got it' "$PKG")
+    pos=$(find_node 'continue|ok|allow|got it|wait' "$PKG")
     if [ -n "$pos" ]; then
       adb shell input tap $pos
       log "dismissed system dialog at $pos"
@@ -125,6 +125,9 @@ adb shell wm density
 
 adb install -r -t --bypass-low-target-sdk-block "$APK" || adb install -r -t "$APK"
 adb shell appops set "$PKG" WRITE_SETTINGS allow
+# A slow emulator can raise "<app> isn't responding" for system apps (the launcher), which
+# blocks all input for the rest of the run; never show those dialogs.
+adb shell settings put global hide_error_dialogs 1 || true
 # Skip the legacy-app permission review screen (Android 10+).
 adb shell pm clear-permission-flags "$PKG" android.permission.POST_NOTIFICATIONS review-required || true
 adb logcat -c || true
@@ -152,6 +155,12 @@ if [ -n "$front" ]; then
     set -- $front
     adb shell input swipe "$1" "$2" $(( $1 + 120 )) $(( $2 + 40 )) 1500
     shot 06d-light-sprung-back 1.5
+    # Three flicks back to back, each starting while the previous one is still settling:
+    # every flick must cycle the stack (not scroll the page or get dropped).
+    set -- $front
+    shot 06e-light-before-rapid 0.3
+    for _ in 1 2 3; do adb shell input swipe "$1" "$2" $(( $1 + 700 )) "$2" 80; done
+    shot 06f-light-after-rapid 1.5
   fi
 fi
 if scroll_until_visible 'scan fcm apps'; then

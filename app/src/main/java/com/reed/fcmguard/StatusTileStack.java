@@ -254,14 +254,19 @@ public final class StatusTileStack extends LinearLayout {
     private void startTracking(MotionEvent event) {
         tracking = false;
         dragging = false;
-        if (isAnimating()) return;
+        // A new touch interrupts whatever is still settling (a thrown tile, the tiles moving
+        // forward, a spring-back): it jumps to its end, so tiles can be flicked one after
+        // another without the touch being refused and falling through to the page.
+        if (isAnimating()) finishAnimations();
         int front = frontChild();
         if (front < 0) return;
         View row = getChildAt(front);
         float x = event.getX();
         float y = event.getY();
         float top = row.getTop() + row.getTranslationY();
-        if (x < row.getLeft() || x > row.getRight() || y < top || y > top + row.getHeight()) return;
+        // The front tile plus the edges of the tiles peeking out below it.
+        float bottom = top + row.getHeight() + peekPx * (getChildCount() - 1);
+        if (x < row.getLeft() || x > row.getRight() || y < top || y > bottom) return;
         tracking = true;
         dragChild = front;
         downX = x;
@@ -457,8 +462,17 @@ public final class StatusTileStack extends LinearLayout {
     }
 
     private boolean isAnimating() {
-        return (gestureAnimator != null && gestureAnimator.isRunning()) ||
-                (slotAnimator != null && slotAnimator.isRunning());
+        return (gestureAnimator != null && gestureAnimator.isStarted()) ||
+                (slotAnimator != null && slotAnimator.isStarted());
+    }
+
+    /** Jumps every running animation to its end state (end listeners run as usual). */
+    private void finishAnimations() {
+        if (slotAnimator != null && slotAnimator.isStarted()) slotAnimator.end();
+        // Ending a throw files the tile at the back, which starts one more animation.
+        for (int guard = 0; guard < 3 && gestureAnimator != null && gestureAnimator.isStarted(); guard++) {
+            gestureAnimator.end();
+        }
     }
 
     private void cancelGesture() {
