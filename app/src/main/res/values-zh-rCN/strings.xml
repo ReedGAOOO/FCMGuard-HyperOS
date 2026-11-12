@@ -44,11 +44,8 @@
     <string name="status_value_no">否</string>
     <string name="status_value_foreground">前台服务</string>
     <string name="status_value_quiet">静默纯后台</string>
-    <string name="status_label_self">FCM Guard 自身</string>
-    <string name="status_value_self_whitelisted">已在白名单</string>
-    <string name="status_value_self_not_whitelisted">不在白名单</string>
-    <string name="status_value_self_autostart_off">自启动未开启</string>
-    <string name="status_value_self_restricted">受限制</string>
+    <string name="status_label_self_whitelist">本应用白名单</string>
+    <string name="status_label_self_autostart">本应用自启动</string>
 
     <string name="saved">配置已保存</string>
     <string name="repaired">已修复 / 已保护</string>

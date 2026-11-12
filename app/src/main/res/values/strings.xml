@@ -43,12 +43,9 @@
     <string name="status_value_yes">Yes</string>
     <string name="status_value_no">No</string>
     <string name="status_value_foreground">Foreground service</string>
-    <string name="status_value_quiet">Quiet background-only</string>
-    <string name="status_label_self">FCM Guard itself</string>
-    <string name="status_value_self_whitelisted">Whitelisted</string>
-    <string name="status_value_self_not_whitelisted">Not whitelisted</string>
-    <string name="status_value_self_autostart_off">Autostart off</string>
-    <string name="status_value_self_restricted">Restricted</string>
+    <string name="status_value_quiet">Background only</string>
+    <string name="status_label_self_whitelist">FCM Guard whitelist</string>
+    <string name="status_label_self_autostart">FCM Guard autostart</string>
 
     <string name="saved">Configuration saved</string>
     <string name="repaired">Repaired / protected</string>

@@ -44,11 +44,8 @@
     <string name="status_value_no">Нет</string>
     <string name="status_value_foreground">Служба переднего плана</string>
     <string name="status_value_quiet">Тихий</string>
-    <string name="status_label_self">Сам FCM Guard</string>
-    <string name="status_value_self_whitelisted">В белом списке</string>
-    <string name="status_value_self_not_whitelisted">Не в белом списке</string>
-    <string name="status_value_self_autostart_off">Автозапуск выключен</string>
-    <string name="status_value_self_restricted">Ограничен</string>
+    <string name="status_label_self_whitelist">Белый список приложения</string>
+    <string name="status_label_self_autostart">Автозапуск приложения</string>
 
     <string name="saved">Конфигурация сохранена</string>
     <string name="repaired">Исправлено / защищено</string>

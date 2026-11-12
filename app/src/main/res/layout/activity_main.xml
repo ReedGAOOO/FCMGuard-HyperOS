@@ -120,11 +120,22 @@
                 android:paddingTop="2dp"
                 android:paddingBottom="2dp">
                 <TextView android:id="@+id/statusMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="@color/text_secondary" android:textSize="13sp" android:paddingBottom="2dp" android:visibility="gone" />
-                <include android:id="@+id/statusRowPermission" layout="@layout/status_row" />
-                <include android:id="@+id/statusRowProtection" layout="@layout/status_row" />
-                <include android:id="@+id/statusRowItem" layout="@layout/status_row" />
-                <include android:id="@+id/statusRowSelf" layout="@layout/status_row" />
-                <include android:id="@+id/statusRowMode" layout="@layout/status_row" />
+                <!-- Status tiles, two per row. -->
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="4dp">
+                    <include android:id="@+id/statusRowPermission" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                    <Space android:layout_width="6dp" android:layout_height="1dp" />
+                    <include android:id="@+id/statusRowProtection" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="6dp">
+                    <include android:id="@+id/statusRowItem" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                    <Space android:layout_width="6dp" android:layout_height="1dp" />
+                    <include android:id="@+id/statusRowMode" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                </LinearLayout>
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:layout_marginTop="6dp">
+                    <include android:id="@+id/statusRowSelfWhitelist" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                    <Space android:layout_width="6dp" android:layout_height="1dp" />
+                    <include android:id="@+id/statusRowSelfAutostart" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
+                </LinearLayout>
             </LinearLayout>
 
             <LinearLayout

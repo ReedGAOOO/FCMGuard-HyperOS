@@ -52,7 +52,8 @@ public class MainActivity extends Activity {
     private View statusRowPermission;
     private View statusRowProtection;
     private View statusRowItem;
-    private View statusRowSelf;
+    private View statusRowSelfWhitelist;
+    private View statusRowSelfAutostart;
     private View statusRowMode;
     private TextView currentValueText;
     private TextView fcmAppsStatusText;
@@ -165,7 +166,8 @@ public class MainActivity extends Activity {
         statusRowPermission = findViewById(R.id.statusRowPermission);
         statusRowProtection = findViewById(R.id.statusRowProtection);
         statusRowItem = findViewById(R.id.statusRowItem);
-        statusRowSelf = findViewById(R.id.statusRowSelf);
+        statusRowSelfWhitelist = findViewById(R.id.statusRowSelfWhitelist);
+        statusRowSelfAutostart = findViewById(R.id.statusRowSelfAutostart);
         statusRowMode = findViewById(R.id.statusRowMode);
         currentValueText = findViewById(R.id.currentValueText);
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
@@ -801,22 +803,15 @@ public class MainActivity extends Activity {
                 present ? R.string.status_value_yes : R.string.status_value_no,
                 present ? TONE_GOOD : TONE_BAD, null);
 
-        int selfValue;
-        View.OnClickListener selfAction;
-        if (selfOk) {
-            selfValue = R.string.status_value_self_whitelisted;
-            selfAction = null;
-        } else if (!selfWhitelisted) {
-            selfValue = selfAutostartOff
-                    ? R.string.status_value_self_restricted
-                    : R.string.status_value_self_not_whitelisted;
-            selfAction = v -> openOwnBatterySettings();
-        } else {
-            selfValue = R.string.status_value_self_autostart_off;
-            selfAction = v -> openOwnAutostartSettings();
-        }
-        bindStatusRow(statusRowSelf, R.string.status_label_self, selfValue,
-                selfOk ? TONE_GOOD : TONE_BAD, selfAction);
+        bindStatusRow(statusRowSelfWhitelist, R.string.status_label_self_whitelist,
+                selfWhitelisted ? R.string.status_value_yes : R.string.status_value_no,
+                selfWhitelisted ? TONE_GOOD : TONE_BAD,
+                selfWhitelisted ? null : v -> openOwnBatterySettings());
+        int autostartTone = selfAutostart == AutostartStatusReader.Status.ENABLED ? TONE_GOOD
+                : selfAutostart == AutostartStatusReader.Status.UNKNOWN ? TONE_NEUTRAL : TONE_BAD;
+        bindStatusRow(statusRowSelfAutostart, R.string.status_label_self_autostart,
+                autostartStatusText(selfAutostart), autostartTone,
+                autostartTone == TONE_GOOD ? null : v -> openOwnAutostartSettings());
 
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
         bindStatusRow(statusRowMode, R.string.status_label_background_mode,
@@ -835,9 +830,10 @@ public class MainActivity extends Activity {
     private static final int TONE_GOOD = 0;
     private static final int TONE_WARN = 1;
     private static final int TONE_BAD = 2;
+    private static final int TONE_NEUTRAL = 3;
 
     /**
-     * One status line as a full-width rounded bar tinted by its state. Bars with an
+     * One status item as a compact rounded tile tinted by its state. Tiles with an
      * action get ripple feedback and a chevron, and open the setting that fixes them.
      */
     private void bindStatusRow(View row, int labelRes, int valueRes, int tone,
@@ -846,9 +842,11 @@ public class MainActivity extends Activity {
         TextView value = row.findViewById(R.id.statusRowValue);
         TextView chevron = row.findViewById(R.id.statusRowChevron);
         int tintRes = tone == TONE_GOOD ? R.color.status_value_green_bg
-                : tone == TONE_WARN ? R.color.status_value_yellow_bg : R.color.status_value_red_bg;
+                : tone == TONE_WARN ? R.color.status_value_yellow_bg
+                : tone == TONE_NEUTRAL ? R.color.status_value_neutral_bg : R.color.status_value_red_bg;
         int valueColorRes = tone == TONE_GOOD ? R.color.badge_text_green
-                : tone == TONE_WARN ? R.color.badge_text_yellow : R.color.badge_text_red;
+                : tone == TONE_WARN ? R.color.badge_text_yellow
+                : tone == TONE_NEUTRAL ? R.color.badge_text_neutral : R.color.badge_text_red;
 
         label.setText(labelRes);
         value.setText(valueRes);
