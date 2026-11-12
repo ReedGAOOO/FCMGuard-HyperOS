@@ -127,12 +127,12 @@
                     <Space android:layout_width="6dp" android:layout_height="match_parent" />
                     <include android:id="@+id/statusRowProtection" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
                 </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="6dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="5dp">
                     <include android:id="@+id/statusRowItem" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
                     <Space android:layout_width="6dp" android:layout_height="match_parent" />
                     <include android:id="@+id/statusRowMode" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
                 </LinearLayout>
-                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="6dp">
+                <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:baselineAligned="false" android:layout_marginTop="5dp">
                     <include android:id="@+id/statusRowSelfWhitelist" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
                     <Space android:layout_width="6dp" android:layout_height="match_parent" />
                     <include android:id="@+id/statusRowSelfAutostart" layout="@layout/status_tile" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" />
