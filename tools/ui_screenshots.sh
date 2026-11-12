@@ -147,22 +147,20 @@ drag_up 300;  shot 06b-light-scroll-1000
 # that should spring back. The most severe tile is in the front row.
 front=$(find_node 'fcm guard whitelist|modify settings')
 if [ -n "$front" ]; then
+  # Stacked tiles all sit in the front slot, so this spot is reused for every gesture
+  # below (looking a tile up by its text could match the page behind the docked card).
   set -- $front
-  adb shell input swipe "$1" "$2" $(( $1 + 700 )) "$2" 90
+  fx=$1
+  fy=$2
+  adb shell input swipe "$fx" "$fy" $(( fx + 700 )) "$fy" 90
   shot 06c-light-swiped-out 1.5
-  front=$(find_node 'modify settings|automatic protection|required item present|background mode|fcm guard autostart')
-  if [ -n "$front" ]; then
-    set -- $front
-    adb shell input swipe "$1" "$2" $(( $1 + 120 )) $(( $2 + 40 )) 1500
-    shot 06d-light-sprung-back 1.5
-    # Two flicks back to back, the second starting while the first is still settling: both
-    # must cycle the stack (not scroll the page or get dropped), so the column's third tile
-    # ends up in front. (Three would cycle a three-tile column back to the start.)
-    set -- $front
-    shot 06e-light-before-rapid 0.3
-    for _ in 1 2; do adb shell input swipe "$1" "$2" $(( $1 + 700 )) "$2" 80; done
-    shot 06f-light-after-rapid 1.5
-  fi
+  adb shell input swipe "$fx" "$fy" $(( fx + 120 )) $(( fy + 40 )) 1500
+  shot 06d-light-sprung-back 1.5
+  # Two flicks back to back, the second starting while the first is still settling: both
+  # must cycle the stack (not scroll the page or get dropped), so the column's third tile
+  # ends up in front. (Three would cycle a three-tile column back to the start.)
+  for _ in 1 2; do adb shell input swipe "$fx" "$fy" $(( fx + 700 )) "$fy" 80; done
+  shot 06f-light-after-rapid 1.5
 fi
 if scroll_until_visible 'scan fcm apps'; then
   tap_text 'scan fcm apps' && shot 07-light-fcm-scan 4
