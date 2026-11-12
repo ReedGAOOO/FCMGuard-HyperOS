@@ -123,8 +123,7 @@ final class ThemePreviewView extends View {
         float heroLeft = rect.left;
         float heroTop = rect.top;
         float heroRight = rect.right;
-        drawText(canvas, appName, heroLeft + pw * 0.07f, heroTop + ph * 0.1f, pw * 0.5f, ph * 0.062f,
-                Fonts.title(), text);
+        drawAppName(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.1f, pw * 0.5f, ph * 0.062f);
         bar(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.135f, pw * 0.34f, ph * 0.02f, text2);
         float capW = pw * 0.21f;
         float capH = ph * 0.05f;
@@ -237,6 +236,31 @@ final class ThemePreviewView extends View {
         float width = textPaint.measureText(value);
         if (width > maxWidth) textPaint.setTextSize(size * maxWidth / width);
         canvas.drawText(value, left, baseline, textPaint);
+    }
+
+    /** The app name as in the hero: "FCM" in the Google colours, the rest in the text colour. */
+    private void drawAppName(Canvas canvas, float left, float baseline, float maxWidth, float size) {
+        textPaint.setTypeface(Fonts.title());
+        textPaint.setTextSize(size);
+        float width = textPaint.measureText(appName);
+        if (width > maxWidth) textPaint.setTextSize(size * maxWidth / width);
+        int mark = appName.indexOf(BrandText.MARK);
+        if (mark < 0) {
+            textPaint.setColor(text);
+            canvas.drawText(appName, left, baseline, textPaint);
+            return;
+        }
+        String prefix = appName.substring(0, mark);
+        String suffix = appName.substring(mark + BrandText.MARK.length());
+        textPaint.setColor(text);
+        if (!prefix.isEmpty()) canvas.drawText(prefix, left, baseline, textPaint);
+        float markLeft = left + textPaint.measureText(prefix);
+        textPaint.setShader(BrandText.gradient(textPaint, "", markLeft));
+        textPaint.setColor(0xFF000000);
+        canvas.drawText(BrandText.MARK, markLeft, baseline, textPaint);
+        textPaint.setShader(null);
+        textPaint.setColor(text);
+        canvas.drawText(suffix, markLeft + textPaint.measureText(BrandText.MARK), baseline, textPaint);
     }
 
     private void bar(Canvas canvas, float left, float top, float width, float height, int color) {

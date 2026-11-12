@@ -132,7 +132,9 @@ public class MainActivity extends Activity {
         loadConfigIntoFields();
         setupLanguagePicker();
         setupThemePicker();
-        ((TextView) findViewById(R.id.heroTitle)).setTypeface(Fonts.title());
+        TextView heroTitle = findViewById(R.id.heroTitle);
+        heroTitle.setTypeface(Fonts.title());
+        heroTitle.setText(BrandText.appName(getString(R.string.app_name)));
         setupAppearance();
         setupGlassMaterial();
         setupSwitches();
