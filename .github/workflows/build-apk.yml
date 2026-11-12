@@ -201,10 +201,17 @@ jobs:
           if gh release view "$TAG" >/dev/null 2>&1; then
             gh release upload "$TAG" "$APK_NAME" "$LATEST_APK_NAME" --clobber
           else
+            # Release notes come from docs/releases/<tag>.md when present.
+            NOTES_FILE="docs/releases/${TAG}.md"
+            if [ -f "$NOTES_FILE" ]; then
+              NOTES_ARGS=(--notes-file "$NOTES_FILE")
+            else
+              NOTES_ARGS=(--notes "FCM Guard v${VERSION} for China-ROM HyperOS 3. Download the APK below and install it directly on your phone.")
+            fi
             gh release create "$TAG" "$APK_NAME" "$LATEST_APK_NAME" \
               --target "$GITHUB_SHA" \
               --title "FCM Guard v${VERSION}" \
-              --notes "FCM Guard v${VERSION} for China-ROM HyperOS 3. Download the APK below and install it directly on your phone."
+              "${NOTES_ARGS[@]}"
           fi
 
   ui-screenshots:

@@ -18,6 +18,32 @@
   <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">Latest release</a>
 </p>
 
+## What's new in 2.0
+
+<table>
+  <tr>
+    <td align="center" width="33%"><img src="docs/images/v2-themes.gif" width="240" alt="Theme panel: picking a theme recolours the page behind it" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-status-card.gif" width="240" alt="Status card docking, stacking its tiles and flicking through them" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-light-dark.png" width="240" alt="Light and dark mode with the frosted-glass header" /></td>
+  </tr>
+  <tr>
+    <td valign="top"><b>9 themes, live preview</b><br />The <b>Theme</b> capsule opens a panel of large previews. Pick one and the page recolours behind it with a crossfade.</td>
+    <td valign="top"><b>Status at a glance</b><br />The status card docks as you scroll. Its tiles stack like notifications and can be flicked through. Tap a red tile to fix it. <b>Protect now</b> sits next to the status.</td>
+    <td valign="top"><b>Light, dark and glass</b><br />Frosted-glass header using the system GPU blur. Light/dark follows the system. The FCM title uses the Google colours.</td>
+  </tr>
+</table>
+
+Also new in 2.0:
+
+- **Self-check:** the status turns red when FCM Guard itself could be frozen, i.e. it is not on the no-restrict whitelist or its Autostart is off.
+- **Smooth switches:** theme, light/dark, language and glass changes crossfade instead of flashing.
+- **Under the hood:**
+  - Opening the app no longer restarts the guard service's work: it no longer re-registers the observer or re-runs a full check.
+  - The FCM app scan runs off the UI thread.
+  - Fewer redundant window and AppOps calls.
+  - The release build is R8-optimized.
+- **Upgrading from 1.5.x:** uninstall the old version first. 2.0 is signed with a new key (see [Release signing](#release-signing)).
+
 ## Highlights
 
 - **No root or Shizuku** — uses the user-grantable **Modify system settings** permission instead of root, persistent ADB, Accessibility, VPN, overlay, or device-admin privileges.
@@ -33,7 +59,7 @@
 
 ## Quick setup
 
-1. Install the latest APK from **GitHub Releases**. Upgrading from v1.5.x to v1.6.0 or later: uninstall the old version first, because releases are now signed with a new key.
+1. Install the latest APK from **GitHub Releases**. Upgrading from v1.5.x to v2.0 or later: uninstall the old version first, because releases are now signed with a new key.
 2. On first launch HyperOS shows a permission list (FCM Guard deliberately targets SDK 22, so the system asks you to review legacy permissions). Keep **Modify system settings** (required) and **Access list of installed apps** (used only by the FCM app scanner) on. Everything else (shortcuts, lock screen, background windows, clipboard, media volume, motion sensors, wallpaper) is unused and can stay off.
 3. Open FCM Guard. If the status card still shows **Modify settings** as **Not granted**, tap **Grant Modify system settings**.
 4. Tap **Protect now** (to the right of the status) once.
