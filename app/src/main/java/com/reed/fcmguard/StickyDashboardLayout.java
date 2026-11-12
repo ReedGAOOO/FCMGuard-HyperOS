@@ -20,6 +20,9 @@ import android.widget.ScrollView;
  * its own white rounded surface and is drawn above the whitelist panel, so the
  * status text remains readable while the whitelist disappears beneath it.
  *
+ * After that, the status tile rows stack behind the first row (StatusTileStack), so the
+ * docked card keeps only its headline, the most important row and two peeking edges.
+ *
  * All motion is driven directly by ScrollView scroll events while the Activity is
  * on screen; there are no timers, alarms, background work, or extra wakeups.
  *
@@ -36,6 +39,7 @@ public final class StickyDashboardLayout extends FrameLayout {
     private CollapsingStatusCard statusCard;
     private View statusDetailsPanel;
     private View currentValuePanel;
+    private StatusTileStack tileStack;
     private ScrollView scrollView;
 
     private int stickyBaseLeft;
@@ -74,6 +78,7 @@ public final class StickyDashboardLayout extends FrameLayout {
         statusCard = findViewById(R.id.statusCard);
         statusDetailsPanel = findViewById(R.id.statusDetailsPanel);
         currentValuePanel = findViewById(R.id.currentValuePanel);
+        tileStack = findViewById(R.id.statusTileStack);
         scrollView = findViewById(R.id.scroll);
         extraGapPx = getResources().getDimensionPixelSize(R.dimen.card_gap);
 
@@ -137,8 +142,9 @@ public final class StickyDashboardLayout extends FrameLayout {
                 ? Math.max(0, ((ViewGroup.MarginLayoutParams) rawParams).leftMargin) : 0;
         int dockedTop = heroCard.getTop() + sideInset;
         int bottomGap = Math.max(0, statusCard.getHeight() - currentValuePanel.getBottom());
+        int stackedAway = tileStack != null ? tileStack.collapsibleHeight() : 0;
         int dockedVisualBottom = Math.min(statusCard.getHeight(),
-                statusDetailsPanel.getBottom() + bottomGap);
+                statusDetailsPanel.getBottom() + bottomGap) - stackedAway;
         int dockedBottom = dockedTop + dockedVisualBottom;
         headerBackdrop.setBandHeight(Math.max(heroCard.getBottom(), dockedBottom) + glassFadePx());
     }
@@ -196,6 +202,8 @@ public final class StickyDashboardLayout extends FrameLayout {
         super.onLayout(changed, left, top, right, bottom);
         syncScrollableTopOffset();
         syncHeaderBand();
+        // Row positions may have changed: recompute the stack transforms from scratch.
+        if (tileStack != null) tileStack.reapply();
         syncCollapsingStatusCard();
     }
 
@@ -257,9 +265,24 @@ public final class StickyDashboardLayout extends FrameLayout {
             currentValuePanel.setTranslationY(panelTranslation);
         }
 
-        // Keep the card's rounded lower edge attached to the translated value panel.
+        // Third stage: once the whitelist is (almost) hidden, the tile rows stack behind
+        // the first row like stacked notifications.
+        float stackShrink = 0f;
+        if (tileStack != null) {
+            int stackDistance = tileStack.collapsibleHeight();
+            float start = collapseDistance + coverDistance * 0.95f;
+            float end = start + stackDistance * 1.2f;
+            float stackProgress = stackDistance > 0 && end > start
+                    ? smootherStep(clamp01((scrollY - start) / (end - start)))
+                    : 0f;
+            tileStack.setStackProgress(stackProgress);
+            stackShrink = tileStack.currentShrink();
+        }
+
+        // Keep the card's rounded lower edge attached to the translated value panel, and
+        // then to the shrinking tile stack.
         int bottomGap = Math.max(0, statusCard.getHeight() - currentValuePanel.getBottom());
-        float visualBottom = currentValuePanel.getBottom() + panelTranslation + bottomGap;
+        float visualBottom = currentValuePanel.getBottom() + panelTranslation + bottomGap - stackShrink;
         statusCard.setVisualBottom(visualBottom);
     }
 

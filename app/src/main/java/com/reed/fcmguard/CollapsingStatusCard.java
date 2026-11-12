@@ -158,6 +158,17 @@ public final class CollapsingStatusCard extends LinearLayout {
     }
 
     /**
+     * Nothing inside the card may draw below its visible lower edge: once the tile rows
+     * stack, the card ends above the laid-out bottom of its panels.
+     */
+    @Override protected void dispatchDraw(Canvas canvas) {
+        int save = canvas.save();
+        canvas.clipRect(0f, 0f, getWidth(), resolveVisualBottom());
+        super.dispatchDraw(canvas);
+        canvas.restoreToCount(save);
+    }
+
+    /**
      * Mask the translated whitelist panel at the detailed-status lower edge.
      *
      * Drawing order alone leaves the whitelist rendered underneath the rounded,

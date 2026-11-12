@@ -49,12 +49,8 @@ public class MainActivity extends Activity {
     private EditText itemEdit;
     private TextView statusHeadline;
     private TextView statusMessage;
-    private View statusRowPermission;
-    private View statusRowProtection;
-    private View statusRowItem;
-    private View statusRowSelfWhitelist;
-    private View statusRowSelfAutostart;
-    private View statusRowMode;
+    /** Tile slots in display order (two per row); filled most severe first. */
+    private View[] statusTiles;
     private TextView currentValueText;
     private TextView fcmAppsStatusText;
     private LinearLayout fcmAppsContainer;
@@ -163,12 +159,11 @@ public class MainActivity extends Activity {
         itemEdit = findViewById(R.id.itemEdit);
         statusHeadline = findViewById(R.id.statusHeadline);
         statusMessage = findViewById(R.id.statusMessage);
-        statusRowPermission = findViewById(R.id.statusRowPermission);
-        statusRowProtection = findViewById(R.id.statusRowProtection);
-        statusRowItem = findViewById(R.id.statusRowItem);
-        statusRowSelfWhitelist = findViewById(R.id.statusRowSelfWhitelist);
-        statusRowSelfAutostart = findViewById(R.id.statusRowSelfAutostart);
-        statusRowMode = findViewById(R.id.statusRowMode);
+        statusTiles = new View[] {
+                findViewById(R.id.statusTile1), findViewById(R.id.statusTile2),
+                findViewById(R.id.statusTile3), findViewById(R.id.statusTile4),
+                findViewById(R.id.statusTile5), findViewById(R.id.statusTile6)
+        };
         currentValueText = findViewById(R.id.currentValueText);
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
@@ -792,31 +787,38 @@ public class MainActivity extends Activity {
         statusMessage.setVisibility(hasMessage ? View.VISIBLE : View.GONE);
         if (hasMessage) statusMessage.setText(firstLine.trim());
 
-        bindStatusRow(statusRowPermission, R.string.status_label_permission,
-                canWrite ? R.string.status_value_granted : R.string.status_value_not_granted,
-                canWrite ? TONE_GOOD : TONE_BAD,
-                canWrite ? null : v -> openWriteSettings());
-        bindStatusRow(statusRowProtection, R.string.status_label_protection,
-                enabled ? R.string.status_value_enabled : R.string.status_value_disabled,
-                enabled ? TONE_GOOD : TONE_WARN, null);
-        bindStatusRow(statusRowItem, R.string.status_label_required_item,
-                present ? R.string.status_value_yes : R.string.status_value_no,
-                present ? TONE_GOOD : TONE_BAD, null);
-
-        bindStatusRow(statusRowSelfWhitelist, R.string.status_label_self_whitelist,
-                selfWhitelisted ? R.string.status_value_yes : R.string.status_value_no,
-                selfWhitelisted ? TONE_GOOD : TONE_BAD,
-                selfWhitelisted ? null : v -> openOwnBatterySettings());
         int autostartTone = selfAutostart == AutostartStatusReader.Status.ENABLED ? TONE_GOOD
                 : selfAutostart == AutostartStatusReader.Status.UNKNOWN ? TONE_NEUTRAL : TONE_BAD;
-        bindStatusRow(statusRowSelfAutostart, R.string.status_label_self_autostart,
-                autostartStatusText(selfAutostart), autostartTone,
-                autostartTone == TONE_GOOD ? null : v -> openOwnAutostartSettings());
-
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
-        bindStatusRow(statusRowMode, R.string.status_label_background_mode,
+
+        java.util.List<StatusItem> items = new java.util.ArrayList<>();
+        items.add(new StatusItem(R.string.status_label_permission,
+                canWrite ? R.string.status_value_granted : R.string.status_value_not_granted,
+                canWrite ? TONE_GOOD : TONE_BAD,
+                canWrite ? null : v -> openWriteSettings()));
+        items.add(new StatusItem(R.string.status_label_protection,
+                enabled ? R.string.status_value_enabled : R.string.status_value_disabled,
+                enabled ? TONE_GOOD : TONE_WARN, null));
+        items.add(new StatusItem(R.string.status_label_required_item,
+                present ? R.string.status_value_yes : R.string.status_value_no,
+                present ? TONE_GOOD : TONE_BAD, null));
+        items.add(new StatusItem(R.string.status_label_background_mode,
                 visibleForeground ? R.string.status_value_foreground : R.string.status_value_quiet,
-                visibleForeground ? TONE_GOOD : TONE_WARN, null);
+                visibleForeground ? TONE_GOOD : TONE_WARN, null));
+        items.add(new StatusItem(R.string.status_label_self_whitelist,
+                selfWhitelisted ? R.string.status_value_yes : R.string.status_value_no,
+                selfWhitelisted ? TONE_GOOD : TONE_BAD,
+                selfWhitelisted ? null : v -> openOwnBatterySettings()));
+        items.add(new StatusItem(R.string.status_label_self_autostart,
+                autostartStatusText(selfAutostart), autostartTone,
+                autostartTone == TONE_GOOD ? null : v -> openOwnAutostartSettings()));
+        // Most severe first (stable), so the row left on top of the collapsed stack is
+        // the one that needs attention.
+        java.util.Collections.sort(items, (x, y) -> Integer.compare(severity(x.tone), severity(y.tone)));
+        for (int i = 0; i < statusTiles.length && i < items.size(); i++) {
+            StatusItem item = items.get(i);
+            bindStatusRow(statusTiles[i], item.labelRes, item.valueRes, item.tone, item.action);
+        }
         currentValueText.setText(buildWhitelistValue(current));
         permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
     }
@@ -831,6 +833,38 @@ public class MainActivity extends Activity {
     private static final int TONE_WARN = 1;
     private static final int TONE_BAD = 2;
     private static final int TONE_NEUTRAL = 3;
+
+    private static final class StatusItem {
+        final int labelRes;
+        final int valueRes;
+        final int tone;
+        final View.OnClickListener action;
+
+        StatusItem(int labelRes, int valueRes, int tone, View.OnClickListener action) {
+            this.labelRes = labelRes;
+            this.valueRes = valueRes;
+            this.tone = tone;
+            this.action = action;
+        }
+    }
+
+    private static int severity(int tone) {
+        if (tone == TONE_BAD) return 0;
+        if (tone == TONE_WARN) return 1;
+        if (tone == TONE_NEUTRAL) return 2;
+        return 3;
+    }
+
+    /** The tint composited over the card surface: opaque, so stacked rows hide each other. */
+    private int opaqueTint(int tintRes) {
+        int tint = getResources().getColor(tintRes);
+        int base = getResources().getColor(R.color.surface);
+        float a = Color.alpha(tint) / 255f;
+        return Color.rgb(
+                Math.round(Color.red(tint) * a + Color.red(base) * (1f - a)),
+                Math.round(Color.green(tint) * a + Color.green(base) * (1f - a)),
+                Math.round(Color.blue(tint) * a + Color.blue(base) * (1f - a)));
+    }
 
     /**
      * One status item as a compact rounded tile tinted by its state. Tiles with an
@@ -854,7 +888,9 @@ public class MainActivity extends Activity {
         chevron.setTextColor(getResources().getColor(valueColorRes));
         chevron.setVisibility(action != null ? View.VISIBLE : View.GONE);
 
-        GradientDrawable bar = makePill(tintRes, dp(10));
+        GradientDrawable bar = new GradientDrawable();
+        bar.setColor(opaqueTint(tintRes));
+        bar.setCornerRadius(dp(10));
         if (action != null) {
             row.setBackground(new android.graphics.drawable.RippleDrawable(
                     android.content.res.ColorStateList.valueOf(

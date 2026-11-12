@@ -138,7 +138,8 @@ tap_text 'automatic protection' && sleep 2 && settle_app
 shot 03-light-protected
 drag_up 250;  shot 04-light-scroll-250
 drag_up 250;  shot 05-light-scroll-500
-drag_up 500;  shot 06-light-scroll-1000
+drag_up 200;  shot 06-light-scroll-700
+drag_up 300;  shot 06b-light-scroll-1000
 if scroll_until_visible 'scan fcm apps'; then
   tap_text 'scan fcm apps' && shot 07-light-fcm-scan 4
 fi
