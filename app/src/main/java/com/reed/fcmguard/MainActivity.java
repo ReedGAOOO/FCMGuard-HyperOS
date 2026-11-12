@@ -10,13 +10,10 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.content.res.Configuration;
-import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.ColorDrawable;
-import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
-import android.graphics.drawable.LayerDrawable;
 import android.graphics.drawable.RippleDrawable;
 import android.net.Uri;
 import android.os.Build;
@@ -39,7 +36,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
-import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +46,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class MainActivity extends Activity {
+    private static final String STATE_THEME_PANEL = "theme_panel_open";
     private static final String[] LANGUAGE_CODES = {
             "system", "en", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
     };
@@ -64,7 +61,8 @@ public class MainActivity extends Activity {
     private TextView fcmAppsStatusText;
     private LinearLayout fcmAppsContainer;
     private Button languageButton;
-    private Button paletteButton;
+    private Button themeButton;
+    private ThemePanel themePanel;
     private Button scanFcmAppsBtn;
     private Switch protectionSwitch;
     private Switch notificationSwitch;
@@ -132,11 +130,15 @@ public class MainActivity extends Activity {
         bindViews();
         loadConfigIntoFields();
         setupLanguagePicker();
-        setupPalettePicker();
+        setupThemePicker();
+        ((TextView) findViewById(R.id.heroTitle)).setTypeface(Fonts.title());
         setupAppearance();
         setupGlassMaterial();
         setupSwitches();
         bindActions();
+        if (savedInstanceState != null && savedInstanceState.getBoolean(STATE_THEME_PANEL)) {
+            themePanel.show(false); // Recreated for a theme switch: keep the picker open.
+        }
         // refreshStatus() runs in onResume(), which always follows onCreate().
     }
 
@@ -200,7 +202,7 @@ public class MainActivity extends Activity {
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
         languageButton = findViewById(R.id.languageButton);
-        paletteButton = findViewById(R.id.paletteButton);
+        themeButton = findViewById(R.id.themeButton);
         scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
         protectionSwitch = findViewById(R.id.protectionSwitch);
         notificationSwitch = findViewById(R.id.notificationSwitch);
@@ -277,124 +279,36 @@ public class MainActivity extends Activity {
         dialog.show();
     }
 
-    private void setupPalettePicker() {
+    private void setupThemePicker() {
         int index = Palettes.current(this);
-        paletteButton.setContentDescription(
-                getString(R.string.palette_title) + ": " + getString(Palettes.NAMES[index]));
-        paletteButton.setOnClickListener(v -> showPalettePicker());
+        themeButton.setContentDescription(
+                getString(R.string.theme_title) + ": " + getString(Palettes.NAMES[index]));
+        themePanel = new ThemePanel(this, themeButton, this::onThemePicked);
+        themeButton.setOnClickListener(v -> themePanel.show(true));
     }
 
-    /** Palette list: a swatch of each palette (light or dark, as shown now), its name and a check. */
-    private void showPalettePicker() {
-        int current = Palettes.current(this);
-        LinearLayout content = new LinearLayout(this);
-        content.setOrientation(LinearLayout.VERTICAL);
-        content.setPadding(0, dp(20), 0, dp(12));
+    /**
+     * Applies a theme with the panel left open: the page is recreated under the same
+     * crossfade and the panel comes back, so themes can be compared one after another.
+     */
+    private void onThemePicked(int index) {
+        if (index == Palettes.current(this)) return;
+        ThemeHelper.setPalette(this, Palettes.IDS[index]);
+        themePanel.select(index);
+        PageTransition.recreate(this);
+    }
 
-        TextView title = new TextView(this);
-        title.setText(R.string.palette_title);
-        title.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
-        title.setTextSize(19f);
-        title.setTypeface(Typeface.DEFAULT_BOLD);
-        title.setPadding(dp(24), 0, dp(24), dp(10));
-        content.addView(title);
-
-        LinearLayout list = new LinearLayout(this);
-        list.setOrientation(LinearLayout.VERTICAL);
-        list.setPadding(dp(10), 0, dp(10), 0);
-        ScrollView scroll = new ScrollView(this);
-        scroll.addView(list);
-        content.addView(scroll);
-
-        AlertDialog dialog = new AlertDialog.Builder(this).setView(content).create();
-        for (int i = 0; i < Palettes.IDS.length; i++) {
-            final int index = i;
-            list.addView(makePaletteRow(i, i == current, v -> {
-                dialog.dismiss();
-                if (index == Palettes.current(this)) return;
-                ThemeHelper.setPalette(this, Palettes.IDS[index]);
-                PageTransition.recreate(this);
-            }));
+    @Override public void onBackPressed() {
+        if (themePanel != null && themePanel.isOpen()) {
+            themePanel.dismiss();
+            return;
         }
-        GradientDrawable sheet = new GradientDrawable();
-        sheet.setColor(AppColors.get(this, R.attr.pal_surface));
-        sheet.setCornerRadius(dp(26));
-        if (dialog.getWindow() != null) {
-            dialog.getWindow().setBackgroundDrawable(
-                    new android.graphics.drawable.InsetDrawable(sheet, dp(16), dp(24), dp(16), dp(24)));
-        }
-        dialog.show();
+        super.onBackPressed();
     }
 
-    private View makePaletteRow(int index, boolean selected, View.OnClickListener onClick) {
-        // Colours of that palette, resolved on a scratch theme: AppTheme + the palette overlay.
-        Resources.Theme theme = getResources().newTheme();
-        theme.applyStyle(R.style.AppTheme, true);
-        theme.applyStyle(Palettes.STYLES[index], true);
-
-        LinearLayout row = new LinearLayout(this);
-        row.setOrientation(LinearLayout.HORIZONTAL);
-        row.setGravity(Gravity.CENTER_VERTICAL);
-        row.setMinimumHeight(dp(56));
-        row.setPadding(dp(14), dp(6), dp(14), dp(6));
-        GradientDrawable mask = new GradientDrawable();
-        mask.setColor(Color.WHITE);
-        mask.setCornerRadius(dp(16));
-        GradientDrawable fill = new GradientDrawable();
-        fill.setColor(selected ? AppColors.get(this, R.attr.pal_surface_alt) : Color.TRANSPARENT);
-        fill.setCornerRadius(dp(16));
-        row.setBackground(new RippleDrawable(
-                ColorStateList.valueOf(AppColors.get(this, R.attr.pal_ripple_neutral)), fill, mask));
-        row.setOnClickListener(onClick);
-
-        View swatch = new View(this);
-        swatch.setBackground(makePaletteSwatch(theme));
-        swatch.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        row.addView(swatch, new LinearLayout.LayoutParams(dp(36), dp(36)));
-
-        TextView name = new TextView(this);
-        name.setText(Palettes.NAMES[index]);
-        name.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
-        name.setTextSize(15f);
-        if (selected) name.setTypeface(Typeface.DEFAULT_BOLD);
-        name.setSingleLine(true);
-        LinearLayout.LayoutParams nameParams = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
-        nameParams.leftMargin = dp(14);
-        row.addView(name, nameParams);
-
-        TextView check = new TextView(this);
-        check.setText("\u2713");
-        check.setTextColor(AppColors.get(this, R.attr.pal_blue));
-        check.setTextSize(17f);
-        check.setTypeface(Typeface.DEFAULT_BOLD);
-        check.setVisibility(selected ? View.VISIBLE : View.INVISIBLE);
-        check.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
-        row.addView(check);
-
-        row.setContentDescription(getString(Palettes.NAMES[index]));
-        row.setSelected(selected);
-        return row;
-    }
-
-    /** Round swatch: the palette's hero gradient with its accent as a centre dot. */
-    private Drawable makePaletteSwatch(Resources.Theme theme) {
-        GradientDrawable hero = new GradientDrawable(GradientDrawable.Orientation.TL_BR, new int[] {
-                AppColors.get(theme, R.attr.pal_hero_start),
-                AppColors.get(theme, R.attr.pal_hero_center),
-                AppColors.get(theme, R.attr.pal_hero_end)
-        });
-        hero.setShape(GradientDrawable.OVAL);
-        hero.setStroke(dp(1), AppColors.get(theme, R.attr.pal_border));
-
-        GradientDrawable dot = new GradientDrawable();
-        dot.setShape(GradientDrawable.OVAL);
-        dot.setColor(AppColors.get(theme, R.attr.pal_primary_fill));
-        dot.setStroke(dp(2), AppColors.get(theme, R.attr.pal_surface));
-
-        LayerDrawable swatch = new LayerDrawable(new Drawable[] {hero, dot});
-        swatch.setLayerInset(1, dp(10), dp(10), dp(10), dp(10));
-        return swatch;
+    @Override protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_THEME_PANEL, themePanel != null && themePanel.isOpen());
     }
 
     private void setupAppearance() {

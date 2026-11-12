@@ -64,8 +64,9 @@
     <string name="notification_active">Schutz aktiv · ereignisgesteuert</string>
     <string name="notification_repaired">Liste repariert · FCM geschützt</string>
 
-    <!-- Colour palettes (picker in the hero card). -->
-    <string name="palette_title">Farben</string>
+    <!-- Themes (colour palettes; picker in the hero card). -->
+    <string name="theme_title">Design</string>
+    <string name="theme_preview_hint">Vorschau im aktuellen hellen oder dunklen Modus</string>
     <string name="palette_classic">Klassisch</string>
     <string name="palette_hyper_blue">HyperOS-Blau</string>
     <string name="palette_guardian_teal">Petrol</string>

@@ -61,13 +61,13 @@
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical">
-                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_name" android:textColor="?attr/pal_text_primary" android:textSize="@dimen/hero_title_size" android:textStyle="bold" />
+                    <TextView android:id="@+id/heroTitle" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/app_name" android:textColor="?attr/pal_text_primary" android:textSize="@dimen/hero_title_size" android:textStyle="bold" />
                     <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/subtitle" android:textColor="?attr/pal_text_secondary" android:textSize="@dimen/hero_subtitle_size" android:maxLines="2" android:ellipsize="end" android:paddingTop="3dp" />
                 </LinearLayout>
 
                 <!--
                   Two stacked capsules: globe + current language name (text set from code),
-                  and the colour palette picker.
+                  and the theme picker (ThemePanel grows out of it).
                 -->
                 <LinearLayout
                     android:id="@+id/heroActions"
@@ -82,11 +82,11 @@
                         android:drawableLeft="@drawable/ic_language" />
 
                     <Button
-                        android:id="@+id/paletteButton"
+                        android:id="@+id/themeButton"
                         style="@style/HeroCapsule"
                         android:layout_marginTop="@dimen/hero_capsule_gap"
                         android:drawableLeft="@drawable/ic_palette"
-                        android:text="@string/palette_title" />
+                        android:text="@string/theme_title" />
                 </LinearLayout>
             </LinearLayout>
         </LinearLayout>

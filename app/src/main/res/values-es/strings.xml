@@ -64,8 +64,9 @@
     <string name="notification_active">Protección activa · basada en eventos</string>
     <string name="notification_repaired">Lista reparada · FCM protegido</string>
 
-    <!-- Colour palettes (picker in the hero card). -->
-    <string name="palette_title">Colores</string>
+    <!-- Themes (colour palettes; picker in the hero card). -->
+    <string name="theme_title">Tema</string>
+    <string name="theme_preview_hint">Las vistas previas siguen el modo claro u oscuro actual</string>
     <string name="palette_classic">Clásico</string>
     <string name="palette_hyper_blue">Azul HyperOS</string>
     <string name="palette_guardian_teal">Verde azulado</string>

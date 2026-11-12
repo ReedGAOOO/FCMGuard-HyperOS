@@ -59,8 +59,9 @@
     <string name="notification_active">&#xBCF4;&#xD638; &#xD65C;&#xC131; &#xB7; &#xC774;&#xBCA4;&#xD2B8; &#xAE30;&#xBC18;</string>
     <string name="notification_repaired">&#xD5C8;&#xC6A9; &#xBAA9;&#xB85D; &#xBCF5;&#xAD6C;&#xB428; &#xB7; FCM &#xBCF4;&#xD638; &#xC911;</string>
 
-    <!-- Colour palettes (picker in the hero card). -->
-    <string name="palette_title">색상</string>
+    <!-- Themes (colour palettes; picker in the hero card). -->
+    <string name="theme_title">테마</string>
+    <string name="theme_preview_hint">미리보기는 현재 라이트 / 다크 모드를 따릅니다</string>
     <string name="palette_classic">클래식</string>
     <string name="palette_hyper_blue">HyperOS 블루</string>
     <string name="palette_guardian_teal">틸</string>

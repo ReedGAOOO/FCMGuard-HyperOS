@@ -64,8 +64,9 @@
     <string name="notification_active">Защита активна · по событиям</string>
     <string name="notification_repaired">Список исправлен · FCM защищён</string>
 
-    <!-- Colour palettes (picker in the hero card). -->
-    <string name="palette_title">Цвета</string>
+    <!-- Themes (colour palettes; picker in the hero card). -->
+    <string name="theme_title">Тема</string>
+    <string name="theme_preview_hint">Превью в текущем светлом или тёмном режиме</string>
     <string name="palette_classic">Классика</string>
     <string name="palette_hyper_blue">Синий HyperOS</string>
     <string name="palette_guardian_teal">Бирюзовый</string>

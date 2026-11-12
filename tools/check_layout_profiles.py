@@ -70,7 +70,7 @@ for required in (
     "@+id/currentValuePanel",
     "@+id/scroll",
     "@+id/languageButton",
-    "@+id/paletteButton",
+    "@+id/themeButton",
 ):
     assert required in ids, f"missing required dashboard id: {required}"
 

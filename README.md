@@ -27,7 +27,7 @@
 - **Optional persistent notification** — foreground mode uses a visible-but-silent notification channel for stronger process survival; quiet background mode remains available.
 - **FCM app assistant** — scans likely Firebase/GCM clients and, when HyperOS exposes the vendor AppOps state, shows read-only Autostart status with automatic re-check after returning from system settings.
 - **Native dark mode** — System / Light / Dark, with **System** as the default.
-- **9 colour palettes** — Classic, HyperOS Blue, Guardian Teal, Indigo Dusk, Google Classic, Sakura, Sunset Amber, Graphite, and Aurora, each with light and dark variants, picked from the **Colors** capsule under the language button.
+- **9 themes** — Classic, HyperOS Blue, Guardian Teal, Indigo Dusk, Google Classic, Sakura, Sunset Amber, Graphite, and Aurora, each with light and dark variants. The **Theme** capsule under the language button expands into a panel with a live miniature of the page in every theme.
 - **10-language UI** — English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian through Android's native per-app language mechanism.
 - **Compact-phone ready** — responsive layout checks cover 320–480dp widths, including a Xiaomi 17-class 393dp profile.
 
@@ -138,8 +138,8 @@ Also enable **Autostart** for the affected app when the ROM exposes that option.
 ## Appearance, languages, and responsive layout
 
 - System / Light / Dark appearance modes.
-- Colour palettes: tap **Colors** in the header. Every palette is contrast-checked (WCAG AA for text) in light and dark, and is generated from `tools/palettes.json` by `tools/gen_palettes.py`.
-- Palette, light/dark, language, and glass switches crossfade instead of flashing: the page is snapshotted once and faded over the new one (skipped when system animations are off).
+- Themes: tap **Theme** in the header. The panel grows out of the capsule and stays open while you try themes; tap outside or press Back to close it. Every theme is contrast-checked (WCAG AA for text) in light and dark, and is generated from `tools/palettes.json` by `tools/gen_palettes.py`.
+- Theme, light/dark, language, and glass switches crossfade instead of flashing: the page is snapshotted once and faded over the new one (skipped when system animations are off).
 - Frosted-glass header and status card on Android 12+ using the system GPU blur (`RenderEffect`; no bitmap capture or CPU blur). It follows HyperOS's advanced-material device tier, pauses in Battery saver, can be turned off under **Appearance**, and falls back to the opaque design elsewhere.
 - 10 native app languages: English, Simplified Chinese, Traditional Chinese, French, Japanese, Korean, Spanish, Portuguese, German, and Russian.
 - Compact and large-width resource profiles.

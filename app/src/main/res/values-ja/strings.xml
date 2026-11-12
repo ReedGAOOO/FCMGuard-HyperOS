@@ -59,8 +59,9 @@
     <string name="notification_active">&#x4FDD;&#x8B77;&#x4E2D; &#xB7; &#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x99C6;&#x52D5;</string>
     <string name="notification_repaired">&#x30DB;&#x30EF;&#x30A4;&#x30C8;&#x30EA;&#x30B9;&#x30C8;&#x4FEE;&#x5FA9;&#x6E08;&#x307F; &#xB7; FCM&#x4FDD;&#x8B77;&#x4E2D;</string>
 
-    <!-- Colour palettes (picker in the hero card). -->
-    <string name="palette_title">配色</string>
+    <!-- Themes (colour palettes; picker in the hero card). -->
+    <string name="theme_title">テーマ</string>
+    <string name="theme_preview_hint">プレビューは現在のライト / ダークモードで表示</string>
     <string name="palette_classic">クラシック</string>
     <string name="palette_hyper_blue">HyperOS ブルー</string>
     <string name="palette_guardian_teal">ティール</string>

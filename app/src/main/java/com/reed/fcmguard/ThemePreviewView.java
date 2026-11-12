@@ -1,0 +1,230 @@
+package com.reed.fcmguard;
+
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.LinearGradient;
+import android.graphics.Paint;
+import android.graphics.Path;
+import android.graphics.RectF;
+import android.graphics.Shader;
+import android.view.View;
+
+/**
+ * A miniature of the dashboard in one theme: hero with its two capsules, the status card
+ * with tinted tiles, and a card with a switch and the primary button. Drawn from the
+ * theme's own colours, so what it shows is what the page will look like.
+ */
+final class ThemePreviewView extends View {
+    /** Height / width. */
+    static final float ASPECT = 1.36f;
+
+    private final Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF rect = new RectF();
+    private final RectF page = new RectF();
+    private final Path clip = new Path();
+    private final Path check = new Path();
+    private final float dp;
+
+    private int bg, surface, border, text, text2, pill, accent, fill, off;
+    private int heroStart, heroCenter, heroEnd;
+    private int tileGood, tileWarn, tileBad, tileNeutral, good, warn, bad, neutral;
+    private LinearGradient heroShader;
+    private float heroShaderLeft = Float.NaN;
+    private boolean checked;
+
+    ThemePreviewView(Context context) {
+        super(context);
+        dp = context.getResources().getDisplayMetrics().density;
+        setImportantForAccessibility(IMPORTANT_FOR_ACCESSIBILITY_NO);
+    }
+
+    void setTheme(Resources.Theme theme) {
+        bg = AppColors.get(theme, R.attr.pal_bg);
+        surface = AppColors.get(theme, R.attr.pal_surface);
+        border = AppColors.get(theme, R.attr.pal_floating_border);
+        text = AppColors.get(theme, R.attr.pal_text_primary);
+        text2 = AppColors.get(theme, R.attr.pal_text_secondary);
+        pill = AppColors.get(theme, R.attr.pal_hero_pill);
+        accent = AppColors.get(theme, R.attr.pal_blue);
+        fill = AppColors.get(theme, R.attr.pal_primary_fill);
+        off = AppColors.get(theme, R.attr.pal_switch_track_off);
+        heroStart = AppColors.get(theme, R.attr.pal_hero_start);
+        heroCenter = AppColors.get(theme, R.attr.pal_hero_center);
+        heroEnd = AppColors.get(theme, R.attr.pal_hero_end);
+        tileGood = over(AppColors.get(theme, R.attr.pal_status_value_green_bg), surface);
+        tileWarn = over(AppColors.get(theme, R.attr.pal_status_value_yellow_bg), surface);
+        tileBad = over(AppColors.get(theme, R.attr.pal_status_value_red_bg), surface);
+        tileNeutral = over(AppColors.get(theme, R.attr.pal_status_value_neutral_bg), surface);
+        good = AppColors.get(theme, R.attr.pal_badge_text_green);
+        warn = AppColors.get(theme, R.attr.pal_badge_text_yellow);
+        bad = AppColors.get(theme, R.attr.pal_badge_text_red);
+        neutral = AppColors.get(theme, R.attr.pal_badge_text_neutral);
+        heroShader = null;
+        invalidate();
+    }
+
+    void setChecked(boolean checked) {
+        if (this.checked == checked) return;
+        this.checked = checked;
+        invalidate();
+    }
+
+    @Override protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        setMeasuredDimension(width, resolveSize(Math.round(width * ASPECT), heightMeasureSpec));
+    }
+
+    @Override protected void onDraw(Canvas canvas) {
+        float w = getWidth();
+        float h = getHeight();
+        if (w <= 0f || h <= 0f) return;
+
+        // Selection ring around the page, in the theme's own accent.
+        float ring = 2.5f * dp;
+        float inset = ring + 3f * dp;
+        if (checked) {
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(ring);
+            paint.setColor(accent);
+            rect.set(ring / 2f, ring / 2f, w - ring / 2f, h - ring / 2f);
+            canvas.drawRoundRect(rect, 17f * dp, 17f * dp, paint);
+            paint.setStyle(Paint.Style.FILL);
+        }
+
+        page.set(inset, inset, w - inset, h - inset);
+        float pw = page.width();
+        float ph = page.height();
+        float pageRadius = 13f * dp;
+        clip.reset();
+        clip.addRoundRect(page, pageRadius, pageRadius, Path.Direction.CW);
+        int save = canvas.save();
+        canvas.clipPath(clip);
+        canvas.drawColor(bg);
+
+        // Hero card with its gradient, title lines and the two capsules.
+        rect.set(page.left + pw * 0.05f, page.top + ph * 0.04f, page.right - pw * 0.05f, page.top + ph * 0.38f);
+        if (heroShader == null || heroShaderLeft != rect.left) {
+            heroShader = new LinearGradient(rect.left, 0f, rect.right, 0f,
+                    new int[] {heroStart, heroCenter, heroEnd}, null, Shader.TileMode.CLAMP);
+            heroShaderLeft = rect.left;
+        }
+        paint.setShader(heroShader);
+        canvas.drawRoundRect(rect, 9f * dp, 9f * dp, paint);
+        paint.setShader(null);
+        float heroLeft = rect.left;
+        float heroTop = rect.top;
+        float heroRight = rect.right;
+        bar(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.06f, pw * 0.36f, ph * 0.04f, text);
+        bar(canvas, heroLeft + pw * 0.07f, heroTop + ph * 0.125f, pw * 0.27f, ph * 0.022f, text2);
+        float capW = pw * 0.21f;
+        float capH = ph * 0.05f;
+        for (int i = 0; i < 2; i++) {
+            float top = heroTop + ph * 0.04f + i * (capH + ph * 0.014f);
+            bar(canvas, heroRight - pw * 0.05f - capW, top, capW, capH, pill);
+            paint.setColor(accent);
+            canvas.drawCircle(heroRight - pw * 0.05f - capW + capH * 0.6f, top + capH / 2f, capH * 0.22f, paint);
+            bar(canvas, heroRight - pw * 0.05f - capW + capH * 1.05f, top + capH * 0.38f, capW * 0.42f, capH * 0.24f, accent);
+        }
+
+        // Floating status card: headline and four tinted tiles.
+        rect.set(page.left + pw * 0.09f, page.top + ph * 0.24f, page.right - pw * 0.09f, page.top + ph * 0.66f);
+        paint.setColor(surface);
+        canvas.drawRoundRect(rect, 8f * dp, 8f * dp, paint);
+        stroke(canvas, rect, 8f * dp, border);
+        float cardLeft = rect.left + pw * 0.05f;
+        float cardRight = rect.right - pw * 0.05f;
+        float cardTop = rect.top;
+        paint.setColor(good);
+        canvas.drawCircle(cardLeft + ph * 0.017f, cardTop + ph * 0.06f, ph * 0.017f, paint);
+        bar(canvas, cardLeft + ph * 0.045f, cardTop + ph * 0.045f, pw * 0.36f, ph * 0.03f, good);
+        float gap = pw * 0.03f;
+        float tileW = (cardRight - cardLeft - gap) / 2f;
+        float tileH = ph * 0.105f;
+        int[] tiles = {tileBad, tileNeutral, tileWarn, tileGood};
+        int[] values = {bad, neutral, warn, good};
+        for (int i = 0; i < 4; i++) {
+            float left = cardLeft + (i % 2) * (tileW + gap);
+            float top = cardTop + ph * 0.11f + (i / 2) * (tileH + gap);
+            rect.set(left, top, left + tileW, top + tileH);
+            paint.setColor(tiles[i]);
+            canvas.drawRoundRect(rect, 4.5f * dp, 4.5f * dp, paint);
+            bar(canvas, left + tileW * 0.12f, top + tileH * 0.24f, tileW * 0.62f, tileH * 0.16f, withAlpha(text2, 0.75f));
+            bar(canvas, left + tileW * 0.12f, top + tileH * 0.56f, tileW * 0.42f, tileH * 0.2f, values[i]);
+        }
+
+        // Next card (cut off by the page edge): a switch and the primary button.
+        rect.set(page.left + pw * 0.05f, page.top + ph * 0.70f, page.right - pw * 0.05f, page.bottom + 12f * dp);
+        paint.setColor(surface);
+        canvas.drawRoundRect(rect, 9f * dp, 9f * dp, paint);
+        float rowTop = rect.top + ph * 0.05f;
+        bar(canvas, rect.left + pw * 0.07f, rowTop + ph * 0.008f, pw * 0.38f, ph * 0.03f, text);
+        float switchW = pw * 0.17f;
+        float switchH = ph * 0.05f;
+        float switchLeft = rect.right - pw * 0.07f - switchW;
+        bar(canvas, switchLeft, rowTop, switchW, switchH, fill);
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(switchLeft + switchW - switchH / 2f, rowTop + switchH / 2f, switchH * 0.38f, paint);
+        float buttonTop = rowTop + ph * 0.09f;
+        bar(canvas, rect.left + pw * 0.07f, buttonTop, rect.width() - pw * 0.14f, ph * 0.07f, fill);
+        bar(canvas, rect.centerX() - pw * 0.12f, buttonTop + ph * 0.025f, pw * 0.24f, ph * 0.02f, Color.WHITE);
+        bar(canvas, rect.left + pw * 0.07f, buttonTop + ph * 0.1f, rect.width() * 0.5f, ph * 0.03f, off);
+
+        canvas.restoreToCount(save);
+        stroke(canvas, page, pageRadius, border);
+
+        if (checked) {
+            // Check badge in the top-right corner of the page.
+            float r = 8.5f * dp;
+            float cx = page.right - r * 0.55f;
+            float cy = page.top + r * 0.55f;
+            paint.setColor(accent);
+            canvas.drawCircle(cx, cy, r + 1.5f * dp, paint);
+            paint.setColor(contrastOn(accent));
+            paint.setStyle(Paint.Style.STROKE);
+            paint.setStrokeWidth(1.8f * dp);
+            paint.setStrokeCap(Paint.Cap.ROUND);
+            paint.setStrokeJoin(Paint.Join.ROUND);
+            check.reset();
+            check.moveTo(cx - r * 0.45f, cy + r * 0.02f);
+            check.lineTo(cx - r * 0.1f, cy + r * 0.36f);
+            check.lineTo(cx + r * 0.48f, cy - r * 0.3f);
+            canvas.drawPath(check, paint);
+            paint.setStyle(Paint.Style.FILL);
+        }
+    }
+
+    private void bar(Canvas canvas, float left, float top, float width, float height, int color) {
+        paint.setColor(color);
+        rect.set(left, top, left + width, top + height);
+        canvas.drawRoundRect(rect, height / 2f, height / 2f, paint);
+    }
+
+    private void stroke(Canvas canvas, RectF bounds, float radius, int color) {
+        paint.setStyle(Paint.Style.STROKE);
+        paint.setStrokeWidth(Math.max(1f, dp * 0.75f));
+        paint.setColor(color);
+        canvas.drawRoundRect(bounds, radius, radius, paint);
+        paint.setStyle(Paint.Style.FILL);
+    }
+
+    private static int over(int tint, int base) {
+        float a = Color.alpha(tint) / 255f;
+        return Color.rgb(
+                Math.round(Color.red(tint) * a + Color.red(base) * (1f - a)),
+                Math.round(Color.green(tint) * a + Color.green(base) * (1f - a)),
+                Math.round(Color.blue(tint) * a + Color.blue(base) * (1f - a)));
+    }
+
+    private static int withAlpha(int color, float alpha) {
+        return Color.argb(Math.round(Color.alpha(color) * alpha),
+                Color.red(color), Color.green(color), Color.blue(color));
+    }
+
+    /** White or near-black, whichever reads better on {@code color}. */
+    private static int contrastOn(int color) {
+        double l = 0.2126 * Color.red(color) + 0.7152 * Color.green(color) + 0.0722 * Color.blue(color);
+        return l > 160 ? 0xFF111111 : Color.WHITE;
+    }
+}

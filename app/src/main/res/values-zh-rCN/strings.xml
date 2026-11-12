@@ -64,8 +64,9 @@
     <string name="notification_active">保护已启动 · 事件驱动</string>
     <string name="notification_repaired">白名单已修复 · FCM 已保护</string>
 
-    <!-- Colour palettes (picker in the hero card). -->
-    <string name="palette_title">配色</string>
+    <!-- Themes (colour palettes; picker in the hero card). -->
+    <string name="theme_title">主题</string>
+    <string name="theme_preview_hint">预览跟随当前的浅色 / 深色模式</string>
     <string name="palette_classic">经典</string>
     <string name="palette_hyper_blue">澎湃蓝</string>
     <string name="palette_guardian_teal">守护青</string>
