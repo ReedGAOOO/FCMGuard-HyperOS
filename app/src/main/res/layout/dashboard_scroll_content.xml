@@ -14,11 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/card_bg">
-        <!-- Title with the main action on its right: write the whitelist entry now. -->
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:paddingBottom="3dp">
-            <TextView android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:text="@string/protection_title" android:textColor="?attr/pal_text_primary" android:textSize="16sp" android:textStyle="bold" />
-            <Button android:id="@+id/protectNowBtn" android:layout_width="wrap_content" android:layout_height="36dp" android:layout_marginLeft="8dp" android:minWidth="0dp" android:minHeight="0dp" android:paddingLeft="13dp" android:paddingRight="15dp" android:drawableLeft="@drawable/ic_shield_check" android:drawablePadding="6dp" android:text="@string/protect_now" android:textAllCaps="false" android:textColor="?attr/pal_button_tonal_text" android:textSize="13.5sp" android:textStyle="bold" android:singleLine="true" android:background="@drawable/tonal_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
-        </LinearLayout>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/protection_title" android:textColor="?attr/pal_text_primary" android:textSize="16sp" android:textStyle="bold" android:paddingBottom="3dp" />
         <Switch android:id="@+id/protectionSwitch" android:layout_width="match_parent" android:layout_height="48dp" android:text="@string/automatic_protection" android:textColor="?attr/pal_text_primary" android:textSize="15sp" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/automatic_protection_summary" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
         <View android:layout_width="match_parent" android:layout_height="1dp" android:background="?attr/pal_divider" android:layout_marginTop="12dp" android:layout_marginBottom="4dp" />

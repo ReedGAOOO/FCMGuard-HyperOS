@@ -150,10 +150,20 @@ final class ThemePreviewView extends View {
         stroke(canvas, rect, 8f * dp, border);
         float cardLeft = rect.left + pw * 0.05f;
         float cardRight = rect.right - pw * 0.05f;
+        // Headline row: status on the left, the tonal "Protect now" pill on the right.
+        float pillW = pw * 0.27f;
+        float pillH = ph * 0.046f;
+        float pillLeft = cardRight - pillW;
+        float pillTop = cardTop + ph * 0.06f - pillH / 2f;
         paint.setColor(good);
         canvas.drawCircle(cardLeft + ph * 0.017f, cardTop + ph * 0.06f, ph * 0.017f, paint);
-        drawText(canvas, headline, cardLeft + ph * 0.045f, cardTop + ph * 0.075f, pw * 0.5f, ph * 0.042f,
+        drawText(canvas, headline, cardLeft + ph * 0.045f, cardTop + ph * 0.075f,
+                pillLeft - pw * 0.03f - (cardLeft + ph * 0.045f), ph * 0.042f,
                 android.graphics.Typeface.DEFAULT_BOLD, good);
+        bar(canvas, pillLeft, pillTop, pillW, pillH, tonalButton);
+        paint.setColor(tonalButtonText);
+        canvas.drawCircle(pillLeft + pillH * 0.62f, pillTop + pillH / 2f, pillH * 0.2f, paint);
+        bar(canvas, pillLeft + pillH * 1.05f, pillTop + pillH * 0.38f, pillW * 0.5f, pillH * 0.24f, tonalButtonText);
         float tileW = (cardRight - cardLeft - gap) / 2f;
         int[] tiles = {tileBad, tileNeutral, tileWarn, tileGood};
         int[] values = {bad, neutral, warn, good};
@@ -172,8 +182,8 @@ final class ThemePreviewView extends View {
         bar(canvas, cardLeft + tileW * 0.12f, stripTop + stripH * 0.36f, (cardRight - cardLeft) * 0.6f,
                 stripH * 0.28f, withAlpha(text, 0.7f));
 
-        // Protection card (cut off by the page edge): title with the tonal "Protect now"
-        // pill on its right, then the switch row. bar() reuses rect, so bounds are locals.
+        // Protection card (cut off by the page edge): title, then the switch row.
+        // bar() reuses rect, so the card's bounds are kept in locals.
         float nextLeft = page.left + pw * 0.05f;
         float nextRight = page.right - pw * 0.05f;
         float nextTop = cardBottom + ph * 0.035f;
@@ -182,16 +192,9 @@ final class ThemePreviewView extends View {
         canvas.drawRoundRect(rect, 9f * dp, 9f * dp, paint);
         float innerLeft = nextLeft + pw * 0.07f;
         float innerRight = nextRight - pw * 0.07f;
-        float headerTop = nextTop + ph * 0.035f;
-        float pillW = pw * 0.3f;
-        float pillH = ph * 0.055f;
-        float pillLeft = innerRight - pillW;
-        bar(canvas, innerLeft, headerTop + (pillH - ph * 0.032f) / 2f, pw * 0.3f, ph * 0.032f, text);
-        bar(canvas, pillLeft, headerTop, pillW, pillH, tonalButton);
-        paint.setColor(tonalButtonText);
-        canvas.drawCircle(pillLeft + pillH * 0.62f, headerTop + pillH / 2f, pillH * 0.2f, paint);
-        bar(canvas, pillLeft + pillH * 1.05f, headerTop + pillH * 0.38f, pillW * 0.5f, pillH * 0.24f, tonalButtonText);
-        float rowTop = headerTop + pillH + ph * 0.04f;
+        float headerTop = nextTop + ph * 0.04f;
+        bar(canvas, innerLeft, headerTop, pw * 0.3f, ph * 0.032f, text);
+        float rowTop = headerTop + ph * 0.07f;
         float switchW = pw * 0.17f;
         float switchH = ph * 0.05f;
         float switchLeft = innerRight - switchW;

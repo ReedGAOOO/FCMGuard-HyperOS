@@ -36,7 +36,7 @@
 1. Install the latest APK from **GitHub Releases**. Upgrading from v1.5.x to v1.6.0 or later: uninstall the old version first, because releases are now signed with a new key.
 2. On first launch HyperOS shows a permission list (FCM Guard deliberately targets SDK 22, so the system asks you to review legacy permissions). Keep **Modify system settings** (required) and **Access list of installed apps** (used only by the FCM app scanner) on. Everything else (shortcuts, lock screen, background windows, clipboard, media volume, motion sensors, wallpaper) is unused and can stay off.
 3. Open FCM Guard. If the status card still shows **Modify settings** as **Not granted**, tap **Grant Modify system settings**.
-4. Tap **Protect now** (next to **Protection**) once.
+4. Tap **Protect now** (to the right of the status) once.
 5. Enable **Automatic protection**.
 6. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**. FCM Guard checks this itself: until it is on the no-restrict whitelist (where HyperOS keeps apps set to No restrictions) and its Autostart is not off, the **FCM Guard whitelist** / **FCM Guard autostart** tiles in the status card are red and the status reads **Needs attention**. Tap a red tile to open the matching setting.
 7. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
