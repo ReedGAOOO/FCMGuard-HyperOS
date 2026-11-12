@@ -247,9 +247,9 @@
         <item name="pal_text_primary">#F4F4F5</item>
         <item name="pal_text_secondary">#A1A1AA</item>
         <item name="pal_blue">#E4E4E7</item>
-        <item name="pal_primary_fill">#3F3F46</item>
-        <item name="pal_primary_pressed">#3F3F46</item>
-        <item name="pal_primary_disabled">#2A2A2E</item>
+        <item name="pal_primary_fill">#71717A</item>
+        <item name="pal_primary_pressed">#71717A</item>
+        <item name="pal_primary_disabled">#404046</item>
         <item name="pal_hero_start">#1C1C20</item>
         <item name="pal_hero_center">#202024</item>
         <item name="pal_hero_end">#1A1A1E</item>
