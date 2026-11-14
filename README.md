@@ -22,16 +22,18 @@
 
 <table>
   <tr>
-    <td align="center" width="33%"><img src="docs/images/v2-themes.gif" width="240" alt="Theme panel: picking a theme recolours the page behind it" /></td>
-    <td align="center" width="33%"><img src="docs/images/v2-status-card.gif" width="240" alt="Status card docking, stacking its tiles and flicking through them" /></td>
-    <td align="center" width="33%"><img src="docs/images/v2-light-dark.png" width="240" alt="Light and dark mode with the frosted-glass header" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-themes.gif" width="240" alt="Theme panel growing out of the Theme capsule; picking Sakura and Sunset Amber recolours the page behind it" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-status.gif" width="240" alt="Scrolling: the status card docks and its tiles stack; tiles are flicked through; the stack unfolds again" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-dark.gif" width="240" alt="The system switches to dark mode and back while the app is open; the page crossfades" /></td>
   </tr>
   <tr>
     <td valign="top"><b>9 themes, live preview</b><br />The <b>Theme</b> capsule opens a panel of large previews. Pick one and the page recolours behind it with a crossfade.</td>
     <td valign="top"><b>Status at a glance</b><br />The status card docks as you scroll. Its tiles stack like notifications and can be flicked through. Tap a red tile to fix it. <b>Protect now</b> sits next to the status.</td>
-    <td valign="top"><b>Light, dark and glass</b><br />Frosted-glass header using the system GPU blur. Light/dark follows the system. The FCM title uses the Google colours.</td>
+    <td valign="top"><b>Light, dark and glass</b><br />Frosted-glass header using the system GPU blur. Light/dark follows the system and crossfades. The FCM title uses the Google colours.</td>
   </tr>
 </table>
+
+<sub>Screen recordings on a stock Android 15 emulator with "Show taps" on (<code>tools/record_demos.sh</code>). The status reads <b>Needs attention</b> because the emulator has no HyperOS whitelist for FCM Guard itself.</sub>
 
 Also new in 2.0:
 

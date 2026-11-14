@@ -22,16 +22,18 @@
 
 <table>
   <tr>
-    <td align="center" width="33%"><img src="docs/images/v2-themes.gif" width="240" alt="主题面板：选择主题时背后的页面实时换色" /></td>
-    <td align="center" width="33%"><img src="docs/images/v2-status-card.gif" width="240" alt="状态卡吸顶、小卡堆叠并可连续甩动切换" /></td>
-    <td align="center" width="33%"><img src="docs/images/v2-light-dark.png" width="240" alt="浅色与深色模式及毛玻璃头部" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-themes.gif" width="240" alt="主题面板从主题胶囊中展开，选择樱花粉、琥珀橙时背后页面跟着换色" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-status.gif" width="240" alt="上滑时状态卡吸顶、小卡堆叠，连续甩动切换，再展开" /></td>
+    <td align="center" width="33%"><img src="docs/images/v2-dark.gif" width="240" alt="App 打开时系统切换深色模式再切回，页面淡入淡出" /></td>
   </tr>
   <tr>
     <td valign="top"><b>9 套主题，实时预览</b><br />点击 <b>主题</b> 胶囊，打开大图预览面板。选中后背后的页面淡入淡出换成新主题。</td>
     <td valign="top"><b>状态一目了然</b><br />上滑时状态卡吸顶，小卡像通知一样叠起来，可以连续甩动切换。红色小卡点一下就能去修复。<b>立即守护</b> 就在状态右侧。</td>
-    <td valign="top"><b>浅色、深色与毛玻璃</b><br />毛玻璃头部使用系统 GPU 模糊。深浅色跟随系统。标题中的 FCM 使用谷歌标志色。</td>
+    <td valign="top"><b>浅色、深色与毛玻璃</b><br />毛玻璃头部使用系统 GPU 模糊。深浅色跟随系统并淡入淡出切换。标题中的 FCM 使用谷歌标志色。</td>
   </tr>
 </table>
+
+<sub>以上为原生 Android 15 模拟器上的真实录屏，开启了“显示点按操作”（<code>tools/record_demos.sh</code>）。状态显示“需要处理”，是因为模拟器上没有 HyperOS 为 FCM Guard 自身提供的白名单。</sub>
 
 2.0 还包括：
 

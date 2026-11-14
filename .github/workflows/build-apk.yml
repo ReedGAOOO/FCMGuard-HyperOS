@@ -203,7 +203,10 @@ jobs:
           fi
 
           if gh release view "$TAG" >/dev/null 2>&1; then
-            gh release upload "$TAG" "$APK_NAME" "$LATEST_APK_NAME" --clobber
+            # A published stable release is never rebuilt in place (users may have checked
+            # its APK, and README-only changes would otherwise replace it). New changes ship
+            # under a new versionName.
+            echo "::notice::$TAG is already released; its APKs are left as they are. Bump versionName to publish a new release."
           else
             # Release notes come from docs/releases/<tag>.md when present.
             NOTES_FILE="docs/releases/${TAG}.md"
