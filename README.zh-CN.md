@@ -8,9 +8,9 @@
 
 # FCM Guard for HyperOS
 
-**一个轻量、免 Root 的 HyperOS 3 后台守护工具，用于让 Google Play 服务持续保留在小米免限制名单中，从而提升 FCM 推送可靠性。**
+**一个轻量、免 Root 的 HyperOS 3 / HyperOS 4 后台守护工具，用于让 Google Play 服务持续保留在小米免限制名单中，从而提升 FCM 推送可靠性。**
 
-**适用范围：** 中国大陆销售、运行 **HyperOS 3 中国版 ROM** 的 Xiaomi / Redmi / POCO 手机，且 Google Play 服务已经正常安装并可使用。
+**适用范围：** 中国大陆销售、运行 **HyperOS 3 或 HyperOS 4 中国版 ROM** 的 Xiaomi / Redmi / POCO 手机，且 Google Play 服务已经正常安装并可使用。
 
 <p align="center">
   <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>直接下载最新版 APK</strong></a>
@@ -73,7 +73,7 @@
 10. 如果只有某个 App 仍出现通知延迟，而其他 FCM App 正常，请单独调整该 App 的后台策略。对于 **WhatsApp** 等即时通讯 App，建议设置为：**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**；若系统提供自启动选项，也建议为该 App 开启 **自启动**。
 11. 为减少金融 App 的兼容风险，除非确有需要，建议保持开发者选项 / USB 调试 / 无线调试关闭。
 
-> FCM Guard 主要针对中国版 HyperOS 3：Google 服务本身可以正常使用，但 PowerKeeper / Greezer 仍可能在后台限制 GMS，造成 FCM 推送延迟或中断。
+> FCM Guard 主要针对中国版 HyperOS 3 和 HyperOS 4：Google 服务本身可以正常使用，但 PowerKeeper / Greezer 仍可能在后台限制 GMS，造成 FCM 推送延迟或中断。
 
 ---
 

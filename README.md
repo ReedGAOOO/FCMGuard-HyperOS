@@ -8,9 +8,9 @@
 
 # FCM Guard for HyperOS
 
-**A lightweight, no-root watchdog for HyperOS 3 China ROM that keeps Google Play services in Xiaomi's no-restrict background list so FCM push stays reliable.**
+**A lightweight, no-root watchdog for HyperOS 3 and HyperOS 4 China ROMs that keeps Google Play services in Xiaomi's no-restrict background list so FCM push stays reliable.**
 
-**Designed for:** China-market Xiaomi / Redmi / POCO phones with Google Play services already installed and working.
+**Designed for:** China-market Xiaomi / Redmi / POCO phones running **HyperOS 3 or HyperOS 4 (China ROM)** with Google Play services already installed and working.
 
 <p align="center">
   <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>Download latest APK</strong></a>
@@ -72,7 +72,7 @@ Also new in 2.0:
 9. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
 10. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
 
-> FCM Guard is mainly for China-ROM HyperOS 3 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
+> FCM Guard is mainly for China-ROM HyperOS 3 and HyperOS 4 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
 
 ---
 

@@ -213,7 +213,7 @@ jobs:
             if [ -f "$NOTES_FILE" ]; then
               NOTES_ARGS=(--notes-file "$NOTES_FILE")
             else
-              NOTES_ARGS=(--notes "FCM Guard v${VERSION} for China-ROM HyperOS 3. Download the APK below and install it directly on your phone.")
+              NOTES_ARGS=(--notes "FCM Guard v${VERSION} for China-ROM HyperOS 3 and HyperOS 4. Download the APK below and install it directly on your phone.")
             fi
             gh release create "$TAG" "$APK_NAME" "$LATEST_APK_NAME" \
               --target "$GITHUB_SHA" \
