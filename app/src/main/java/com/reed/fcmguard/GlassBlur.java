@@ -5,6 +5,7 @@ import android.graphics.BlendMode;
 import android.graphics.Canvas;
 import android.graphics.LinearGradient;
 import android.graphics.Outline;
+import android.graphics.Paint;
 import android.graphics.RecordingCanvas;
 import android.graphics.RenderEffect;
 import android.graphics.RenderNode;
@@ -27,6 +28,7 @@ import android.view.ViewParent;
 final class GlassBlur {
     private final RenderNode node = new RenderNode("FCMGuardGlass");
     private final Outline outline = new Outline();
+    private final Paint flatPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final float[] targetOffset = new float[2];
     private final float[] sourceOffset = new float[2];
     private final View target;
@@ -79,7 +81,11 @@ final class GlassBlur {
      * [0, height] in target coordinates, with optional rounded corners.
      */
     void draw(Canvas canvas, int width, int height, float cornerRadius) {
-        if (width <= 0 || height <= 0 || !canvas.isHardwareAccelerated()) return;
+        if (width <= 0 || height <= 0) return;
+        if (!canvas.isHardwareAccelerated()) {
+            drawFlat(canvas, width, height, cornerRadius);
+            return;
+        }
 
         node.setPosition(0, 0, width, height);
         updateEffect(height);
@@ -111,6 +117,37 @@ final class GlassBlur {
             node.endRecording();
         }
         canvas.drawRenderNode(node);
+    }
+
+    /**
+     * Software canvases (the page-transition snapshot taken while Android recreates the
+     * page) cannot run the GPU blur, so the frosted layer is drawn as its flat base and
+     * tint, with the same bottom fade, instead of leaving a hole.
+     */
+    private void drawFlat(Canvas canvas, int width, int height, float cornerRadius) {
+        int color = tintColor != 0 ? over(tintColor, baseColor) : baseColor;
+        flatPaint.setColor(color);
+        if (bottomFadePx > 0f) {
+            float fadeStart = Math.max(0f, height - bottomFadePx);
+            flatPaint.setShader(new LinearGradient(0f, fadeStart, 0f, height,
+                    color, color & 0x00FFFFFF, Shader.TileMode.CLAMP));
+        } else {
+            flatPaint.setShader(null);
+        }
+        if (cornerRadius > 0f) {
+            canvas.drawRoundRect(0f, 0f, width, height, cornerRadius, cornerRadius, flatPaint);
+        } else {
+            canvas.drawRect(0f, 0f, width, height, flatPaint);
+        }
+    }
+
+    /** {@code top} (with alpha) laid over the opaque {@code base}. */
+    private static int over(int top, int base) {
+        float a = (top >>> 24) / 255f;
+        int r = Math.round(((top >> 16) & 0xFF) * a + ((base >> 16) & 0xFF) * (1f - a));
+        int g = Math.round(((top >> 8) & 0xFF) * a + ((base >> 8) & 0xFF) * (1f - a));
+        int b = Math.round((top & 0xFF) * a + (base & 0xFF) * (1f - a));
+        return 0xFF000000 | (r << 16) | (g << 8) | b;
     }
 
     void release() {

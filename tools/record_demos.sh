@@ -117,31 +117,53 @@ launch_fresh
 sleep 3
 read -r CAPSULE < <(ui_centres 'theme' | tr ' ' ',')
 cx=${CAPSULE%,*}; cy=${CAPSULE#*,}
-# Dry run to learn where the strip and the two target cards are (layout is deterministic).
-# A card's centre lies on its preview, which is where it is pressed and dragged.
+rec_start themes1
+hold 0.7
 press "$cx" "$cy"
-sleep 5
+hold 1.0
+rec_stop themes1
+# Cards are pressed and dragged at their centre, which lies on the preview.
 read -r STRIP < <(ui_centres 'classic' | tr ' ' ',')
 sy=${STRIP#*,}
-for _ in 1 2 3 4 5; do drag 860 "$sy" 560 "$sy" 200; sleep 2; done
-read -r PICK1 PICK2 < <(ui_centres 'sakura' 'sunset amber' | tr ' ' ',' | paste -sd' ' -)
+rec_start themes2
+hold 0.2
+for _ in 1 2 3 4 5; do drag 860 "$sy" 560 "$sy" 200; hold 0.25; done
+hold 0.6
+rec_stop themes2
+# Where the strip actually settled: prefer Sakura then Sunset Amber, else the two cards
+# that are most fully on screen.
+read -r PICK1 PICK2 < <(
+  adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1
+  adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1
+  python3 - "$UI_XML" <<'PY'
+import re, sys, xml.etree.ElementTree as ET
+names = ["classic", "hyperos blue", "guardian teal", "indigo dusk", "google classic",
+         "sakura", "sunset amber", "graphite", "aurora"]
+cards = {}
+for node in ET.parse(sys.argv[1]).iter("node"):
+    desc = (node.get("content-desc") or "").strip().lower()
+    m = re.match(r"\[(\d+),(\d+)\]\[(\d+),(\d+)\]", node.get("bounds", ""))
+    if desc in names and m and desc not in cards:
+        x1, y1, x2, y2 = map(int, m.groups())
+        cards[desc] = (x2 - x1, f"{(x1 + x2) // 2},{(y1 + y2) // 2}")
+if "sakura" in cards and "sunset amber" in cards and min(cards["sakura"][0], cards["sunset amber"][0]) > 300:
+    print(cards["sakura"][1], cards["sunset amber"][1])
+else:
+    widest = sorted(cards.values(), key=lambda c: -c[0])[:2]
+    print(" ".join(c[1] for c in widest) if len(widest) == 2 else "- -")
+PY
+)
 log "theme capsule $cx,$cy strip y $sy picks $PICK1 / $PICK2"
-adb shell input keyevent 4
-sleep 5
 if [ "${PICK1#-}" = "$PICK1" ] && [ "${PICK2#-}" = "$PICK2" ]; then
-  rec_start themes1
-  hold 0.7
-  press "$cx" "$cy"
-  hold 1.0
-  for _ in 1 2 3 4 5; do drag 860 "$sy" 560 "$sy" 200; hold 0.25; done
-  hold 0.5
+  rec_start themes3
+  hold 0.3
   press "${PICK1%,*}" "${PICK1#*,}"
   hold 1.5
   press "${PICK2%,*}" "${PICK2#*,}"
   hold 1.5
   adb shell input keyevent 4
   hold 1.2
-  rec_stop themes1
+  rec_stop themes3
 fi
 
 adb shell settings put global animator_duration_scale 0

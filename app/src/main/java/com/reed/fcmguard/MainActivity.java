@@ -160,6 +160,12 @@ public class MainActivity extends Activity {
         }
     }
 
+    @Override protected void onPause() {
+        // Android is about to recreate the page itself (see PageTransition.captureForRelaunch).
+        if (isChangingConfigurations()) PageTransition.captureForRelaunch(this);
+        super.onPause();
+    }
+
     @Override protected void onResume() {
         super.onResume();
         configureFullEdgeToEdge();

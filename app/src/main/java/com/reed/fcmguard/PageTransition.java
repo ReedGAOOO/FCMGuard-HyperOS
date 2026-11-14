@@ -69,6 +69,26 @@ final class PageTransition {
         });
     }
 
+    /**
+     * For configuration changes the activity cannot take in place, Android recreates it
+     * itself (a system dark-mode switch also swaps system theme resources). Called from
+     * onPause() in that case: keeps a snapshot so the new page fades in over the old one.
+     * Drawn in software, because it has to be done before the activity goes away.
+     */
+    static void captureForRelaunch(Activity activity) {
+        if (pending != null || capturing) return; // recreate() above already took one.
+        View decor = activity.getWindow().getDecorView();
+        int width = decor.getWidth();
+        int height = decor.getHeight();
+        if (width <= 0 || height <= 0 || !animationsEnabled(activity)) return;
+        try {
+            Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            if (drawInto(decor, bitmap)) pending = bitmap;
+        } catch (OutOfMemoryError ignored) {
+            // No snapshot: the page simply changes without the crossfade.
+        }
+    }
+
     /** Called by a recreated activity right after {@code setContentView}. */
     static void playPending(Activity activity) {
         Bitmap snapshot = pending;
