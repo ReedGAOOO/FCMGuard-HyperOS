@@ -3,6 +3,9 @@
 #
 #   tools/ui_screenshots.sh <apk> <output-dir>
 #
+# UI_PASSES picks what runs: "shots" (default) for the screenshot review, "demos" for the
+# slow-motion demo recordings used in the README (tools/record_demos.sh), or both.
+#
 # Used by .github/workflows/ui-screenshots.yml. This is stock Android, not HyperOS:
 # it checks layout, theming, glass, languages and the collapse animation, not the
 # Xiaomi-specific whitelist / Autostart behaviour.
@@ -13,6 +16,7 @@ OUT="$2"
 PKG=com.reed.fcmguard
 ACTIVITY="$PKG/.MainActivity"
 UI_XML=/tmp/fcmguard-ui.xml
+UI_PASSES="${UI_PASSES:-shots}"
 mkdir -p "$OUT"
 
 log() { echo "[ui] $*"; }
@@ -133,6 +137,7 @@ adb shell pm clear-permission-flags "$PKG" android.permission.POST_NOTIFICATIONS
 adb logcat -c || true
 adb shell cmd uimode night no
 
+if [[ " $UI_PASSES " == *" shots "* ]]; then
 # --- Light, English, 411dp ---
 launch_fresh
 shot 01-light-initial
@@ -269,6 +274,12 @@ adb shell input keyevent 4
 shot 36-theme-closed-dark 1
 adb shell cmd uimode night no
 adb shell settings put global animator_duration_scale 0
+fi
+
+if [[ " $UI_PASSES " == *" demos "* ]]; then
+  # shellcheck source=record_demos.sh
+  source "$(dirname "$0")/record_demos.sh"
+fi
 
 # Any crash of the app during the run ends up here.
 adb logcat -d -b crash > "$OUT/crash-log.txt" 2>/dev/null || true

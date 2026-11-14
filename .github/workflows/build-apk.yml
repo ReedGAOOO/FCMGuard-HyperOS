@@ -13,6 +13,10 @@ on:
         description: 'Also capture UI screenshots on an Android emulator'
         type: boolean
         default: false
+      record_demos:
+        description: 'Also record the README demo clips on an Android emulator'
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -215,5 +219,7 @@ jobs:
           fi
 
   ui-screenshots:
-    if: github.event_name == 'workflow_dispatch' && inputs.ui_screenshots
+    if: github.event_name == 'workflow_dispatch' && (inputs.ui_screenshots || inputs.record_demos)
     uses: ./.github/workflows/ui-screenshots.yml
+    with:
+      passes: ${{ format('{0} {1}', inputs.ui_screenshots && 'shots' || '', inputs.record_demos && 'demos' || '') }}

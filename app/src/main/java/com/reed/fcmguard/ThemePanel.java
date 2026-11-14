@@ -369,6 +369,8 @@ final class ThemePanel {
     private static final class SnapRow extends android.widget.HorizontalScrollView {
         private final int step;
         private boolean flung;
+        /** Settles with a regular animator, so it follows the system animation scale. */
+        private ValueAnimator settler;
 
         SnapRow(Context context, int step) {
             super(context);
@@ -392,7 +394,10 @@ final class ThemePanel {
 
         @Override public boolean onTouchEvent(MotionEvent event) {
             int action = event.getActionMasked();
-            if (action == MotionEvent.ACTION_DOWN) flung = false;
+            if (action == MotionEvent.ACTION_DOWN) {
+                flung = false;
+                stopSettling();
+            }
             boolean handled = super.onTouchEvent(event);
             if ((action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) && !flung) {
                 settle(Math.round(getScrollX() / (float) step));
@@ -400,9 +405,25 @@ final class ThemePanel {
             return handled;
         }
 
+        @Override public boolean onInterceptTouchEvent(MotionEvent event) {
+            if (event.getActionMasked() == MotionEvent.ACTION_DOWN) stopSettling();
+            return super.onInterceptTouchEvent(event);
+        }
+
         private void settle(int index) {
             int x = Math.max(0, Math.min(index * step, maxScroll()));
-            if (x != getScrollX()) smoothScrollTo(x, 0);
+            stopSettling();
+            if (x == getScrollX()) return;
+            settler = ValueAnimator.ofInt(getScrollX(), x);
+            settler.setDuration(300L);
+            settler.setInterpolator(new android.view.animation.DecelerateInterpolator(1.8f));
+            settler.addUpdateListener(a -> scrollTo((Integer) a.getAnimatedValue(), 0));
+            settler.start();
+        }
+
+        private void stopSettling() {
+            if (settler != null) settler.cancel();
+            settler = null;
         }
     }
 
