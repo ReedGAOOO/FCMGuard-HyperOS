@@ -87,4 +87,8 @@
     <string name="status_value_not_used">Not used</string>
     <string name="heartbeat_never">not sent yet</string>
     <string name="heartbeat_summary">Every %1$d min · last sent %2$s</string>
+    <string name="status_label_notifications">Notification permission</string>
+    <string name="heartbeat_interval">Heartbeat interval</string>
+    <string name="heartbeat_interval_summary">How often the FCM heartbeat is sent. Shorter is faster but uses a little more battery. In deep sleep Android allows at most about one every 9 minutes.</string>
+    <string name="heartbeat_every">%1$d min</string>
 </resources>

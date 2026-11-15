@@ -82,4 +82,8 @@
     <string name="status_value_not_used">사용 안 함</string>
     <string name="heartbeat_never">아직 전송 안 됨</string>
     <string name="heartbeat_summary">%1$d분마다 · 마지막 전송 %2$s</string>
+    <string name="status_label_notifications">알림 권한</string>
+    <string name="heartbeat_interval">하트비트 간격</string>
+    <string name="heartbeat_interval_summary">FCM 하트비트를 보내는 주기입니다. 짧을수록 빠르지만 배터리를 조금 더 씁니다. 깊은 절전 중에는 Android가 약 9분에 한 번까지만 허용합니다.</string>
+    <string name="heartbeat_every">%1$d분</string>
 </resources>

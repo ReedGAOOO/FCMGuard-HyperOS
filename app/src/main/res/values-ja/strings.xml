@@ -82,4 +82,8 @@
     <string name="status_value_not_used">未使用</string>
     <string name="heartbeat_never">未送信</string>
     <string name="heartbeat_summary">%1$d 分ごと · 最終送信 %2$s</string>
+    <string name="status_label_notifications">通知の許可</string>
+    <string name="heartbeat_interval">ハートビート間隔</string>
+    <string name="heartbeat_interval_summary">FCM ハートビートの送信頻度。短いほど速く届きますが電池をやや多く使います。ディープスリープ中は Android の制限で約 9 分に 1 回までです。</string>
+    <string name="heartbeat_every">%1$d 分</string>
 </resources>

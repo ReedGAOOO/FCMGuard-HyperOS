@@ -87,4 +87,8 @@
     <string name="status_value_not_used">Не используется</string>
     <string name="heartbeat_never">ещё не отправлен</string>
     <string name="heartbeat_summary">Каждые %1$d мин · последний %2$s</string>
+    <string name="status_label_notifications">Разрешение на уведомления</string>
+    <string name="heartbeat_interval">Интервал heartbeat</string>
+    <string name="heartbeat_interval_summary">Как часто отправляется FCM heartbeat. Чаще — быстрее, но чуть больше расход батареи. В глубоком сне Android разрешает не чаще раза примерно в 9 минут.</string>
+    <string name="heartbeat_every">%1$d мин</string>
 </resources>

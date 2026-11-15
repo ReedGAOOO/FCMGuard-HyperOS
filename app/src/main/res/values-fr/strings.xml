@@ -87,4 +87,8 @@
     <string name="status_value_not_used">Inutilisée</string>
     <string name="heartbeat_never">pas encore envoyé</string>
     <string name="heartbeat_summary">Toutes les %1$d min · dernier envoi %2$s</string>
+    <string name="status_label_notifications">Autorisation des notifications</string>
+    <string name="heartbeat_interval">Intervalle du battement</string>
+    <string name="heartbeat_interval_summary">Fréquence du battement FCM. Plus court est plus réactif mais consomme un peu plus de batterie. En veille profonde, Android en autorise au plus un toutes les 9 minutes environ.</string>
+    <string name="heartbeat_every">%1$d min</string>
 </resources>

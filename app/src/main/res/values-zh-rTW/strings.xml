@@ -76,4 +76,19 @@
     <string name="palette_sunset_amber">琥珀橙</string>
     <string name="palette_graphite">石墨</string>
     <string name="palette_aurora">極光</string>
+    <string name="status_label_notifications">通知權限</string>
+    <string name="heartbeat_interval">心跳間隔</string>
+    <string name="heartbeat_interval_summary">FCM 心跳的傳送頻率。越短越即時，但會稍微多耗電。深度休眠時 Android 最多約每 9 分鐘一次。</string>
+    <string name="heartbeat_every">%1$d 分鐘</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">未設定白名單鍵 · 僅心跳模式</string>
+    <string name="status_label_heartbeat">FCM 心跳</string>
+    <string name="status_value_heartbeat_on">執行中</string>
+    <string name="status_value_allowed">已允許</string>
+    <string name="status_value_restricted">受限制</string>
+    <string name="status_label_whitelist_key">白名單鍵</string>
+    <string name="status_value_not_used">未使用</string>
+    <string name="heartbeat_never">尚未傳送</string>
+    <string name="heartbeat_summary">每 %1$d 分鐘 · 上次傳送 %2$s</string>
 </resources>

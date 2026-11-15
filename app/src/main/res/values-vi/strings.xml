@@ -85,4 +85,8 @@
     <string name="status_value_not_used">Không dùng</string>
     <string name="heartbeat_never">chưa gửi</string>
     <string name="heartbeat_summary">Mỗi %1$d phút · lần gửi gần nhất: %2$s</string>
+    <string name="status_label_notifications">Quyền thông báo</string>
+    <string name="heartbeat_interval">Chu kỳ nhịp tim</string>
+    <string name="heartbeat_interval_summary">Tần suất gửi nhịp tim FCM. Càng ngắn thông báo càng nhanh nhưng tốn pin hơn một chút. Khi máy ngủ sâu, Android chỉ cho tối đa khoảng 9 phút một lần.</string>
+    <string name="heartbeat_every">%1$d phút</string>
 </resources>

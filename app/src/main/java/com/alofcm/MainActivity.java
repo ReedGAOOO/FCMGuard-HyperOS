@@ -52,6 +52,7 @@ public class MainActivity extends Activity {
             "system", "en", "vi", "zh-CN", "zh-TW", "fr", "ja", "ko", "es", "pt", "de", "ru"
     };
 
+    private Button heartbeatIntervalBtn;
     private EditText keyEdit;
     private EditText itemEdit;
     private TextView statusHeadline;
@@ -200,6 +201,7 @@ public class MainActivity extends Activity {
     }
 
     private void bindViews() {
+        heartbeatIntervalBtn = findViewById(R.id.heartbeatIntervalBtn);
         keyEdit = findViewById(R.id.keyEdit);
         itemEdit = findViewById(R.id.itemEdit);
         statusHeadline = findViewById(R.id.statusHeadline);
@@ -455,6 +457,8 @@ public class MainActivity extends Activity {
         });
 
         permissionBtn.setOnClickListener(v -> openWriteSettings());
+        heartbeatIntervalBtn.setOnClickListener(v -> showHeartbeatIntervalDialog());
+        findViewById(R.id.heartbeatIntervalRow).setOnClickListener(v -> showHeartbeatIntervalDialog());
 
         findViewById(R.id.protectNowBtn).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
@@ -605,17 +609,14 @@ public class MainActivity extends Activity {
             }
         }
 
-        if (unknownCount == scannedFcmApps.size()) {
-            fcmAppsContainer.setVisibility(View.GONE);
-            fcmAppsStatusText.setText(getString(
-                    R.string.fcm_autostart_status_unavailable, scannedFcmApps.size()));
-            return;
-        }
-
+        // OriginOS usually hides Autostart state from other apps. The list is still shown:
+        // each row opens that app's permission page, where Autostart is switched on.
+        boolean allUnknown = unknownCount == scannedFcmApps.size();
         fcmAppsContainer.setVisibility(View.VISIBLE);
-        fcmAppsStatusText.setText(getString(
-                R.string.fcm_apps_status_summary,
-                scannedFcmApps.size(), enabledCount, attentionCount, unknownCount));
+        fcmAppsStatusText.setText(allUnknown
+                ? getString(R.string.fcm_autostart_status_unavailable, scannedFcmApps.size())
+                : getString(R.string.fcm_apps_status_summary,
+                        scannedFcmApps.size(), enabledCount, attentionCount, unknownCount));
 
         // Attention first (Disabled, Partial), then Unknown, then Enabled; the scan
         // order (alphabetical) is kept inside each group.
@@ -690,7 +691,8 @@ public class MainActivity extends Activity {
         row.addView(labels, labelsParams);
 
         TextView badge = new TextView(this);
-        badge.setText(autostartStatusText(autostartStatus));
+        badge.setText(autostartStatus == AutostartStatusReader.Status.UNKNOWN
+                ? R.string.app_settings : autostartStatusText(autostartStatus));
         badge.setTextColor(AppColors.get(this, autostartStatusTextColor(autostartStatus)));
         badge.setTextSize(11.5f);
         badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -921,38 +923,41 @@ public class MainActivity extends Activity {
                 : selfAutostart == AutostartStatusReader.Status.UNKNOWN ? TONE_NEUTRAL : TONE_BAD;
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
 
+        boolean notificationsOk = GuardService.canShowPersistentNotification(this);
+        int interval = HeartbeatScheduler.intervalMinutes(this);
+
+        // Setup steps in the order they should be done (not sorted by severity).
         java.util.List<StatusItem> items = new java.util.ArrayList<>();
-        items.add(new StatusItem(R.string.status_label_protection,
-                enabled ? R.string.status_value_enabled : R.string.status_value_disabled,
-                enabled ? TONE_GOOD : TONE_WARN, null));
-        items.add(new StatusItem(R.string.status_label_heartbeat,
-                enabled ? R.string.status_value_heartbeat_on : R.string.status_value_disabled,
-                enabled ? TONE_GOOD : TONE_WARN, null));
-        items.add(new StatusItem(R.string.status_label_background_mode,
-                visibleForeground ? R.string.status_value_foreground : R.string.status_value_quiet,
-                visibleForeground ? TONE_GOOD : TONE_WARN, null));
-        items.add(new StatusItem(R.string.status_label_self_whitelist,
-                selfBattery ? R.string.status_value_allowed : R.string.status_value_restricted,
+        items.add(new StatusItem(getString(R.string.status_label_notifications),
+                getString(notificationsOk ? R.string.status_value_granted : R.string.status_value_not_granted),
+                notificationsOk ? TONE_GOOD : TONE_BAD,
+                notificationsOk ? null : v -> ensurePersistentNotificationAccess()));
+        items.add(new StatusItem(getString(R.string.status_label_self_whitelist),
+                getString(selfBattery ? R.string.status_value_allowed : R.string.status_value_restricted),
                 selfBattery ? TONE_GOOD : TONE_BAD,
                 selfBattery ? null : v -> openOwnBatterySettings()));
-        items.add(new StatusItem(R.string.status_label_self_autostart,
-                autostartStatusText(selfAutostart), autostartTone,
+        items.add(new StatusItem(getString(R.string.status_label_self_autostart),
+                getString(autostartStatusText(selfAutostart)), autostartTone,
                 autostartTone == TONE_GOOD ? null : v -> openOwnAutostartSettings()));
-        if (whitelist) {
-            items.add(new StatusItem(R.string.status_label_required_item,
-                    present ? R.string.status_value_yes : R.string.status_value_no,
-                    present ? TONE_GOOD : TONE_BAD,
-                    canWrite ? null : v -> openWriteSettings()));
-        } else {
-            items.add(new StatusItem(R.string.status_label_whitelist_key,
-                    R.string.status_value_not_used, TONE_NEUTRAL, null));
-        }
-        // Most severe first (stable), so the row left on top of the collapsed stack is
-        // the one that needs attention.
-        java.util.Collections.sort(items, (x, y) -> Integer.compare(severity(x.tone), severity(y.tone)));
+        items.add(new StatusItem(getString(R.string.status_label_protection),
+                getString(enabled ? R.string.status_value_enabled : R.string.status_value_disabled),
+                enabled ? TONE_GOOD : TONE_WARN,
+                enabled ? null : v -> protectionSwitch.setChecked(true)));
+        items.add(new StatusItem(getString(R.string.status_label_heartbeat),
+                enabled ? getString(R.string.heartbeat_every, interval)
+                        : getString(R.string.status_value_disabled),
+                enabled ? TONE_GOOD : TONE_WARN,
+                v -> showHeartbeatIntervalDialog()));
+        items.add(new StatusItem(getString(R.string.status_label_background_mode),
+                getString(visibleForeground ? R.string.status_value_foreground : R.string.status_value_quiet),
+                visibleForeground ? TONE_GOOD : TONE_WARN,
+                visibleForeground || notification ? null : v -> notificationSwitch.setChecked(true)));
         for (int i = 0; i < statusTiles.length && i < items.size(); i++) {
             StatusItem item = items.get(i);
-            bindStatusRow(statusTiles[i], item.labelRes, item.valueRes, item.tone, item.action);
+            bindStatusRow(statusTiles[i], i + 1, item.label, item.value, item.tone, item.action);
+        }
+        if (heartbeatIntervalBtn != null) {
+            heartbeatIntervalBtn.setText(getString(R.string.heartbeat_every, interval));
         }
         currentValueText.setText(whitelist ? buildWhitelistValue(current) : buildHeartbeatValue());
         permissionBtn.setVisibility(writeOk ? View.GONE : View.VISIBLE);
@@ -980,24 +985,43 @@ public class MainActivity extends Activity {
     private static final int TONE_NEUTRAL = 3;
 
     private static final class StatusItem {
-        final int labelRes;
-        final int valueRes;
+        final CharSequence label;
+        final CharSequence value;
         final int tone;
         final View.OnClickListener action;
 
-        StatusItem(int labelRes, int valueRes, int tone, View.OnClickListener action) {
-            this.labelRes = labelRes;
-            this.valueRes = valueRes;
+        StatusItem(CharSequence label, CharSequence value, int tone, View.OnClickListener action) {
+            this.label = label;
+            this.value = value;
             this.tone = tone;
             this.action = action;
         }
     }
 
-    private static int severity(int tone) {
-        if (tone == TONE_BAD) return 0;
-        if (tone == TONE_WARN) return 1;
-        if (tone == TONE_NEUTRAL) return 2;
-        return 3;
+    /** Lets the user pick how often the FCM heartbeat is sent. */
+    private void showHeartbeatIntervalDialog() {
+        int[] choices = HeartbeatScheduler.INTERVAL_CHOICES;
+        int current = HeartbeatScheduler.intervalMinutes(this);
+        String[] labels = new String[choices.length];
+        int checked = -1;
+        for (int i = 0; i < choices.length; i++) {
+            labels[i] = getString(R.string.heartbeat_every, choices[i]);
+            if (choices[i] == current) checked = i;
+        }
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.heartbeat_interval)
+                .setSingleChoiceItems(labels, checked, (d, which) -> {
+                    d.dismiss();
+                    if (which < 0 || which >= choices.length || choices[which] == current) return;
+                    HeartbeatScheduler.setIntervalMinutes(this, choices[which]);
+                    if (SettingsGuard.isProtectionEnabled(this)) {
+                        HeartbeatScheduler.kickNow(this);
+                        HeartbeatScheduler.schedule(this);
+                    }
+                    refreshStatus(null);
+                })
+                .setNegativeButton(android.R.string.cancel, null)
+                .show();
     }
 
     /** The tint composited over the card surface: opaque, so stacked rows hide each other. */
@@ -1015,8 +1039,9 @@ public class MainActivity extends Activity {
      * One status item as a compact rounded tile tinted by its state. Tiles with an
      * action get ripple feedback and a chevron, and open the setting that fixes them.
      */
-    private void bindStatusRow(View row, int labelRes, int valueRes, int tone,
-            View.OnClickListener action) {
+    private void bindStatusRow(View row, int step, CharSequence labelText, CharSequence valueText,
+            int tone, View.OnClickListener action) {
+        TextView stepView = row.findViewById(R.id.statusRowStep);
         TextView label = row.findViewById(R.id.statusRowLabel);
         TextView value = row.findViewById(R.id.statusRowValue);
         TextView chevron = row.findViewById(R.id.statusRowChevron);
@@ -1027,9 +1052,16 @@ public class MainActivity extends Activity {
                 : tone == TONE_WARN ? R.attr.pal_badge_text_yellow
                 : tone == TONE_NEUTRAL ? R.attr.pal_badge_text_neutral : R.attr.pal_badge_text_red;
 
-        label.setText(labelRes);
-        value.setText(valueRes);
+        label.setText(labelText);
+        value.setText(valueText);
         value.setTextColor(AppColors.get(this, valueColorRes));
+        stepView.setText(String.valueOf(step));
+        stepView.setTextColor(AppColors.get(this, valueColorRes));
+        GradientDrawable badge = new GradientDrawable();
+        badge.setShape(GradientDrawable.OVAL);
+        badge.setColor(AppColors.get(this, R.attr.pal_surface));
+        stepView.setBackground(badge);
+        row.setContentDescription(step + ". " + labelText + ": " + valueText);
         chevron.setTextColor(AppColors.get(this, valueColorRes));
         chevron.setVisibility(action != null ? View.VISIBLE : View.GONE);
 

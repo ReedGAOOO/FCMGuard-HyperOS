@@ -27,7 +27,9 @@ public final class HeartbeatScheduler extends BroadcastReceiver {
     public static final String PREF_LAST_KICK = "heartbeat_last_kick";
     public static final int DEFAULT_INTERVAL_MIN = 10;
     /** Android throttles allow-while-idle alarms to roughly once per 9 minutes in Doze. */
-    public static final int MIN_INTERVAL_MIN = 5;
+    public static final int MIN_INTERVAL_MIN = 3;
+    /** Choices offered in the app. */
+    public static final int[] INTERVAL_CHOICES = {3, 5, 10, 15, 20, 30, 45, 60};
     public static final int MAX_INTERVAL_MIN = 60;
     private static final int REQUEST_CODE = 427;
 
@@ -55,6 +57,11 @@ public final class HeartbeatScheduler extends BroadcastReceiver {
     public static int intervalMinutes(Context context) {
         int v = prefs(context).getInt(PREF_INTERVAL_MIN, DEFAULT_INTERVAL_MIN);
         return Math.max(MIN_INTERVAL_MIN, Math.min(MAX_INTERVAL_MIN, v));
+    }
+
+    public static void setIntervalMinutes(Context context, int minutes) {
+        int v = Math.max(MIN_INTERVAL_MIN, Math.min(MAX_INTERVAL_MIN, minutes));
+        prefs(context).edit().putInt(PREF_INTERVAL_MIN, v).apply();
     }
 
     /** (Re)arms the next heartbeat one interval from now. */

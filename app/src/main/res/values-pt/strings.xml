@@ -87,4 +87,8 @@
     <string name="status_value_not_used">Não usada</string>
     <string name="heartbeat_never">ainda não enviado</string>
     <string name="heartbeat_summary">A cada %1$d min · último envio %2$s</string>
+    <string name="status_label_notifications">Permissão de notificações</string>
+    <string name="heartbeat_interval">Intervalo do heartbeat</string>
+    <string name="heartbeat_interval_summary">Frequência do heartbeat FCM. Mais curto é mais rápido, mas gasta um pouco mais de bateria. Em repouso profundo o Android permite no máximo um a cada 9 minutos aprox.</string>
+    <string name="heartbeat_every">%1$d min</string>
 </resources>

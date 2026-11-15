@@ -87,4 +87,8 @@
     <string name="status_value_not_used">未使用</string>
     <string name="heartbeat_never">尚未发送</string>
     <string name="heartbeat_summary">每 %1$d 分钟 · 上次发送 %2$s</string>
+    <string name="status_label_notifications">通知权限</string>
+    <string name="heartbeat_interval">心跳间隔</string>
+    <string name="heartbeat_interval_summary">FCM 心跳的发送频率。越短越及时，但会稍微多耗电。深度休眠时 Android 最多约每 9 分钟一次。</string>
+    <string name="heartbeat_every">%1$d 分钟</string>
 </resources>

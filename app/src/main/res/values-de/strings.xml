@@ -87,4 +87,8 @@
     <string name="status_value_not_used">Nicht verwendet</string>
     <string name="heartbeat_never">noch nicht gesendet</string>
     <string name="heartbeat_summary">Alle %1$d Min. · zuletzt %2$s</string>
+    <string name="status_label_notifications">Benachrichtigungen</string>
+    <string name="heartbeat_interval">Heartbeat-Intervall</string>
+    <string name="heartbeat_interval_summary">Wie oft der FCM-Heartbeat gesendet wird. Kürzer ist schneller, braucht aber etwas mehr Akku. Im Tiefschlaf erlaubt Android höchstens etwa alle 9 Minuten einen.</string>
+    <string name="heartbeat_every">%1$d Min.</string>
 </resources>
