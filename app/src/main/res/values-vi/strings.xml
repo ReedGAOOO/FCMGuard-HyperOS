@@ -102,10 +102,4 @@
     <string name="mark_on">Đã bật</string>
     <string name="mark_off">Chưa bật</string>
     <string name="autostart_marked_hint">tự đánh dấu</string>
-    <string name="shizuku_install">Đọc trạng thái thật: cài Shizuku</string>
-    <string name="shizuku_start">Đọc trạng thái thật: khởi động Shizuku</string>
-    <string name="shizuku_grant">Đọc trạng thái thật: cấp quyền cho AloFCM trong Shizuku</string>
-    <string name="shizuku_ready">Đã kết nối Shizuku · chạm để đọc lại</string>
-    <string name="shizuku_start_hint">Hãy khởi động Shizuku (gỡ lỗi không dây), rồi quay lại AloFCM.</string>
-    <string name="shizuku_reading_real">Trạng thái Tự khởi động được đọc thật từ OriginOS qua Shizuku.</string>
 </resources>

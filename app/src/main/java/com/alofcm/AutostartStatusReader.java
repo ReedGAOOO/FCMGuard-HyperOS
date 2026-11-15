@@ -73,8 +73,6 @@ public final class AutostartStatusReader {
 
     /** The uid is unused on vivo; kept so callers stay identical to the HyperOS build. */
     public static Status check(Context context, String packageName, int uid) {
-        Boolean shell = ShizukuAutostart.lookup(packageName);
-        if (shell != null) return shell ? Status.ENABLED : Status.DISABLED;
         String known;
         synchronized (LOCK) {
             known = workingAuthority;

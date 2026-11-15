@@ -99,10 +99,4 @@
     <string name="mark_on">Switched on</string>
     <string name="mark_off">Still off</string>
     <string name="autostart_marked_hint">marked by you</string>
-    <string name="shizuku_install">Read real state: install Shizuku</string>
-    <string name="shizuku_start">Read real state: start Shizuku</string>
-    <string name="shizuku_grant">Read real state: authorise AloFCM in Shizuku</string>
-    <string name="shizuku_ready">Shizuku connected · tap to re-read</string>
-    <string name="shizuku_start_hint">Start Shizuku (wireless debugging), then come back to AloFCM.</string>
-    <string name="shizuku_reading_real">Autostart state is read from OriginOS through Shizuku.</string>
 </resources>

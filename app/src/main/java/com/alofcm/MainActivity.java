@@ -53,13 +53,6 @@ public class MainActivity extends Activity {
     };
 
     private Button heartbeatIntervalBtn;
-    private Button shizukuBtn;
-    private final rikka.shizuku.Shizuku.OnRequestPermissionResultListener shizukuPermissionListener =
-            (requestCode, grantResult) -> onShizukuChanged(true);
-    private final rikka.shizuku.Shizuku.OnBinderReceivedListener shizukuBinderListener =
-            () -> onShizukuChanged(false);
-    private final rikka.shizuku.Shizuku.OnBinderDeadListener shizukuDeadListener =
-            () -> onShizukuChanged(false);
     private EditText keyEdit;
     private EditText itemEdit;
     private TextView statusHeadline;
@@ -187,7 +180,6 @@ public class MainActivity extends Activity {
             startProtectionService();
         }
         refreshStatus(null);
-        updateShizukuButton();
         recheckFcmAutostartStatuses();
         if (pendingMarkPackage != null) {
             String pkg = pendingMarkPackage;
@@ -203,11 +195,6 @@ public class MainActivity extends Activity {
 
     @Override protected void onDestroy() {
         fcmScanGeneration++;
-        try {
-            rikka.shizuku.Shizuku.removeRequestPermissionResultListener(shizukuPermissionListener);
-            rikka.shizuku.Shizuku.removeBinderReceivedListener(shizukuBinderListener);
-            rikka.shizuku.Shizuku.removeBinderDeadListener(shizukuDeadListener);
-        } catch (Throwable ignored) {}
         backgroundExecutor.shutdownNow();
         uiHandler.removeCallbacksAndMessages(null);
         super.onDestroy();
@@ -226,7 +213,6 @@ public class MainActivity extends Activity {
 
     private void bindViews() {
         heartbeatIntervalBtn = findViewById(R.id.heartbeatIntervalBtn);
-        shizukuBtn = findViewById(R.id.shizukuBtn);
         keyEdit = findViewById(R.id.keyEdit);
         itemEdit = findViewById(R.id.itemEdit);
         statusHeadline = findViewById(R.id.statusHeadline);
@@ -537,12 +523,6 @@ public class MainActivity extends Activity {
 
         findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
         findViewById(R.id.autostartDiagBtn).setOnClickListener(v -> showAutostartDiagnostics());
-        shizukuBtn.setOnClickListener(v -> onShizukuButton());
-        try {
-            rikka.shizuku.Shizuku.addRequestPermissionResultListener(shizukuPermissionListener);
-            rikka.shizuku.Shizuku.addBinderReceivedListenerSticky(shizukuBinderListener);
-            rikka.shizuku.Shizuku.addBinderDeadListener(shizukuDeadListener);
-        } catch (Throwable ignored) {}
         scanFcmAppsBtn.setOnClickListener(v -> toggleFcmAppsList());
         findViewById(R.id.openAutostartBtn).setOnClickListener(v -> {
             if (!OriginOsSettings.openAutoStartManager(this)) {
@@ -638,8 +618,6 @@ public class MainActivity extends Activity {
 
     private static AutostartStatusReader.Status[] readAutostartStatuses(
             Context context, List<FcmAppScanner.AppEntry> apps) {
-        // With Shizuku authorised this reads every app's real state (shell rights).
-        ShizukuAutostart.refresh(context);
         AutostartStatusReader.Status[] statuses = new AutostartStatusReader.Status[apps.size()];
         for (int i = 0; i < apps.size(); i++) {
             FcmAppScanner.AppEntry app = apps.get(i);
@@ -678,11 +656,7 @@ public class MainActivity extends Activity {
         fcmAppsContainer.removeAllViews();
         fcmAppsContainer.setVisibility(View.VISIBLE);
         String summary = getString(R.string.fcm_apps_on_off_summary, n, onCount, n - onCount);
-        if (ShizukuAutostart.hasData()) {
-            summary += "\n" + getString(R.string.shizuku_reading_real);
-        } else if (markedCount > 0) {
-            summary += "\n" + getString(R.string.autostart_manual_note);
-        }
+        if (markedCount > 0) summary += "\n" + getString(R.string.autostart_manual_note);
         fcmAppsStatusText.setText(summary);
 
         // Off first, then on; the scan order (alphabetical) is kept inside each group.
@@ -1331,52 +1305,6 @@ public class MainActivity extends Activity {
 
     private int dp(int value) {
         return Math.round(value * getResources().getDisplayMetrics().density);
-    }
-
-    /** Shizuku came up, went away or answered the permission request. */
-    private void onShizukuChanged(boolean rescan) {
-        runOnUiThread(() -> {
-            if (isFinishing() || isDestroyed()) return;
-            updateShizukuButton();
-            if (rescan && ShizukuAutostart.state(this) == ShizukuAutostart.State.READY) {
-                if (fcmListExpanded) recheckFcmAutostartStatuses(); else scanFcmApps();
-                runInBackground(() -> {
-                    ShizukuAutostart.refresh(getApplicationContext());
-                    runOnUiThread(() -> { if (!isFinishing() && !isDestroyed()) refreshStatus(null); });
-                });
-            }
-        });
-    }
-
-    private void updateShizukuButton() {
-        if (shizukuBtn == null) return;
-        ShizukuAutostart.State state = ShizukuAutostart.state(this);
-        int text = state == ShizukuAutostart.State.READY ? R.string.shizuku_ready
-                : state == ShizukuAutostart.State.NO_PERMISSION ? R.string.shizuku_grant
-                : state == ShizukuAutostart.State.NOT_RUNNING ? R.string.shizuku_start
-                : R.string.shizuku_install;
-        shizukuBtn.setText(text);
-        shizukuBtn.setTextColor(AppColors.get(this, state == ShizukuAutostart.State.READY
-                ? R.attr.pal_green : R.attr.pal_text_primary));
-    }
-
-    private void onShizukuButton() {
-        ShizukuAutostart.State state = ShizukuAutostart.state(this);
-        try {
-            if (state == ShizukuAutostart.State.READY) {
-                if (fcmListExpanded) recheckFcmAutostartStatuses(); else scanFcmApps();
-            } else if (state == ShizukuAutostart.State.NO_PERMISSION) {
-                rikka.shizuku.Shizuku.requestPermission(ShizukuAutostart.REQUEST_CODE);
-            } else if (state == ShizukuAutostart.State.NOT_RUNNING) {
-                Intent launch = getPackageManager().getLaunchIntentForPackage(ShizukuAutostart.MANAGER_PACKAGE);
-                if (launch != null) startActivity(launch);
-                toast(getString(R.string.shizuku_start_hint));
-            } else {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("https://shizuku.rikka.app/download/")));
-            }
-        } catch (Throwable t) {
-            toast(t.getClass().getSimpleName());
-        }
     }
 
     /** Collects the Autostart provider report off the UI thread and shows it, copyable. */

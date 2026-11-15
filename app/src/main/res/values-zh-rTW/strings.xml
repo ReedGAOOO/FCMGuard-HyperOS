@@ -104,10 +104,4 @@
     <string name="mark_on">已開啟</string>
     <string name="mark_off">仍未開啟</string>
     <string name="autostart_marked_hint">手動標記</string>
-    <string name="shizuku_install">讀取真實狀態：安裝 Shizuku</string>
-    <string name="shizuku_start">讀取真實狀態：啟動 Shizuku</string>
-    <string name="shizuku_grant">讀取真實狀態：在 Shizuku 中授權 AloFCM</string>
-    <string name="shizuku_ready">Shizuku 已連線 · 點按重新讀取</string>
-    <string name="shizuku_start_hint">請啟動 Shizuku（無線偵錯），然後返回 AloFCM。</string>
-    <string name="shizuku_reading_real">自啟動狀態透過 Shizuku 從 OriginOS 真實讀取。</string>
 </resources>
