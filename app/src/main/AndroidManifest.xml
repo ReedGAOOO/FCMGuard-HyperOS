@@ -77,6 +77,15 @@
                 android:value="Keeps the Google Play services push (FCM) connection alive with a periodic heartbeat on ROMs that drop it." />
         </service>
 
+        <!-- Receives the Shizuku binder when the user runs Shizuku (optional feature). -->
+        <provider
+            android:name="rikka.shizuku.ShizukuProvider"
+            android:authorities="${applicationId}.shizuku"
+            android:enabled="true"
+            android:exported="true"
+            android:multiprocess="false"
+            android:permission="android.permission.INTERACT_ACROSS_USERS_FULL" />
+
         <receiver
             android:name=".HeartbeatScheduler"
             android:exported="false" />

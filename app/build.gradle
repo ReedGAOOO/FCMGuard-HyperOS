@@ -12,10 +12,10 @@ android {
 
     defaultConfig {
         applicationId "com.alofcm.originos"
-        minSdk 21
+        minSdk 24
         targetSdk 34
-        versionCode 39
-        versionName "2.0.7-originos"
+        versionCode 40
+        versionName "2.0.8-originos"
     }
 
     signingConfigs {
@@ -51,4 +51,10 @@ android {
         sourceCompatibility JavaVersion.VERSION_17
         targetCompatibility JavaVersion.VERSION_17
     }
+}
+
+dependencies {
+    // Optional shell-level read of iManager's Autostart table (see ShizukuAutostart).
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
 }
