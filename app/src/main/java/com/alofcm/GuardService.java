@@ -215,7 +215,12 @@ public class GuardService extends Service {
         filter.addAction(Intent.ACTION_USER_PRESENT);
         filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         try {
-            registerReceiver(wakeReceiver, filter);
+            if (Build.VERSION.SDK_INT >= 33) {
+                // Only system broadcasts are wanted; other apps may not send to it.
+                registerReceiver(wakeReceiver, filter, Context.RECEIVER_NOT_EXPORTED);
+            } else {
+                registerReceiver(wakeReceiver, filter);
+            }
         } catch (Throwable ignored) {
             wakeReceiver = null;
         }
@@ -232,7 +237,12 @@ public class GuardService extends Service {
         }
     }
 
-    /** Restarts the service when protection is on (used by the heartbeat alarm). */
+    /**
+     * Restarts the service when protection is on (used by the heartbeat alarm and boot).
+     * Exact-alarm and boot broadcasts may start a foreground service from the background;
+     * in background-only mode Android 8+ refuses the start, and the alarm alone keeps
+     * the heartbeat going.
+     */
     public static void startIfNeeded(Context context) {
         if (!SettingsGuard.isProtectionEnabled(context)) return;
         Intent service = new Intent(context, GuardService.class);

@@ -76,4 +76,15 @@
     <string name="palette_sunset_amber">Bernstein</string>
     <string name="palette_graphite">Graphit</string>
     <string name="palette_aurora">Polarlicht</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">Kein Whitelist-Schlüssel · nur Heartbeat</string>
+    <string name="status_label_heartbeat">FCM-Heartbeat</string>
+    <string name="status_value_heartbeat_on">Läuft</string>
+    <string name="status_value_allowed">Erlaubt</string>
+    <string name="status_value_restricted">Eingeschränkt</string>
+    <string name="status_label_whitelist_key">Whitelist-Schlüssel</string>
+    <string name="status_value_not_used">Nicht verwendet</string>
+    <string name="heartbeat_never">noch nicht gesendet</string>
+    <string name="heartbeat_summary">Alle %1$d Min. · zuletzt %2$s</string>
 </resources>

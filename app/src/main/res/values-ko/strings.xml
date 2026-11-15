@@ -71,4 +71,15 @@
     <string name="palette_sunset_amber">앰버</string>
     <string name="palette_graphite">그래파이트</string>
     <string name="palette_aurora">오로라</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">화이트리스트 키 없음 · 하트비트만 사용</string>
+    <string name="status_label_heartbeat">FCM 하트비트</string>
+    <string name="status_value_heartbeat_on">실행 중</string>
+    <string name="status_value_allowed">허용됨</string>
+    <string name="status_value_restricted">제한됨</string>
+    <string name="status_label_whitelist_key">화이트리스트 키</string>
+    <string name="status_value_not_used">사용 안 함</string>
+    <string name="heartbeat_never">아직 전송 안 됨</string>
+    <string name="heartbeat_summary">%1$d분마다 · 마지막 전송 %2$s</string>
 </resources>

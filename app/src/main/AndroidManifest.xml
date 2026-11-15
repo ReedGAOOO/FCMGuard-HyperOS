@@ -1,9 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!--
+      Exact heartbeat alarm. USE_EXACT_ALARM is granted at install on Android 13+ (the app
+      is not on Google Play, whose policy limits it to alarm apps); SCHEDULE_EXACT_ALARM
+      covers Android 12. Without either, HeartbeatScheduler falls back to inexact alarms.
+    -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- OriginOS build: network-change heartbeat and the Doze exemption request. -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -37,14 +46,7 @@
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true">
 
-        <!--
-          AloFCM intentionally targets SDK 22 so WRITE_SETTINGS can modify an optional
-          private Settings.System whitelist key, and so its heartbeat alarm and service
-          restarts are not subject to newer background-start limits. Old-target apps can otherwise be placed
-          into legacy aspect-ratio compatibility mode on tall modern displays, which
-          the ROM shows as a large black area below the app. Explicitly opt the main
-          activity into modern tall/resizable layouts while keeping targetSdk 22.
-        -->
+        <!-- Allow tall modern displays without letterboxing. -->
         <meta-data
             android:name="android.max_aspect"
             android:value="3.0" />
@@ -64,7 +66,12 @@
         <service
             android:name=".GuardService"
             android:exported="false"
-            android:stopWithTask="false" />
+            android:foregroundServiceType="specialUse"
+            android:stopWithTask="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps the Google Play services push (FCM) connection alive with a periodic heartbeat on ROMs that drop it." />
+        </service>
 
         <receiver
             android:name=".HeartbeatScheduler"

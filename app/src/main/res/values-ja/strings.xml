@@ -71,4 +71,15 @@
     <string name="palette_sunset_amber">アンバー</string>
     <string name="palette_graphite">グラファイト</string>
     <string name="palette_aurora">オーロラ</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">ホワイトリストキー未設定 · ハートビートのみ</string>
+    <string name="status_label_heartbeat">FCM ハートビート</string>
+    <string name="status_value_heartbeat_on">実行中</string>
+    <string name="status_value_allowed">許可</string>
+    <string name="status_value_restricted">制限あり</string>
+    <string name="status_label_whitelist_key">ホワイトリストキー</string>
+    <string name="status_value_not_used">未使用</string>
+    <string name="heartbeat_never">未送信</string>
+    <string name="heartbeat_summary">%1$d 分ごと · 最終送信 %2$s</string>
 </resources>

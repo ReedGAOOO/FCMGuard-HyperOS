@@ -25,6 +25,12 @@ public final class SettingsGuard {
         return key == null ? "" : key.trim();
     }
 
+    /** Settings.System.canWrite on Android 6+; always false below (no permission declared). */
+    public static boolean canWrite(Context context) {
+        return android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M &&
+                Settings.System.canWrite(context);
+    }
+
     /** True when a whitelist key is configured, i.e. the HyperOS-style repair is in use. */
     public static boolean isWhitelistConfigured(Context context) {
         return !getConfiguredKey(context).isEmpty();
@@ -105,7 +111,7 @@ public final class SettingsGuard {
         if (!isWhitelistConfigured(context)) {
             return new Result(true, false, null, context.getString(R.string.whitelist_not_configured));
         }
-        if (!Settings.System.canWrite(context)) {
+        if (!canWrite(context)) {
             return new Result(false, false, read(context), context.getString(R.string.permission_missing));
         }
 

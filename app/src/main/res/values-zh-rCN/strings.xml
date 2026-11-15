@@ -26,7 +26,7 @@
     <string name="actions_title">工具</string>
     <string name="advanced_title">高级配置</string>
 
-    <string name="helper_text">OriginOS 没有类似 HyperOS 无限制名单的公开开关。AloFCM 通过周期性心跳保持 Google Play 服务的推送连接。如果你的系统版本存在 Settings.System 白名单键，可在高级配置中填写，AloFCM 会同时把 Google Play 服务保持在其中。</string>
+    <string name="helper_text">OriginOS 没有类似 HyperOS 无限制名单的公开开关。AloFCM 通过周期性心跳保持 Google Play 服务的推送连接。同时请允许 AloFCM 在后台运行，以便心跳持续发送。</string>
     <string name="note_text">建议在 OriginOS 中为 AloFCM 和 Google Play 服务开启“自启动”，将“电池 → 后台耗电管理”设为“允许”，并在最近任务中锁定 AloFCM。不需要开发者选项或 USB 调试。</string>
 
     <string name="status_protected">保护正常</string>

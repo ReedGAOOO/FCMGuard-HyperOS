@@ -398,7 +398,7 @@ public class MainActivity extends Activity {
                 SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
                 // WRITE_SETTINGS is only needed for the optional whitelist key; the
                 // OriginOS heartbeat works without it.
-                if (SettingsGuard.isWhitelistConfigured(this) && !Settings.System.canWrite(this)) {
+                if (SettingsGuard.isWhitelistConfigured(this) && !SettingsGuard.canWrite(this)) {
                     SettingsGuard.setProtectionEnabled(this, false);
                     suppressSwitchCallbacks = true;
                     protectionSwitch.setChecked(false);
@@ -771,8 +771,20 @@ public class MainActivity extends Activity {
         }
     }
 
+    private static final int REQUEST_POST_NOTIFICATIONS = 4260;
+
     private void ensurePersistentNotificationAccess() {
         boolean createdNow = GuardService.ensureNotificationChannel(this);
+        // Android 13+: notifications are a runtime permission for apps targeting 33+.
+        if (Build.VERSION.SDK_INT >= 33 &&
+                checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS)
+                        != PackageManager.PERMISSION_GRANTED) {
+            notificationAccessPending = false;
+            uiHandler.removeCallbacks(notificationAccessFollowUp);
+            requestPermissions(new String[] {android.Manifest.permission.POST_NOTIFICATIONS},
+                    REQUEST_POST_NOTIFICATIONS);
+            return;
+        }
         if (GuardService.canShowPersistentNotification(this)) {
             notificationAccessPending = false;
             return;
@@ -786,6 +798,22 @@ public class MainActivity extends Activity {
             notificationAccessPending = false;
             openNotificationSettings();
         }
+    }
+
+    @Override public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode != REQUEST_POST_NOTIFICATIONS) return;
+        boolean granted = grantResults.length > 0 &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED;
+        if (granted) {
+            if (SettingsGuard.isProtectionEnabled(this)) startProtectionService();
+        } else if (Build.VERSION.SDK_INT >= 33 &&
+                !shouldShowRequestPermissionRationale(android.Manifest.permission.POST_NOTIFICATIONS)) {
+            // Denied permanently (or the dialog was suppressed): only Settings can fix it.
+            openNotificationSettings();
+        }
+        refreshStatus(null);
     }
 
     private void openNotificationSettings() {
@@ -853,7 +881,7 @@ public class MainActivity extends Activity {
     }
 
     private void refreshStatus(String firstLine) {
-        boolean canWrite = Settings.System.canWrite(this);
+        boolean canWrite = SettingsGuard.canWrite(this);
         boolean enabled = SettingsGuard.isProtectionEnabled(this);
         boolean notification = SettingsGuard.usePersistentNotification(this);
         boolean whitelist = SettingsGuard.isWhitelistConfigured(this);

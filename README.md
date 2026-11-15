@@ -17,8 +17,9 @@ This branch is the OriginOS build of AloFCM for HyperOS. It installs side by sid
 | | HyperOS build | OriginOS build |
 |---|---|---|
 | Core fix | Keeps `com.google.android.gms` in Xiaomi's `MILLET_NO_RESTRICT_APP` whitelist | Periodic FCM heartbeat (GTALK/MCS) on an allow-while-idle alarm, plus on network change and screen-on |
-| Whitelist key | Fixed default | **Off by default.** vivo has no documented equivalent; enter a key under Advanced configuration only if your build has one |
-| Modify system settings permission | Required | Only needed when a whitelist key is set |
+| Whitelist key | Fixed default | **Not used.** vivo has no documented equivalent, and apps targeting Android 6+ cannot write private settings keys |
+| Modify system settings permission | Required | Not needed |
+| targetSdk | 22 (needed for the private key) | 34, so Android no longer warns that the app was built for an older version |
 | Settings shortcuts | Security app Autostart / battery saver | iManager Autostart, Background power consumption, Android Doze exemption |
 | Self-check tiles | Whitelist + Autostart | Background power (Doze exemption) + Autostart (Unknown when iManager hides it) |
 

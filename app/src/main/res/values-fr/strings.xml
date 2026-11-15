@@ -76,4 +76,15 @@
     <string name="palette_sunset_amber">Ambre</string>
     <string name="palette_graphite">Graphite</string>
     <string name="palette_aurora">Aurore</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">Aucune clé de liste blanche · battement seul</string>
+    <string name="status_label_heartbeat">Battement FCM</string>
+    <string name="status_value_heartbeat_on">Actif</string>
+    <string name="status_value_allowed">Autorisé</string>
+    <string name="status_value_restricted">Restreint</string>
+    <string name="status_label_whitelist_key">Clé de liste blanche</string>
+    <string name="status_value_not_used">Inutilisée</string>
+    <string name="heartbeat_never">pas encore envoyé</string>
+    <string name="heartbeat_summary">Toutes les %1$d min · dernier envoi %2$s</string>
 </resources>

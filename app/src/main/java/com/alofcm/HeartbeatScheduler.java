@@ -64,8 +64,13 @@ public final class HeartbeatScheduler extends BroadcastReceiver {
         long at = SystemClock.elapsedRealtime() + intervalMinutes(context) * 60_000L;
         PendingIntent pi = pendingIntent(context);
         try {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            boolean exactAllowed = Build.VERSION.SDK_INT < Build.VERSION_CODES.S ||
+                    am.canScheduleExactAlarms();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && exactAllowed) {
                 am.setExactAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, at, pi);
+            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                // Exact alarms not granted: still fires in Doze, at the system's pace.
+                am.setAndAllowWhileIdle(AlarmManager.ELAPSED_REALTIME_WAKEUP, at, pi);
             } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
                 am.setExact(AlarmManager.ELAPSED_REALTIME_WAKEUP, at, pi);
             } else {

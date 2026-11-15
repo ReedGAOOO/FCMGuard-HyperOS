@@ -26,7 +26,7 @@
     <string name="actions_title">Tools</string>
     <string name="advanced_title">Advanced configuration</string>
 
-    <string name="helper_text">OriginOS has no public switch like the HyperOS no-restrict list. AloFCM keeps the Google Play services push connection alive with a periodic heartbeat. If your build exposes a Settings.System whitelist key, enter it under Advanced configuration and AloFCM will also keep Google Play services in it.</string>
+    <string name="helper_text">OriginOS has no public switch like the HyperOS no-restrict list. AloFCM keeps the Google Play services push connection alive with a periodic heartbeat. Also allow AloFCM to run in the background so the heartbeat keeps going.</string>
     <string name="note_text">Recommended on OriginOS: allow Autostart for AloFCM and Google Play services, set Battery → Background power consumption to Allow, and lock AloFCM in Recents. Developer options and USB debugging are not required.</string>
 
     <string name="status_protected">Protected</string>

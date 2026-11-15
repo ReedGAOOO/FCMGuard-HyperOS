@@ -76,4 +76,15 @@
     <string name="palette_sunset_amber">Янтарь</string>
     <string name="palette_graphite">Графит</string>
     <string name="palette_aurora">Аврора</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">Ключ белого списка не задан · только heartbeat</string>
+    <string name="status_label_heartbeat">FCM heartbeat</string>
+    <string name="status_value_heartbeat_on">Работает</string>
+    <string name="status_value_allowed">Разрешено</string>
+    <string name="status_value_restricted">Ограничено</string>
+    <string name="status_label_whitelist_key">Ключ белого списка</string>
+    <string name="status_value_not_used">Не используется</string>
+    <string name="heartbeat_never">ещё не отправлен</string>
+    <string name="heartbeat_summary">Каждые %1$d мин · последний %2$s</string>
 </resources>

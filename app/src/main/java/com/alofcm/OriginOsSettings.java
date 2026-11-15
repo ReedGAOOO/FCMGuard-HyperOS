@@ -117,7 +117,8 @@ public final class OriginOsSettings {
 
     private static boolean launch(Context context, Intent intent) {
         try {
-            if (intent.resolveActivity(context.getPackageManager()) == null) return false;
+            // No resolveActivity() pre-check: with package visibility (Android 11+) it can
+            // miss system Settings pages. A missing or non-exported page throws instead.
             context.startActivity(intent);
             return true;
         } catch (Throwable ignored) {

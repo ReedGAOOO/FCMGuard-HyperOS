@@ -13,9 +13,9 @@ android {
     defaultConfig {
         applicationId "com.alofcm.originos"
         minSdk 21
-        targetSdk 22
-        versionCode 33
-        versionName "2.0.1-originos"
+        targetSdk 34
+        versionCode 34
+        versionName "2.0.2-originos"
     }
 
     signingConfigs {
@@ -42,9 +42,9 @@ android {
     }
 
     lint {
-        // targetSdk 22 is deliberate (see README: it keeps the WRITE_SETTINGS path to
-        // optional private whitelist key and unrestricted background alarms). The app is distributed outside Google Play.
+        // Distributed outside Google Play; Play's yearly targetSdk deadline does not apply.
         disable.add('ExpiredTargetSdkVersion')
+        disable.add('OldTargetApi')
     }
 
     compileOptions {
