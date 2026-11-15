@@ -180,67 +180,111 @@ public final class AutostartStatusReader {
         return Status.UNKNOWN;
     }
 
+    /** Packages whose providers may hold Autostart / background-start state. */
+    private static final String[] RELATED_PACKAGES = {
+            "com.vivo.permissionmanager", "com.iqoo.secure", "com.vivo.abe",
+            "com.vivo.safecenter", "com.vivo.appfilter", "com.iqoo.powersaving"
+    };
+
+    /** Extra authorities seen on OriginOS 7 that may hold app life-control state. */
+    private static final String[] EXTRA_AUTHORITIES = {
+            "com.vivo.abe.thirdapp.lifecontrol.provider",
+            "com.vivo.abe.provider.third",
+            "com.vivo.abe.highpower.provider",
+            "com.vivo.abe.configlist.provider",
+            "com.vivo.safecenter.provider.secureprovider",
+            "com.vivo.appfilter.provider.secureprovider"
+    };
+
     /**
-     * Plain-text report for the user to send: device, vivo packages and their providers,
-     * and what each candidate authority answers for AloFCM's own package.
+     * Short plain-text report for the user to send. The probes come first so they survive
+     * if the text is cut when pasted. Only counts, column names and error types are shown,
+     * never the contents of another app's rows.
      */
     static String diagnose(Context context) {
         StringBuilder sb = new StringBuilder();
-        sb.append("AloFCM autostart diagnostics\n");
+        sb.append("AloFCM autostart diagnostics v2\n");
         sb.append("Device: ").append(android.os.Build.MANUFACTURER).append(' ')
-                .append(android.os.Build.MODEL).append(" (").append(android.os.Build.DEVICE).append(")\n");
-        sb.append("Android: ").append(android.os.Build.VERSION.RELEASE)
-                .append(" / SDK ").append(android.os.Build.VERSION.SDK_INT).append('\n');
-        for (String prop : new String[] {"ro.vivo.os.name", "ro.vivo.os.version",
-                "ro.vivo.os.build.display.id", "ro.vivo.product.version", "ro.build.display.id"}) {
-            String v = systemProperty(prop);
-            if (!v.isEmpty()) sb.append(prop).append(": ").append(v).append('\n');
+                .append(android.os.Build.MODEL).append(" / Android ")
+                .append(android.os.Build.VERSION.RELEASE).append(" (SDK ")
+                .append(android.os.Build.VERSION.SDK_INT).append(")\n");
+        String os = systemProperty("ro.vivo.os.build.display.id");
+        if (!os.isEmpty()) sb.append("OS: ").append(os).append('\n');
+
+        sb.append("\n[Probes]\n");
+        LinkedHashSet<String> authorities = new LinkedHashSet<>(candidates(context));
+        for (String a : EXTRA_AUTHORITIES) authorities.add(a);
+        for (String authority : authorities) {
+            sb.append(authority).append('\n');
+            sb.append("  /").append(TABLE).append(": ")
+                    .append(probe(context, "content://" + authority + "/" + TABLE)).append('\n');
+            sb.append("  /: ").append(probe(context, "content://" + authority)).append('\n');
+        }
+        sb.append("\n[Rows for known apps in ").append(KNOWN_AUTHORITY).append("/").append(TABLE).append("]\n");
+        for (String pkg : new String[] {context.getPackageName(), "com.google.android.gms",
+                "com.zing.zalo", "com.facebook.orca"}) {
+            sb.append("  ").append(pkg).append(": ").append(rowsFor(context, pkg)).append('\n');
         }
 
         PackageManager pm = context.getPackageManager();
-        sb.append("\nPackages:\n");
-        for (String pkg : new String[] {"com.vivo.permissionmanager", "com.iqoo.secure",
-                "com.vivo.abe", "com.iqoo.powersaving", "com.vivo.safecenter"}) {
+        sb.append("\n[Providers of related packages]\n");
+        for (String pkg : RELATED_PACKAGES) {
             try {
-                PackageInfo info = pm.getPackageInfo(pkg, 0);
-                sb.append("  ").append(pkg).append(" ").append(info.versionName).append('\n');
+                PackageInfo info = pm.getPackageInfo(pkg, PackageManager.GET_PROVIDERS);
+                sb.append(pkg).append(' ').append(info.versionName).append('\n');
+                if (info.providers == null || info.providers.length == 0) {
+                    sb.append("  (no providers)\n");
+                    continue;
+                }
+                for (ProviderInfo p : info.providers) {
+                    sb.append("  ").append(p.authority).append(p.exported ? " [exported" : " [private");
+                    if (p.readPermission != null) sb.append(", read=").append(p.readPermission);
+                    sb.append("]\n");
+                }
             } catch (Throwable t) {
-                sb.append("  ").append(pkg).append(" -\n");
+                sb.append(pkg).append(" -\n");
             }
-        }
-
-        sb.append("\nVendor providers:\n");
-        int count = 0;
-        for (ProviderInfo p : vendorProviders(context)) {
-            sb.append("  ").append(p.authority).append("  [").append(p.packageName)
-                    .append(p.exported ? ", exported" : ", private");
-            if (p.readPermission != null) sb.append(", read=").append(p.readPermission);
-            sb.append("]\n");
-            count++;
-        }
-        if (count == 0) sb.append("  (none visible)\n");
-
-        sb.append("\nQueries (").append(TABLE).append(", ").append(context.getPackageName()).append("):\n");
-        for (String authority : candidates(context)) {
-            sb.append("  ").append(authority).append(": ").append(probe(context, authority)).append('\n');
         }
         return sb.toString();
     }
 
-    private static String probe(Context context, String authority) {
+    /** Row count and state values (only) for one package in the known table. */
+    private static String rowsFor(Context context, String pkg) {
         Cursor cursor = null;
         try {
-            if (context.getPackageManager().resolveContentProvider(authority, 0) == null) {
+            cursor = context.getContentResolver().query(
+                    Uri.parse("content://" + KNOWN_AUTHORITY + "/" + TABLE),
+                    null, "pkgname=?", new String[] {pkg}, null);
+            if (cursor == null) return "null cursor";
+            StringBuilder out = new StringBuilder().append(cursor.getCount()).append(" rows");
+            int state = cursor.getColumnIndex("currentstate");
+            if (state >= 0 && cursor.moveToFirst()) {
+                out.append(", currentstate=").append(cursor.getString(state));
+            }
+            return out.toString();
+        } catch (Throwable t) {
+            return t.getClass().getSimpleName();
+        } finally {
+            if (cursor != null) {
+                try { cursor.close(); } catch (Throwable ignored) {}
+            }
+        }
+    }
+
+    private static String probe(Context context, String uri) {
+        Cursor cursor = null;
+        try {
+            Uri u = Uri.parse(uri);
+            if (context.getPackageManager().resolveContentProvider(u.getAuthority(), 0) == null) {
                 return "not resolvable";
             }
-            cursor = context.getContentResolver().query(
-                    Uri.parse("content://" + authority + "/" + TABLE), null, null, null, null);
+            cursor = context.getContentResolver().query(u, null, null, null, null);
             if (cursor == null) return "null cursor";
             String[] names = cursor.getColumnNames();
             return cursor.getCount() + " rows, columns " + java.util.Arrays.toString(names);
         } catch (Throwable t) {
             String msg = t.getMessage();
-            if (msg != null && msg.length() > 140) msg = msg.substring(0, 140) + "…";
+            if (msg != null && msg.length() > 120) msg = msg.substring(0, 120) + "…";
             return t.getClass().getSimpleName() + (msg == null ? "" : ": " + msg);
         } finally {
             if (cursor != null) {
