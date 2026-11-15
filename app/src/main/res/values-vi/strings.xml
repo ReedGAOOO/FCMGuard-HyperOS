@@ -93,4 +93,7 @@
     <string name="autostart_reason_denied">Lý do: OriginOS từ chối cho AloFCM đọc danh sách Tự khởi động của iManager.</string>
     <string name="autostart_reason_missing">Lý do: bản ROM này không có danh sách Tự khởi động đọc được (không thấy provider của iManager).</string>
     <string name="autostart_reason_no_row">Lý do: iManager không trả về mục Tự khởi động nào cho các ứng dụng này.</string>
+    <string name="autostart_diag">Chẩn đoán Tự khởi động</string>
+    <string name="copy_report">Sao chép</string>
+    <string name="report_copied">Đã sao chép báo cáo</string>
 </resources>

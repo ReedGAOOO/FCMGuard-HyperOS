@@ -95,4 +95,7 @@
     <string name="autostart_reason_denied">Reason: OriginOS refused AloFCM access to iManager’s Autostart list.</string>
     <string name="autostart_reason_missing">Reason: this ROM has no readable Autostart list (iManager provider not found).</string>
     <string name="autostart_reason_no_row">Reason: iManager returned no Autostart entry for these apps.</string>
+    <string name="autostart_diag">Autostart diagnostics</string>
+    <string name="copy_report">Copy</string>
+    <string name="report_copied">Report copied</string>
 </resources>

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -19,11 +20,15 @@
     <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!--
-      Narrow package visibility only for the signals AloFCM needs. This avoids
-      QUERY_ALL_PACKAGES while allowing best-effort discovery of FCM/GCM receivers
-      and the Google Play services diagnostics activity.
+      Package visibility (Android 11+). vivo moves iManager's Autostart provider between
+      OriginOS releases and packages, so AloFCM needs to see all installed packages to
+      find it; the app is distributed outside Google Play.
     -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <queries>
+        <provider android:authorities="com.vivo.permissionmanager.provider.permission" />
         <intent>
             <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent>

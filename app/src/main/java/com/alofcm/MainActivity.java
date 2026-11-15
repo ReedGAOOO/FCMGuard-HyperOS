@@ -512,6 +512,7 @@ public class MainActivity extends Activity {
         });
 
         findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
+        findViewById(R.id.autostartDiagBtn).setOnClickListener(v -> showAutostartDiagnostics());
         scanFcmAppsBtn.setOnClickListener(v -> toggleFcmAppsList());
         findViewById(R.id.openAutostartBtn).setOnClickListener(v -> {
             if (!OriginOsSettings.openAutoStartManager(this)) {
@@ -1269,6 +1270,40 @@ public class MainActivity extends Activity {
 
     private int dp(int value) {
         return Math.round(value * getResources().getDisplayMetrics().density);
+    }
+
+    /** Collects the Autostart provider report off the UI thread and shows it, copyable. */
+    private void showAutostartDiagnostics() {
+        final Context appContext = getApplicationContext();
+        toast(getString(R.string.scanning_fcm_apps));
+        runInBackground(() -> {
+            String report = AutostartStatusReader.diagnose(appContext);
+            runOnUiThread(() -> {
+                if (isFinishing() || isDestroyed()) return;
+                TextView text = new TextView(this);
+                text.setText(report);
+                text.setTextIsSelectable(true);
+                text.setTextSize(11f);
+                text.setTypeface(Typeface.MONOSPACE);
+                text.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
+                text.setPadding(dp(20), dp(8), dp(20), dp(8));
+                android.widget.ScrollView scroll = new android.widget.ScrollView(this);
+                scroll.addView(text);
+                new AlertDialog.Builder(this)
+                        .setTitle(R.string.autostart_diag)
+                        .setView(scroll)
+                        .setPositiveButton(R.string.copy_report, (d, w) -> {
+                            android.content.ClipboardManager cm = (android.content.ClipboardManager)
+                                    getSystemService(CLIPBOARD_SERVICE);
+                            if (cm != null) {
+                                cm.setPrimaryClip(android.content.ClipData.newPlainText("AloFCM", report));
+                                toast(getString(R.string.report_copied));
+                            }
+                        })
+                        .setNegativeButton(android.R.string.cancel, null)
+                        .show();
+            });
+        });
     }
 
     private void toast(String text) {
