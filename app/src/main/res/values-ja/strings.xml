@@ -93,4 +93,10 @@
     <string name="autostart_diag">Autostart diagnostics</string>
     <string name="copy_report">Copy</string>
     <string name="report_copied">Report copied</string>
+    <string name="fcm_apps_on_off_summary">%1$d FCM apps · %2$d autostart on · %3$d off</string>
+    <string name="autostart_manual_note">OriginOS only lets an app read its own Autostart state, so these are marked by you. Tap an app to open its settings, long-press to flip the mark.</string>
+    <string name="autostart_mark_question">Is Autostart now switched on for this app in iManager?</string>
+    <string name="mark_on">Switched on</string>
+    <string name="mark_off">Still off</string>
+    <string name="autostart_marked_hint">marked by you</string>
 </resources>

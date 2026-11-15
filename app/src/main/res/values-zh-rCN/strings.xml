@@ -98,4 +98,10 @@
     <string name="autostart_diag">自启动诊断</string>
     <string name="copy_report">复制</string>
     <string name="report_copied">报告已复制</string>
+    <string name="fcm_apps_on_off_summary">%1$d 个 FCM 应用 · %2$d 已自启动 · %3$d 未自启动</string>
+    <string name="autostart_manual_note">OriginOS 只允许应用读取自己的自启动状态，因此以下状态由你手动标记。点按应用打开设置，长按切换标记。</string>
+    <string name="autostart_mark_question">是否已在 i管家中为此应用开启自启动？</string>
+    <string name="mark_on">已开启</string>
+    <string name="mark_off">仍未开启</string>
+    <string name="autostart_marked_hint">手动标记</string>
 </resources>

@@ -96,4 +96,10 @@
     <string name="autostart_diag">Chẩn đoán Tự khởi động</string>
     <string name="copy_report">Sao chép</string>
     <string name="report_copied">Đã sao chép báo cáo</string>
+    <string name="fcm_apps_on_off_summary">%1$d ứng dụng FCM · %2$d đang tự khởi chạy · %3$d chưa</string>
+    <string name="autostart_manual_note">OriginOS chỉ cho mỗi ứng dụng đọc trạng thái Tự khởi động của chính nó, nên trạng thái dưới đây do bạn tự đánh dấu. Chạm vào ứng dụng để mở cài đặt, nhấn giữ để đổi dấu.</string>
+    <string name="autostart_mark_question">Bạn đã bật Tự khởi động cho ứng dụng này trong iManager chưa?</string>
+    <string name="mark_on">Đã bật</string>
+    <string name="mark_off">Chưa bật</string>
+    <string name="autostart_marked_hint">tự đánh dấu</string>
 </resources>

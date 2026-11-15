@@ -79,6 +79,9 @@ public class MainActivity extends Activity {
     /** Night bit of the configuration this page was built for. */
     private int shownNightMode;
     private boolean notificationAccessPending = false;
+    /** App whose Autostart page was just opened; asked about on return. */
+    private String pendingMarkPackage;
+    private CharSequence pendingMarkLabel;
     private boolean fcmListExpanded = false;
     private boolean fcmScanInFlight = false;
     private int fcmScanGeneration = 0;
@@ -178,6 +181,13 @@ public class MainActivity extends Activity {
         }
         refreshStatus(null);
         recheckFcmAutostartStatuses();
+        if (pendingMarkPackage != null) {
+            String pkg = pendingMarkPackage;
+            CharSequence label = pendingMarkLabel;
+            pendingMarkPackage = null;
+            pendingMarkLabel = null;
+            dashboard.postDelayed(() -> askAutostartMark(pkg, label), 300L);
+        }
         // Battery saver may have been toggled while we were away; apply after attach so
         // the vendor blur is set on views that already have a render node.
         dashboard.post(this::updateGlassMaterial);
@@ -627,45 +637,54 @@ public class MainActivity extends Activity {
 
     private void renderFcmAppStatuses() {
         if (scannedFcmApps == null || scannedFcmApps.isEmpty()) return;
-        AutostartStatusReader.Status[] statuses = scannedFcmStatuses;
-        if (statuses == null || statuses.length != scannedFcmApps.size()) return;
+        AutostartStatusReader.Status[] read = scannedFcmStatuses;
+        if (read == null || read.length != scannedFcmApps.size()) return;
+
+        int n = scannedFcmApps.size();
+        AutostartStatusReader.Status[] shown = new AutostartStatusReader.Status[n];
+        boolean[] marked = new boolean[n];
+        int onCount = 0;
+        int markedCount = 0;
+        for (int i = 0; i < n; i++) {
+            String pkg = scannedFcmApps.get(i).packageName;
+            marked[i] = read[i] == AutostartStatusReader.Status.UNKNOWN;
+            shown[i] = ManualAutostart.effective(this, pkg, read[i]);
+            if (shown[i] == AutostartStatusReader.Status.ENABLED) onCount++;
+            if (marked[i]) markedCount++;
+        }
 
         fcmAppsContainer.removeAllViews();
-        int enabledCount = 0;
-        int attentionCount = 0;
-        int unknownCount = 0;
-
-        for (int i = 0; i < scannedFcmApps.size(); i++) {
-            AutostartStatusReader.Status status = statuses[i];
-            if (status == AutostartStatusReader.Status.ENABLED) {
-                enabledCount++;
-            } else if (status == AutostartStatusReader.Status.PARTIAL ||
-                    status == AutostartStatusReader.Status.DISABLED) {
-                attentionCount++;
-            } else {
-                unknownCount++;
-            }
-        }
-
-        // OriginOS usually hides Autostart state from other apps. The list is still shown:
-        // each row opens that app's permission page, where Autostart is switched on.
-        boolean allUnknown = unknownCount == scannedFcmApps.size();
         fcmAppsContainer.setVisibility(View.VISIBLE);
-        fcmAppsStatusText.setText(allUnknown
-                ? getString(R.string.fcm_autostart_status_unavailable, scannedFcmApps.size())
-                        + "\n" + getString(autostartFailureText(AutostartStatusReader.lastFailure()))
-                : getString(R.string.fcm_apps_status_summary,
-                        scannedFcmApps.size(), enabledCount, attentionCount, unknownCount));
+        String summary = getString(R.string.fcm_apps_on_off_summary, n, onCount, n - onCount);
+        if (markedCount > 0) summary += "\n" + getString(R.string.autostart_manual_note);
+        fcmAppsStatusText.setText(summary);
 
-        // Attention first (Disabled, Partial), then Unknown, then Enabled; the scan
-        // order (alphabetical) is kept inside each group.
-        Integer[] order = new Integer[scannedFcmApps.size()];
-        for (int i = 0; i < order.length; i++) order[i] = i;
+        // Off first, then on; the scan order (alphabetical) is kept inside each group.
+        Integer[] order = new Integer[n];
+        for (int i = 0; i < n; i++) order[i] = i;
         Arrays.sort(order, (a, b) -> Integer.compare(
-                attentionRank(statuses[a]), attentionRank(statuses[b])));
+                attentionRank(shown[a]), attentionRank(shown[b])));
         for (int index : order) {
-            addFcmAppRow(scannedFcmApps.get(index), statuses[index]);
+            addFcmAppRow(scannedFcmApps.get(index), shown[index], marked[index]);
         }
+    }
+
+    /** Asks whether Autostart was switched on, after the user came back from iManager. */
+    private void askAutostartMark(String packageName, CharSequence label) {
+        if (isFinishing() || isDestroyed()) return;
+        new AlertDialog.Builder(this)
+                .setTitle(label)
+                .setMessage(R.string.autostart_mark_question)
+                .setPositiveButton(R.string.mark_on, (d, w) -> applyMark(packageName, true))
+                .setNegativeButton(R.string.mark_off, (d, w) -> applyMark(packageName, false))
+                .setNeutralButton(android.R.string.cancel, null)
+                .show();
+    }
+
+    private void applyMark(String packageName, boolean enabled) {
+        ManualAutostart.set(this, packageName, enabled);
+        renderFcmAppStatuses();
+        refreshStatus(null);
     }
 
     private static int attentionRank(AutostartStatusReader.Status status) {
@@ -689,7 +708,8 @@ public class MainActivity extends Activity {
     }
 
     private void addFcmAppRow(
-            FcmAppScanner.AppEntry app, AutostartStatusReader.Status autostartStatus) {
+            FcmAppScanner.AppEntry app, AutostartStatusReader.Status autostartStatus,
+            boolean marked) {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
@@ -699,10 +719,21 @@ public class MainActivity extends Activity {
         row.setClickable(true);
         row.setContentDescription(app.label + ", " + getString(autostartStatusText(autostartStatus)));
         row.setOnClickListener(v -> {
-            if (!OriginOsSettings.openAppPermissionEditor(this, app.packageName)) {
+            if (OriginOsSettings.openAppPermissionEditor(this, app.packageName)) {
+                if (marked) {
+                    pendingMarkPackage = app.packageName;
+                    pendingMarkLabel = app.label;
+                }
+            } else {
                 toast(getString(R.string.app_settings_unavailable));
             }
         });
+        if (marked) {
+            row.setOnLongClickListener(v -> {
+                applyMark(app.packageName, autostartStatus != AutostartStatusReader.Status.ENABLED);
+                return true;
+            });
+        }
 
         LinearLayout labels = new LinearLayout(this);
         labels.setOrientation(LinearLayout.VERTICAL);
@@ -718,7 +749,9 @@ public class MainActivity extends Activity {
         label.setEllipsize(android.text.TextUtils.TruncateAt.END);
 
         TextView packageName = new TextView(this);
-        packageName.setText(app.packageName);
+        packageName.setText(marked
+                ? app.packageName + " · " + getString(R.string.autostart_marked_hint)
+                : app.packageName);
         packageName.setTextColor(AppColors.get(this, R.attr.pal_text_secondary));
         packageName.setTextSize(12f);
         packageName.setMaxLines(1);
@@ -762,12 +795,6 @@ public class MainActivity extends Activity {
         android.util.TypedValue value = new android.util.TypedValue();
         getTheme().resolveAttribute(android.R.attr.selectableItemBackground, value, true);
         return getResources().getDrawable(value.resourceId, getTheme());
-    }
-
-    private static int autostartFailureText(AutostartStatusReader.Failure failure) {
-        if (failure == AutostartStatusReader.Failure.DENIED) return R.string.autostart_reason_denied;
-        if (failure == AutostartStatusReader.Failure.NO_PROVIDER) return R.string.autostart_reason_missing;
-        return R.string.autostart_reason_no_row;
     }
 
     private int autostartStatusText(AutostartStatusReader.Status status) {
@@ -945,7 +972,11 @@ public class MainActivity extends Activity {
         // Autostart state is not treated as off.
         String self = getPackageName();
         boolean selfBattery = OriginOsSettings.isIgnoringBatteryOptimizations(this, self);
-        AutostartStatusReader.Status selfAutostart = AutostartStatusReader.check(this, self);
+        AutostartStatusReader.Status selfRead = AutostartStatusReader.check(this, self);
+        AutostartStatusReader.Status selfAutostart =
+                selfRead != AutostartStatusReader.Status.UNKNOWN
+                        || ManualAutostart.get(this, self) != null
+                        ? ManualAutostart.effective(this, self, selfRead) : selfRead;
         boolean selfAutostartOff = selfAutostart == AutostartStatusReader.Status.DISABLED ||
                 selfAutostart == AutostartStatusReader.Status.PARTIAL;
         boolean writeOk = !whitelist || canWrite;
@@ -1132,6 +1163,10 @@ public class MainActivity extends Activity {
     }
 
     private void openOwnAutostartSettings() {
+        if (AutostartStatusReader.check(this, getPackageName()) == AutostartStatusReader.Status.UNKNOWN) {
+            pendingMarkPackage = getPackageName();
+            pendingMarkLabel = getString(R.string.app_name);
+        }
         if (!OriginOsSettings.openAppPermissionEditor(this, getPackageName()) &&
                 !OriginOsSettings.openAutoStartManager(this)) {
             toast(getString(R.string.autostart_manager_unavailable));
