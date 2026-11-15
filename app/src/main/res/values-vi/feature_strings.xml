@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">Trợ lý ứng dụng FCM</string>
-    <string name="fcm_apps_summary">Tìm các ứng dụng đã cài có khai báo thành phần nhận FCM/GCM chuẩn, rồi kiểm tra trạng thái Tự khởi động trên OriginOS nếu iManager cho phép đọc.</string>
+    <string name="fcm_apps_summary">Tìm các ứng dụng đã cài có dùng FCM, rồi chọn ứng dụng bạn muốn tự khởi chạy và đánh dấu sau khi đã bật Tự khởi động trong iManager.</string>
     <string name="scan_fcm_apps">Quét ứng dụng FCM</string>
     <string name="collapse_fcm_apps">Thu gọn danh sách</string>
     <string name="scanning_fcm_apps">Đang quét…</string>
@@ -18,7 +18,7 @@
     <string name="autostart_unknown">Không đọc được</string>
     <string name="autostart_manager_unavailable">Không mở được cài đặt Tự khởi động của OriginOS</string>
     <string name="app_settings_unavailable">Không mở được cài đặt ứng dụng</string>
-    <string name="fcm_detection_note">Chỉ trạng thái Tự khởi động của chính AloFCM được đọc từ OriginOS; các ứng dụng khác hiện theo dấu bạn đánh.</string>
+    <string name="fcm_detection_note">OriginOS không cho AloFCM đọc trạng thái Tự khởi động của ứng dụng khác, nên danh sách này là ghi chú của chính bạn về những gì đã bật.</string>
 
     <string name="appearance_title">Hiển thị</string>
     <string name="appearance_summary">Mặc định theo hệ thống. Chỉ đổi giao diện, không thêm tác vụ nền.</string>

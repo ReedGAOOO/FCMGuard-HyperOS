@@ -99,4 +99,9 @@
     <string name="mark_on">Switched on</string>
     <string name="mark_off">Still off</string>
     <string name="autostart_marked_hint">marked by you</string>
+    <string name="fcm_apps_total">%1$d FCM apps found · %2$d marked</string>
+    <string name="fcm_pick_hint">Tap an app, switch Autostart on in iManager, then confirm to mark it. Long-press to mark it right away.</string>
+    <string name="marked_title">Marked for autostart (%1$d)</string>
+    <string name="marked_remove">Remove</string>
+    <string name="app_marked_toast">Marked</string>
 </resources>

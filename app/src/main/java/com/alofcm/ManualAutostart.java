@@ -26,6 +26,20 @@ final class ManualAutostart {
         prefs(context).edit().putBoolean(packageName, enabled).apply();
     }
 
+    /** Removes a mark entirely (the app drops out of the marked list). */
+    static void remove(Context context, String packageName) {
+        prefs(context).edit().remove(packageName).apply();
+    }
+
+    /** Packages the user marked as having Autostart switched on. */
+    static java.util.Set<String> markedPackages(Context context) {
+        java.util.Set<String> out = new java.util.TreeSet<>();
+        for (java.util.Map.Entry<String, ?> e : prefs(context).getAll().entrySet()) {
+            if (Boolean.TRUE.equals(e.getValue())) out.add(e.getKey());
+        }
+        return out;
+    }
+
     /** Real state when readable, otherwise the user's mark (unmarked counts as off). */
     static AutostartStatusReader.Status effective(
             Context context, String packageName, AutostartStatusReader.Status read) {

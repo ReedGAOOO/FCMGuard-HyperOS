@@ -62,6 +62,8 @@ public class MainActivity extends Activity {
     private TextView currentValueText;
     private TextView fcmAppsStatusText;
     private LinearLayout fcmAppsContainer;
+    private TextView fcmMarkedTitle;
+    private LinearLayout fcmMarkedContainer;
     private Button languageButton;
     private Button themeButton;
     private ThemePanel themePanel;
@@ -86,7 +88,6 @@ public class MainActivity extends Activity {
     private boolean fcmScanInFlight = false;
     private int fcmScanGeneration = 0;
     private List<FcmAppScanner.AppEntry> scannedFcmApps;
-    private AutostartStatusReader.Status[] scannedFcmStatuses;
 
     /**
      * Package-manager and AppOps queries for other apps are binder calls (and label
@@ -180,7 +181,7 @@ public class MainActivity extends Activity {
             startProtectionService();
         }
         refreshStatus(null);
-        recheckFcmAutostartStatuses();
+        refreshFcmLists();
         if (pendingMarkPackage != null) {
             String pkg = pendingMarkPackage;
             CharSequence label = pendingMarkLabel;
@@ -225,6 +226,8 @@ public class MainActivity extends Activity {
         currentValueText = findViewById(R.id.currentValueText);
         fcmAppsStatusText = findViewById(R.id.fcmAppsStatusText);
         fcmAppsContainer = findViewById(R.id.fcmAppsContainer);
+        fcmMarkedTitle = findViewById(R.id.fcmMarkedTitle);
+        fcmMarkedContainer = findViewById(R.id.fcmMarkedContainer);
         languageButton = findViewById(R.id.languageButton);
         themeButton = findViewById(R.id.themeButton);
         scanFcmAppsBtn = findViewById(R.id.scanFcmAppsBtn);
@@ -555,8 +558,7 @@ public class MainActivity extends Activity {
 
         boolean queued = runInBackground(() -> {
             List<FcmAppScanner.AppEntry> apps = FcmAppScanner.scan(appContext);
-            AutostartStatusReader.Status[] statuses = readAutostartStatuses(appContext, apps);
-            runOnUiThread(() -> onFcmScanFinished(generation, apps, statuses));
+            runOnUiThread(() -> onFcmScanFinished(generation, apps));
         });
         if (!queued) {
             fcmScanInFlight = false;
@@ -566,16 +568,12 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void onFcmScanFinished(
-            int generation,
-            List<FcmAppScanner.AppEntry> apps,
-            AutostartStatusReader.Status[] statuses) {
+    private void onFcmScanFinished(int generation, List<FcmAppScanner.AppEntry> apps) {
         if (isFinishing() || isDestroyed() || generation != fcmScanGeneration) return;
 
         fcmScanInFlight = false;
         scanFcmAppsBtn.setEnabled(true);
         scannedFcmApps = apps;
-        scannedFcmStatuses = statuses;
         fcmListExpanded = true;
         fcmAppsStatusText.setVisibility(View.VISIBLE);
         updateScanButton(true);
@@ -584,46 +582,19 @@ public class MainActivity extends Activity {
             fcmAppsContainer.removeAllViews();
             fcmAppsContainer.setVisibility(View.GONE);
             fcmAppsStatusText.setText(R.string.no_fcm_apps);
+            renderMarkedList();
             return;
         }
-
-        renderFcmAppStatuses();
+        renderFcmLists();
     }
 
-    /**
-     * Autostart can be changed in HyperOS while AloFCM is in the background. Re-read
-     * the states off the UI thread and rebuild the rows only when something changed.
-     */
-    private void recheckFcmAutostartStatuses() {
-        if (!fcmListExpanded || fcmScanInFlight ||
-                scannedFcmApps == null || scannedFcmApps.isEmpty()) {
-            return;
+    /** Rebuilds the lists from the saved marks (called when the page comes back). */
+    private void refreshFcmLists() {
+        if (fcmListExpanded && scannedFcmApps != null && !scannedFcmApps.isEmpty()) {
+            renderFcmLists();
+        } else {
+            renderMarkedList();
         }
-        final int generation = ++fcmScanGeneration;
-        final List<FcmAppScanner.AppEntry> apps = scannedFcmApps;
-        final Context appContext = getApplicationContext();
-        runInBackground(() -> {
-            AutostartStatusReader.Status[] statuses = readAutostartStatuses(appContext, apps);
-            runOnUiThread(() -> {
-                if (isFinishing() || isDestroyed() || generation != fcmScanGeneration ||
-                        apps != scannedFcmApps) {
-                    return;
-                }
-                if (Arrays.equals(statuses, scannedFcmStatuses)) return;
-                scannedFcmStatuses = statuses;
-                renderFcmAppStatuses();
-            });
-        });
-    }
-
-    private static AutostartStatusReader.Status[] readAutostartStatuses(
-            Context context, List<FcmAppScanner.AppEntry> apps) {
-        AutostartStatusReader.Status[] statuses = new AutostartStatusReader.Status[apps.size()];
-        for (int i = 0; i < apps.size(); i++) {
-            FcmAppScanner.AppEntry app = apps.get(i);
-            statuses[i] = AutostartStatusReader.check(context, app.packageName, app.uid);
-        }
-        return statuses;
     }
 
     private boolean runInBackground(Runnable task) {
@@ -635,37 +606,55 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void renderFcmAppStatuses() {
-        if (scannedFcmApps == null || scannedFcmApps.isEmpty()) return;
-        AutostartStatusReader.Status[] read = scannedFcmStatuses;
-        if (read == null || read.length != scannedFcmApps.size()) return;
-
-        int n = scannedFcmApps.size();
-        AutostartStatusReader.Status[] shown = new AutostartStatusReader.Status[n];
-        boolean[] marked = new boolean[n];
-        int onCount = 0;
-        int markedCount = 0;
-        for (int i = 0; i < n; i++) {
-            String pkg = scannedFcmApps.get(i).packageName;
-            marked[i] = read[i] == AutostartStatusReader.Status.UNKNOWN;
-            shown[i] = ManualAutostart.effective(this, pkg, read[i]);
-            if (shown[i] == AutostartStatusReader.Status.ENABLED) onCount++;
-            if (marked[i]) markedCount++;
+    /**
+     * Scanned apps the user has not marked yet, with only the total shown above them (no
+     * per-app status: OriginOS does not let AloFCM read it), plus the separate marked list.
+     */
+    private void renderFcmLists() {
+        if (scannedFcmApps == null || scannedFcmApps.isEmpty()) {
+            renderMarkedList();
+            return;
         }
-
+        java.util.Set<String> marked = ManualAutostart.markedPackages(this);
         fcmAppsContainer.removeAllViews();
-        fcmAppsContainer.setVisibility(View.VISIBLE);
-        String summary = getString(R.string.fcm_apps_on_off_summary, n, onCount, n - onCount);
-        if (markedCount > 0) summary += "\n" + getString(R.string.autostart_manual_note);
-        fcmAppsStatusText.setText(summary);
+        for (FcmAppScanner.AppEntry app : scannedFcmApps) {
+            if (!marked.contains(app.packageName)) addFcmAppRow(app);
+        }
+        fcmAppsContainer.setVisibility(fcmAppsContainer.getChildCount() > 0 ? View.VISIBLE : View.GONE);
+        fcmAppsStatusText.setText(getString(R.string.fcm_apps_total, scannedFcmApps.size(), marked.size())
+                + "\n" + getString(R.string.fcm_pick_hint));
+        renderMarkedList();
+    }
 
-        // Off first, then on; the scan order (alphabetical) is kept inside each group.
-        Integer[] order = new Integer[n];
-        for (int i = 0; i < n; i++) order[i] = i;
-        Arrays.sort(order, (a, b) -> Integer.compare(
-                attentionRank(shown[a]), attentionRank(shown[b])));
-        for (int index : order) {
-            addFcmAppRow(scannedFcmApps.get(index), shown[index], marked[index]);
+    /** The apps the user marked as set to autostart, listed on their own. */
+    private void renderMarkedList() {
+        java.util.List<String[]> items = new java.util.ArrayList<>();
+        for (String pkg : ManualAutostart.markedPackages(this)) {
+            items.add(new String[] {labelFor(pkg), pkg});
+        }
+        java.util.Collections.sort(items, (a, b) -> a[0].compareToIgnoreCase(b[0]));
+
+        fcmMarkedContainer.removeAllViews();
+        boolean any = !items.isEmpty();
+        fcmMarkedTitle.setVisibility(any ? View.VISIBLE : View.GONE);
+        fcmMarkedContainer.setVisibility(any ? View.VISIBLE : View.GONE);
+        if (!any) return;
+        fcmMarkedTitle.setText(getString(R.string.marked_title, items.size()));
+        for (String[] item : items) addMarkedRow(item[0], item[1]);
+    }
+
+    private String labelFor(String packageName) {
+        if (scannedFcmApps != null) {
+            for (FcmAppScanner.AppEntry app : scannedFcmApps) {
+                if (app.packageName.equals(packageName)) return app.label;
+            }
+        }
+        try {
+            CharSequence label = getPackageManager().getApplicationLabel(
+                    getPackageManager().getApplicationInfo(packageName, 0));
+            return label == null ? packageName : label.toString();
+        } catch (Throwable t) {
+            return packageName;
         }
     }
 
@@ -683,15 +672,8 @@ public class MainActivity extends Activity {
 
     private void applyMark(String packageName, boolean enabled) {
         ManualAutostart.set(this, packageName, enabled);
-        renderFcmAppStatuses();
+        renderFcmLists();
         refreshStatus(null);
-    }
-
-    private static int attentionRank(AutostartStatusReader.Status status) {
-        if (status == AutostartStatusReader.Status.DISABLED) return 0;
-        if (status == AutostartStatusReader.Status.PARTIAL) return 1;
-        if (status == AutostartStatusReader.Status.UNKNOWN) return 2;
-        return 3;
     }
 
     private void updateScanButton(boolean expanded) {
@@ -707,9 +689,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    private void addFcmAppRow(
-            FcmAppScanner.AppEntry app, AutostartStatusReader.Status autostartStatus,
-            boolean marked) {
+    private LinearLayout newAppRow() {
         LinearLayout row = new LinearLayout(this);
         row.setOrientation(LinearLayout.HORIZONTAL);
         row.setGravity(Gravity.CENTER_VERTICAL);
@@ -717,63 +697,60 @@ public class MainActivity extends Activity {
         row.setMinimumHeight(dp(52));
         row.setBackground(selectableItemBackground());
         row.setClickable(true);
-        row.setContentDescription(app.label + ", " + getString(autostartStatusText(autostartStatus)));
-        row.setOnClickListener(v -> {
-            if (OriginOsSettings.openAppPermissionEditor(this, app.packageName)) {
-                if (marked) {
-                    pendingMarkPackage = app.packageName;
-                    pendingMarkLabel = app.label;
-                }
-            } else {
-                toast(getString(R.string.app_settings_unavailable));
-            }
-        });
-        if (marked) {
-            row.setOnLongClickListener(v -> {
-                applyMark(app.packageName, autostartStatus != AutostartStatusReader.Status.ENABLED);
-                return true;
-            });
-        }
+        return row;
+    }
 
+    private LinearLayout appLabels(CharSequence name, String packageName) {
         LinearLayout labels = new LinearLayout(this);
         labels.setOrientation(LinearLayout.VERTICAL);
-        LinearLayout.LayoutParams labelsParams = new LinearLayout.LayoutParams(
-                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
 
         TextView label = new TextView(this);
-        label.setText(app.label);
+        label.setText(name);
         label.setTextColor(AppColors.get(this, R.attr.pal_text_primary));
         label.setTextSize(14f);
         label.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
         label.setMaxLines(1);
         label.setEllipsize(android.text.TextUtils.TruncateAt.END);
 
-        TextView packageName = new TextView(this);
-        packageName.setText(marked
-                ? app.packageName + " · " + getString(R.string.autostart_marked_hint)
-                : app.packageName);
-        packageName.setTextColor(AppColors.get(this, R.attr.pal_text_secondary));
-        packageName.setTextSize(12f);
-        packageName.setMaxLines(1);
-        packageName.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
-        packageName.setPadding(0, dp(2), dp(8), 0);
+        TextView pkg = new TextView(this);
+        pkg.setText(packageName);
+        pkg.setTextColor(AppColors.get(this, R.attr.pal_text_secondary));
+        pkg.setTextSize(12f);
+        pkg.setMaxLines(1);
+        pkg.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+        pkg.setPadding(0, dp(2), dp(8), 0);
 
         labels.addView(label);
-        labels.addView(packageName);
-        row.addView(labels, labelsParams);
+        labels.addView(pkg);
+        return labels;
+    }
 
-        TextView badge = new TextView(this);
-        badge.setText(autostartStatusText(autostartStatus));
-        badge.setTextColor(AppColors.get(this, autostartStatusTextColor(autostartStatus)));
-        badge.setTextSize(11.5f);
-        badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
-        badge.setGravity(Gravity.CENTER);
-        badge.setMinWidth(dp(72));
-        badge.setPadding(dp(10), dp(6), dp(10), dp(6));
-        badge.setBackground(makeStatusBadgeBackground(autostartStatus));
-        row.addView(badge, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT));
+    private void addDivider(LinearLayout container) {
+        View divider = new View(this);
+        divider.setBackgroundColor(AppColors.get(this, R.attr.pal_divider));
+        container.addView(divider, new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT, dp(1)));
+    }
+
+    /** An app to pick: tap opens its Autostart page, then asks to mark; long-press marks. */
+    private void addFcmAppRow(FcmAppScanner.AppEntry app) {
+        LinearLayout row = newAppRow();
+        row.setContentDescription(app.label);
+        row.setOnClickListener(v -> {
+            if (OriginOsSettings.openAppPermissionEditor(this, app.packageName)) {
+                pendingMarkPackage = app.packageName;
+                pendingMarkLabel = app.label;
+            } else {
+                toast(getString(R.string.app_settings_unavailable));
+            }
+        });
+        row.setOnLongClickListener(v -> {
+            applyMark(app.packageName, true);
+            toast(getString(R.string.app_marked_toast));
+            return true;
+        });
+        row.addView(appLabels(app.label, app.packageName), new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
 
         TextView chevron = new TextView(this);
         chevron.setText("›");
@@ -784,11 +761,49 @@ public class MainActivity extends Activity {
         row.addView(chevron);
 
         fcmAppsContainer.addView(row);
+        addDivider(fcmAppsContainer);
+    }
 
-        View divider = new View(this);
-        divider.setBackgroundColor(AppColors.get(this, R.attr.pal_divider));
-        fcmAppsContainer.addView(divider, new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT, dp(1)));
+    /** A marked app: tap reopens its page; the button removes the mark. */
+    private void addMarkedRow(String name, String packageName) {
+        LinearLayout row = newAppRow();
+        row.setContentDescription(name);
+        row.setOnClickListener(v -> {
+            if (!OriginOsSettings.openAppPermissionEditor(this, packageName)) {
+                toast(getString(R.string.app_settings_unavailable));
+            }
+        });
+
+        TextView check = new TextView(this);
+        check.setText("✓");
+        check.setTextColor(AppColors.get(this, R.attr.pal_badge_text_green));
+        check.setTextSize(16f);
+        check.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        check.setPadding(0, 0, dp(10), 0);
+        check.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
+        row.addView(check);
+
+        row.addView(appLabels(name, packageName), new LinearLayout.LayoutParams(
+                0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f));
+
+        TextView remove = new TextView(this);
+        remove.setText(R.string.marked_remove);
+        remove.setTextColor(AppColors.get(this, R.attr.pal_badge_text_red));
+        remove.setTextSize(12.5f);
+        remove.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
+        remove.setGravity(Gravity.CENTER);
+        remove.setMinHeight(dp(36));
+        remove.setPadding(dp(12), dp(6), dp(12), dp(6));
+        remove.setBackground(makePill(R.attr.pal_status_value_red_bg, dp(12)));
+        remove.setOnClickListener(v -> {
+            ManualAutostart.remove(this, packageName);
+            renderFcmLists();
+            refreshStatus(null);
+        });
+        row.addView(remove);
+
+        fcmMarkedContainer.addView(row);
+        addDivider(fcmMarkedContainer);
     }
 
     private android.graphics.drawable.Drawable selectableItemBackground() {
@@ -802,30 +817,6 @@ public class MainActivity extends Activity {
         if (status == AutostartStatusReader.Status.PARTIAL) return R.string.autostart_partial;
         if (status == AutostartStatusReader.Status.DISABLED) return R.string.autostart_disabled;
         return R.string.autostart_unknown;
-    }
-
-    private int autostartStatusTextColor(AutostartStatusReader.Status status) {
-        if (status == AutostartStatusReader.Status.ENABLED) return R.attr.pal_badge_text_green;
-        if (status == AutostartStatusReader.Status.PARTIAL) return R.attr.pal_badge_text_yellow;
-        if (status == AutostartStatusReader.Status.DISABLED) return R.attr.pal_badge_text_red;
-        return R.attr.pal_badge_text_neutral;
-    }
-
-    private GradientDrawable makeStatusBadgeBackground(AutostartStatusReader.Status status) {
-        int color;
-        if (status == AutostartStatusReader.Status.ENABLED) {
-            color = R.attr.pal_status_value_green_bg;
-        } else if (status == AutostartStatusReader.Status.PARTIAL) {
-            color = R.attr.pal_status_value_yellow_bg;
-        } else if (status == AutostartStatusReader.Status.DISABLED) {
-            color = R.attr.pal_status_value_red_bg;
-        } else {
-            color = R.attr.pal_status_value_neutral_bg;
-        }
-        GradientDrawable background = new GradientDrawable();
-        background.setColor(AppColors.get(this, color));
-        background.setCornerRadius(dp(12));
-        return background;
     }
 
     private void startProtectionService() {

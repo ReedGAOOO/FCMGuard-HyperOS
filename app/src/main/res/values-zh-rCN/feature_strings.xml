@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM 应用助手</string>
-    <string name="fcm_apps_summary">自动检测声明了标准 FCM/GCM 接收组件的已安装应用，并在 i管家允许读取时检查它们的自启动状态。</string>
+    <string name="fcm_apps_summary">查找已安装、使用 FCM 的应用，选择你想自启动的应用，在 i管家中开启自启动后进行标记。</string>
     <string name="scan_fcm_apps">扫描 FCM 应用</string>
     <string name="collapse_fcm_apps">收起应用列表</string>
     <string name="scanning_fcm_apps">正在扫描…</string>
@@ -18,7 +18,7 @@
     <string name="autostart_unknown">无法读取</string>
     <string name="autostart_manager_unavailable">无法打开 OriginOS 自启动设置</string>
     <string name="app_settings_unavailable">无法打开该应用的设置</string>
-    <string name="fcm_detection_note">只有 AloFCM 自己的自启动状态从 OriginOS 读取；其他应用显示你的标记。</string>
+    <string name="fcm_detection_note">OriginOS 不允许 AloFCM 读取其他应用的自启动状态，所以此列表是你自己对已开启应用的记录。</string>
 
     <string name="appearance_title">外观</string>
     <string name="appearance_summary">默认跟随系统；仅改变界面主题，不增加任何后台任务。</string>

@@ -68,6 +68,8 @@
         <Button android:id="@+id/openAutostartBtn" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="8dp" android:text="@string/open_autostart_manager" android:textAllCaps="false" android:textColor="?attr/pal_text_primary" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
         <TextView android:id="@+id/fcmAppsStatusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/fcm_apps_not_scanned" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:paddingTop="11dp" />
         <LinearLayout android:id="@+id/fcmAppsContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="4dp" />
+        <TextView android:id="@+id/fcmMarkedTitle" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?attr/pal_text_primary" android:textSize="14sp" android:textStyle="bold" android:paddingTop="16dp" android:visibility="gone" />
+        <LinearLayout android:id="@+id/fcmMarkedContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="4dp" android:visibility="gone" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/fcm_detection_note" android:textColor="?attr/pal_text_secondary" android:textSize="11sp" android:lineSpacingExtra="2dp" android:paddingTop="9dp" />
     </LinearLayout>
 

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM app assistant</string>
-    <string name="fcm_apps_summary">Detect installed apps that declare standard FCM/GCM receive components, then check their OriginOS Autostart state when iManager exposes it.</string>
+    <string name="fcm_apps_summary">Find installed apps that use FCM, then pick the ones you want to autostart and mark them once you have switched Autostart on in iManager.</string>
     <string name="scan_fcm_apps">Scan FCM apps</string>
     <string name="collapse_fcm_apps">Collapse app list</string>
     <string name="scanning_fcm_apps">Scanning…</string>
@@ -18,7 +18,7 @@
     <string name="autostart_unknown">Unreadable</string>
     <string name="autostart_manager_unavailable">OriginOS Autostart settings could not be opened</string>
     <string name="app_settings_unavailable">App settings could not be opened</string>
-    <string name="fcm_detection_note">Only AloFCM’s own Autostart state is read from OriginOS; other apps show your marks.</string>
+    <string name="fcm_detection_note">OriginOS does not let AloFCM read other apps’ Autostart state, so this list is your own record of what you switched on.</string>
 
     <string name="appearance_title">Appearance</string>
     <string name="appearance_summary">Default: follow the system. This changes only the UI theme and adds no background work.</string>

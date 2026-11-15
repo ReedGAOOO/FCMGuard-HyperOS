@@ -104,4 +104,9 @@
     <string name="mark_on">已開啟</string>
     <string name="mark_off">仍未開啟</string>
     <string name="autostart_marked_hint">手動標記</string>
+    <string name="fcm_apps_total">找到 %1$d 個 FCM 應用 · 已標記 %2$d</string>
+    <string name="fcm_pick_hint">點按應用，在 i管家中開啟自啟動，然後確認標記。長按可直接標記。</string>
+    <string name="marked_title">已標記自啟動 (%1$d)</string>
+    <string name="marked_remove">移除</string>
+    <string name="app_marked_toast">已標記</string>
 </resources>
