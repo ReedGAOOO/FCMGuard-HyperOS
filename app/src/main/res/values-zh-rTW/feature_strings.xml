@@ -12,10 +12,10 @@
     <string name="fcm_autostart_status_unavailable">偵測到 %1$d 個 FCM 應用程式，但目前 OriginOS 未向一般應用程式開放可讀取的自啟動狀態。請使用「在 OriginOS 中統一設定」。</string>
     <string name="no_fcm_apps">未偵測到面向使用者的 FCM 應用程式。</string>
     <string name="app_settings">自啟動</string>
-    <string name="autostart_enabled">已開啟</string>
+    <string name="autostart_enabled">已自啟動</string>
     <string name="autostart_partial">部分開啟</string>
-    <string name="autostart_disabled">未開啟</string>
-    <string name="autostart_unknown">未知</string>
+    <string name="autostart_disabled">未自啟動</string>
+    <string name="autostart_unknown">無法讀取</string>
     <string name="autostart_manager_unavailable">無法開啟 OriginOS 自啟動設定</string>
     <string name="app_settings_unavailable">無法開啟此應用程式的設定</string>
     <string name="fcm_detection_note">自啟動狀態只做唯讀、盡力而為的偵測。「未知」表示 OriginOS 阻止或未公開對應的廠商 AppOps 查詢；AloFCM 不會把未知誤判為未開啟。</string>

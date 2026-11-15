@@ -91,4 +91,8 @@
     <string name="heartbeat_interval">Heartbeat-Intervall</string>
     <string name="heartbeat_interval_summary">Wie oft der FCM-Heartbeat gesendet wird. Kürzer ist schneller, braucht aber etwas mehr Akku. Im Tiefschlaf erlaubt Android höchstens etwa alle 9 Minuten einen.</string>
     <string name="heartbeat_every">%1$d Min.</string>
+    <string name="tab_apps">FCM apps</string>
+    <string name="autostart_reason_denied">Reason: OriginOS refused AloFCM access to iManager’s Autostart list.</string>
+    <string name="autostart_reason_missing">Reason: this ROM has no readable Autostart list (iManager provider not found).</string>
+    <string name="autostart_reason_no_row">Reason: iManager returned no Autostart entry for these apps.</string>
 </resources>

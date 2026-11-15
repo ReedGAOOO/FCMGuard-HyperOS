@@ -137,6 +137,7 @@ public class MainActivity extends Activity {
         heroTitle.setTypeface(Fonts.title());
         heroTitle.setText(BrandText.appName(getString(R.string.app_name)));
         setupAppearance();
+        setupSectionTabs();
         setupGlassMaterial();
         setupSwitches();
         bindActions();
@@ -360,6 +361,42 @@ public class MainActivity extends Activity {
                 PageTransition.recreate(this);
             }
         });
+    }
+
+    private static final String PREF_SECTION = "dashboard_section";
+
+    /** Shows one section at a time; the chosen tab is remembered across launches. */
+    private void setupSectionTabs() {
+        RadioGroup tabs = findViewById(R.id.sectionTabs);
+        ColorStateList tabText = new ColorStateList(
+                new int[][] {{android.R.attr.state_checked}, {}},
+                new int[] {
+                        AppColors.get(this, R.attr.pal_text_primary),
+                        AppColors.get(this, R.attr.pal_text_secondary)
+                });
+        int[] ids = {R.id.tabProtection, R.id.tabApps, R.id.tabTools, R.id.tabAppearance};
+        for (int id : ids) ((RadioButton) findViewById(id)).setTextColor(tabText);
+
+        int saved = getSharedPreferences(SettingsGuard.PREFS, MODE_PRIVATE).getInt(PREF_SECTION, 0);
+        int index = saved >= 0 && saved < ids.length ? saved : 0;
+        tabs.check(ids[index]);
+        showSection(index);
+        tabs.setOnCheckedChangeListener((group, checkedId) -> {
+            for (int i = 0; i < ids.length; i++) {
+                if (ids[i] != checkedId) continue;
+                showSection(i);
+                getSharedPreferences(SettingsGuard.PREFS, MODE_PRIVATE)
+                        .edit().putInt(PREF_SECTION, i).apply();
+            }
+        });
+    }
+
+    private void showSection(int index) {
+        findViewById(R.id.sectionProtection).setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+        findViewById(R.id.sectionNotes).setVisibility(index == 0 ? View.VISIBLE : View.GONE);
+        findViewById(R.id.sectionApps).setVisibility(index == 1 ? View.VISIBLE : View.GONE);
+        findViewById(R.id.sectionTools).setVisibility(index == 2 ? View.VISIBLE : View.GONE);
+        findViewById(R.id.sectionAppearance).setVisibility(index == 3 ? View.VISIBLE : View.GONE);
     }
 
     private void setupGlassMaterial() {
@@ -615,6 +652,7 @@ public class MainActivity extends Activity {
         fcmAppsContainer.setVisibility(View.VISIBLE);
         fcmAppsStatusText.setText(allUnknown
                 ? getString(R.string.fcm_autostart_status_unavailable, scannedFcmApps.size())
+                        + "\n" + getString(autostartFailureText(AutostartStatusReader.lastFailure()))
                 : getString(R.string.fcm_apps_status_summary,
                         scannedFcmApps.size(), enabledCount, attentionCount, unknownCount));
 
@@ -691,8 +729,7 @@ public class MainActivity extends Activity {
         row.addView(labels, labelsParams);
 
         TextView badge = new TextView(this);
-        badge.setText(autostartStatus == AutostartStatusReader.Status.UNKNOWN
-                ? R.string.app_settings : autostartStatusText(autostartStatus));
+        badge.setText(autostartStatusText(autostartStatus));
         badge.setTextColor(AppColors.get(this, autostartStatusTextColor(autostartStatus)));
         badge.setTextSize(11.5f);
         badge.setTypeface(Typeface.DEFAULT, Typeface.BOLD);
@@ -724,6 +761,12 @@ public class MainActivity extends Activity {
         android.util.TypedValue value = new android.util.TypedValue();
         getTheme().resolveAttribute(android.R.attr.selectableItemBackground, value, true);
         return getResources().getDrawable(value.resourceId, getTheme());
+    }
+
+    private static int autostartFailureText(AutostartStatusReader.Failure failure) {
+        if (failure == AutostartStatusReader.Failure.DENIED) return R.string.autostart_reason_denied;
+        if (failure == AutostartStatusReader.Failure.NO_PROVIDER) return R.string.autostart_reason_missing;
+        return R.string.autostart_reason_no_row;
     }
 
     private int autostartStatusText(AutostartStatusReader.Status status) {

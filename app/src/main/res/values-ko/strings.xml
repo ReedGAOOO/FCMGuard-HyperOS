@@ -86,4 +86,8 @@
     <string name="heartbeat_interval">하트비트 간격</string>
     <string name="heartbeat_interval_summary">FCM 하트비트를 보내는 주기입니다. 짧을수록 빠르지만 배터리를 조금 더 씁니다. 깊은 절전 중에는 Android가 약 9분에 한 번까지만 허용합니다.</string>
     <string name="heartbeat_every">%1$d분</string>
+    <string name="tab_apps">FCM apps</string>
+    <string name="autostart_reason_denied">Reason: OriginOS refused AloFCM access to iManager’s Autostart list.</string>
+    <string name="autostart_reason_missing">Reason: this ROM has no readable Autostart list (iManager provider not found).</string>
+    <string name="autostart_reason_no_row">Reason: iManager returned no Autostart entry for these apps.</string>
 </resources>

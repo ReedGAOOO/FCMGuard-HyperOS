@@ -91,4 +91,8 @@
     <string name="status_value_not_used">未使用</string>
     <string name="heartbeat_never">尚未傳送</string>
     <string name="heartbeat_summary">每 %1$d 分鐘 · 上次傳送 %2$s</string>
+    <string name="tab_apps">FCM 應用</string>
+    <string name="autostart_reason_denied">原因：OriginOS 拒絕 AloFCM 讀取 i管家的自啟動清單。</string>
+    <string name="autostart_reason_missing">原因：此系統沒有可讀取的自啟動清單（找不到 i管家 provider）。</string>
+    <string name="autostart_reason_no_row">原因：i管家沒有回傳這些應用的自啟動記錄。</string>
 </resources>

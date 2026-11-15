@@ -12,13 +12,13 @@
     <string name="fcm_autostart_status_unavailable">Phát hiện %1$d ứng dụng FCM. Bản OriginOS này không cho đọc trạng thái Tự khởi động. Hãy dùng Cài đặt Tự khởi động trong iManager.</string>
     <string name="no_fcm_apps">Không tìm thấy ứng dụng FCM nào.</string>
     <string name="app_settings">Tự khởi động</string>
-    <string name="autostart_enabled">Đang bật</string>
+    <string name="autostart_enabled">Đang tự khởi chạy</string>
     <string name="autostart_partial">Một phần</string>
-    <string name="autostart_disabled">Đang tắt</string>
-    <string name="autostart_unknown">Không rõ</string>
+    <string name="autostart_disabled">Chưa tự khởi chạy</string>
+    <string name="autostart_unknown">Không đọc được</string>
     <string name="autostart_manager_unavailable">Không mở được cài đặt Tự khởi động của OriginOS</string>
     <string name="app_settings_unavailable">Không mở được cài đặt ứng dụng</string>
-    <string name="fcm_detection_note">Trạng thái Tự khởi động chỉ được đọc, không chỉnh sửa, và có thể không chính xác. "Không rõ" nghĩa là OriginOS chặn hoặc không cho truy vấn iManager; AloFCM không bao giờ coi "Không rõ" là đang tắt.</string>
+    <string name="fcm_detection_note">Trạng thái Tự khởi động chỉ được đọc, không chỉnh sửa, và có thể không chính xác. "Không đọc được" nghĩa là OriginOS chặn hoặc không cho truy vấn iManager; AloFCM không bao giờ đoán thành "Chưa tự khởi chạy".</string>
 
     <string name="appearance_title">Hiển thị</string>
     <string name="appearance_summary">Mặc định theo hệ thống. Chỉ đổi giao diện, không thêm tác vụ nền.</string>

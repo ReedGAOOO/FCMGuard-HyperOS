@@ -12,10 +12,10 @@
     <string name="fcm_autostart_status_unavailable">%1$d FCM apps detected. OriginOS did not expose readable Autostart state on this build. Use Configure Autostart in iManager.</string>
     <string name="no_fcm_apps">No user-facing FCM apps were detected.</string>
     <string name="app_settings">Autostart</string>
-    <string name="autostart_enabled">Enabled</string>
+    <string name="autostart_enabled">Autostart on</string>
     <string name="autostart_partial">Partial</string>
-    <string name="autostart_disabled">Disabled</string>
-    <string name="autostart_unknown">Unknown</string>
+    <string name="autostart_disabled">Autostart off</string>
+    <string name="autostart_unknown">Unreadable</string>
     <string name="autostart_manager_unavailable">OriginOS Autostart settings could not be opened</string>
     <string name="app_settings_unavailable">App settings could not be opened</string>
     <string name="fcm_detection_note">Autostart status is read-only and best-effort. Unknown means OriginOS blocked or did not expose the iManager query; AloFCM never treats Unknown as Disabled.</string>

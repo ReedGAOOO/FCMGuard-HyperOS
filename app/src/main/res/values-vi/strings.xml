@@ -89,4 +89,8 @@
     <string name="heartbeat_interval">Chu kỳ nhịp tim</string>
     <string name="heartbeat_interval_summary">Tần suất gửi nhịp tim FCM. Càng ngắn thông báo càng nhanh nhưng tốn pin hơn một chút. Khi máy ngủ sâu, Android chỉ cho tối đa khoảng 9 phút một lần.</string>
     <string name="heartbeat_every">%1$d phút</string>
+    <string name="tab_apps">Ứng dụng</string>
+    <string name="autostart_reason_denied">Lý do: OriginOS từ chối cho AloFCM đọc danh sách Tự khởi động của iManager.</string>
+    <string name="autostart_reason_missing">Lý do: bản ROM này không có danh sách Tự khởi động đọc được (không thấy provider của iManager).</string>
+    <string name="autostart_reason_no_row">Lý do: iManager không trả về mục Tự khởi động nào cho các ứng dụng này.</string>
 </resources>

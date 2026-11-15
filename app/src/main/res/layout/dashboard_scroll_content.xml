@@ -9,7 +9,23 @@
     android:paddingRight="@dimen/page_horizontal_padding"
     android:paddingBottom="@dimen/content_bottom_padding">
 
+    <!-- Section tabs: one section is shown at a time instead of one long page. -->
+    <RadioGroup
+        android:id="@+id/sectionTabs"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="@dimen/card_gap"
+        android:background="@drawable/segmented_group_bg">
+        <RadioButton android:id="@+id/tabProtection" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:ellipsize="end" android:text="@string/protection_title" android:textSize="13sp" android:textStyle="bold" />
+        <RadioButton android:id="@+id/tabApps" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:ellipsize="end" android:text="@string/tab_apps" android:textSize="13sp" android:textStyle="bold" />
+        <RadioButton android:id="@+id/tabTools" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:ellipsize="end" android:text="@string/actions_title" android:textSize="13sp" android:textStyle="bold" />
+        <RadioButton android:id="@+id/tabAppearance" android:layout_width="0dp" android:layout_height="40dp" android:layout_weight="1" android:button="@null" android:background="@drawable/segment_item_bg" android:gravity="center" android:singleLine="true" android:ellipsize="end" android:text="@string/appearance_title" android:textSize="13sp" android:textStyle="bold" />
+    </RadioGroup>
+
     <LinearLayout
+        android:id="@+id/sectionProtection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
@@ -30,26 +46,22 @@
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/sectionNotes"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:background="@drawable/card_bg"
+        android:background="@drawable/info_card_bg"
         android:layout_marginTop="@dimen/card_gap">
-        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/actions_title" android:textColor="?attr/pal_text_primary" android:textSize="16sp" android:textStyle="bold" android:paddingBottom="9dp" />
-        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
-            <Button android:id="@+id/wakeBtn" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/wake_fcm" android:textAllCaps="false" android:textColor="?attr/pal_text_primary" android:textSize="13sp" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
-            <Space android:layout_width="8dp" android:layout_height="1dp" />
-            <Button android:id="@+id/diagBtn" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/open_fcm_diag" android:textAllCaps="false" android:textColor="?attr/pal_text_primary" android:textSize="13sp" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
-        </LinearLayout>
-        <Button android:id="@+id/permissionBtn" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="8dp" android:text="@string/grant_modify" android:textAllCaps="false" android:textColor="?attr/pal_blue" android:textStyle="bold" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
+        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/note_text" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
     </LinearLayout>
 
     <LinearLayout
+        android:id="@+id/sectionApps"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/card_bg"
-        android:layout_marginTop="@dimen/card_gap">
+>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/fcm_apps_title" android:textColor="?attr/pal_text_primary" android:textSize="16sp" android:textStyle="bold" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/fcm_apps_summary" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" android:paddingTop="5dp" />
         <Button android:id="@+id/scanFcmAppsBtn" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="12dp" android:text="@string/scan_fcm_apps" android:textAllCaps="false" android:textColor="@android:color/white" android:textStyle="bold" android:background="@drawable/primary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
@@ -57,6 +69,22 @@
         <TextView android:id="@+id/fcmAppsStatusText" android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/fcm_apps_not_scanned" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:paddingTop="11dp" />
         <LinearLayout android:id="@+id/fcmAppsContainer" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:paddingTop="4dp" />
         <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/fcm_detection_note" android:textColor="?attr/pal_text_secondary" android:textSize="11sp" android:lineSpacingExtra="2dp" android:paddingTop="9dp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/sectionTools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@drawable/card_bg"
+>
+        <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/actions_title" android:textColor="?attr/pal_text_primary" android:textSize="16sp" android:textStyle="bold" android:paddingBottom="9dp" />
+        <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal">
+            <Button android:id="@+id/wakeBtn" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/wake_fcm" android:textAllCaps="false" android:textColor="?attr/pal_text_primary" android:textSize="13sp" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
+            <Space android:layout_width="8dp" android:layout_height="1dp" />
+            <Button android:id="@+id/diagBtn" android:layout_width="0dp" android:layout_height="48dp" android:layout_weight="1" android:text="@string/open_fcm_diag" android:textAllCaps="false" android:textColor="?attr/pal_text_primary" android:textSize="13sp" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
+        </LinearLayout>
+        <Button android:id="@+id/permissionBtn" android:layout_width="match_parent" android:layout_height="48dp" android:layout_marginTop="8dp" android:text="@string/grant_modify" android:textAllCaps="false" android:textColor="?attr/pal_blue" android:textStyle="bold" android:background="@drawable/secondary_button_bg" android:elevation="0dp" android:stateListAnimator="@null" />
     </LinearLayout>
 
     <LinearLayout
@@ -75,21 +103,12 @@
     </LinearLayout>
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@drawable/info_card_bg"
-        android:layout_marginTop="@dimen/card_gap">
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/helper_text" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" />
-        <TextView android:layout_width="match_parent" android:layout_height="wrap_content" android:text="@string/note_text" android:textColor="?attr/pal_text_secondary" android:textSize="12sp" android:lineSpacingExtra="2dp" android:paddingTop="7dp" />
-    </LinearLayout>
-
-    <LinearLayout
+        android:id="@+id/sectionAppearance"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:background="@drawable/card_bg"
-        android:layout_marginTop="@dimen/card_gap">
+>
         <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/appearance_title" android:textColor="?attr/pal_text_primary" android:textSize="16sp" android:textStyle="bold" />
         <!-- Segmented control: three equal segments inside a tonal track. -->
         <RadioGroup android:id="@+id/appearanceGroup" android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="horizontal" android:gravity="center_vertical" android:layout_marginTop="10dp" android:background="@drawable/segmented_group_bg">

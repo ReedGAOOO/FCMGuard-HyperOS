@@ -14,8 +14,8 @@ android {
         applicationId "com.alofcm.originos"
         minSdk 21
         targetSdk 34
-        versionCode 35
-        versionName "2.0.3-originos"
+        versionCode 36
+        versionName "2.0.4-originos"
     }
 
     signingConfigs {

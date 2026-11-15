@@ -91,4 +91,8 @@
     <string name="heartbeat_interval">Intervalo do heartbeat</string>
     <string name="heartbeat_interval_summary">Frequência do heartbeat FCM. Mais curto é mais rápido, mas gasta um pouco mais de bateria. Em repouso profundo o Android permite no máximo um a cada 9 minutos aprox.</string>
     <string name="heartbeat_every">%1$d min</string>
+    <string name="tab_apps">FCM apps</string>
+    <string name="autostart_reason_denied">Reason: OriginOS refused AloFCM access to iManager’s Autostart list.</string>
+    <string name="autostart_reason_missing">Reason: this ROM has no readable Autostart list (iManager provider not found).</string>
+    <string name="autostart_reason_no_row">Reason: iManager returned no Autostart entry for these apps.</string>
 </resources>
