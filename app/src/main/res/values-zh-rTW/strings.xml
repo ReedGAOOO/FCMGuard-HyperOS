@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">OriginOS 低功耗 FCM 保護</string>
     <string name="label_key">設定項 Key</string>
     <string name="label_item">必要項目</string>
@@ -59,7 +59,7 @@
     <string name="write_rejected">系統拒絕寫入</string>
     <string name="write_failed">寫入失敗：%1$s</string>
 
-    <string name="notification_channel_name">FCM Guard 保護</string>
+    <string name="notification_channel_name">AloFCM 保護</string>
     <string name="notification_channel_description">用於維持自動 FCM 保護可靠性的低優先級通知</string>
     <string name="notification_active">保護已啟動 · 事件驅動</string>
     <string name="notification_repaired">白名單已修復 · FCM 已保護</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">Энергоэффективная защита FCM для OriginOS</string>
     <string name="label_key">Ключ настройки</string>
     <string name="label_item">Обязательный элемент</string>
@@ -59,7 +59,7 @@
     <string name="write_rejected">Система отклонила запись</string>
     <string name="write_failed">Ошибка записи: %1$s</string>
 
-    <string name="notification_channel_name">Защита FCM Guard</string>
+    <string name="notification_channel_name">Защита AloFCM</string>
     <string name="notification_channel_description">Низкоприоритетное уведомление для надёжной автоматической защиты FCM</string>
     <string name="notification_active">Защита активна · по событиям</string>
     <string name="notification_repaired">Список исправлен · FCM защищён</string>

@@ -3,19 +3,19 @@
 </p>
 
 <p align="center">
-  <img src="docs/icon.svg" width="180" alt="FCM Guard 图标" />
+  <img src="docs/icon.png" width="180" alt="AloFCM 图标" />
 </p>
 
-# FCM Guard for HyperOS
+# AloFCM for HyperOS
 
 **一个轻量、免 Root 的 HyperOS 3 / HyperOS 4 后台守护工具，用于让 Google Play 服务持续保留在小米免限制名单中，从而提升 FCM 推送可靠性。**
 
 **适用范围：** 中国大陆销售、运行 **HyperOS 3 或 HyperOS 4 中国版 ROM** 的 Xiaomi / Redmi / POCO 手机，且 Google Play 服务已经正常安装并可使用。
 
 <p align="center">
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>直接下载最新版 APK</strong></a>
+  <a href="https://github.com/minhdatstn/AloFCM/releases/latest/download/AloFCM-OriginOS.apk"><strong>直接下载最新版 APK</strong></a>
   ·
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">查看最新 Release</a>
+  <a href="https://github.com/minhdatstn/AloFCM/releases/latest">查看最新 Release</a>
 </p>
 
 ## 2.0 新功能
@@ -33,11 +33,11 @@
   </tr>
 </table>
 
-<sub>以上为原生 Android 15 模拟器上的真实录屏，开启了“显示点按操作”（<code>tools/record_demos.sh</code>）。状态显示“需要处理”，是因为模拟器上没有 HyperOS 为 FCM Guard 自身提供的白名单。</sub>
+<sub>以上为原生 Android 15 模拟器上的真实录屏，开启了“显示点按操作”（<code>tools/record_demos.sh</code>）。状态显示“需要处理”，是因为模拟器上没有 HyperOS 为 AloFCM 自身提供的白名单。</sub>
 
 2.0 还包括：
 
-- **自检：** FCM Guard 自己不在免限制白名单，或自启动被关闭时，状态会变红提醒。
+- **自检：** AloFCM 自己不在免限制白名单，或自启动被关闭时，状态会变红提醒。
 - **流畅切换：** 切换主题、浅色/深色、语言和毛玻璃时整页淡入淡出，不再闪一下。
 - **底层优化：**
   - 每次打开 App 不再让守护服务重复工作：不再重新注册监听，也不再重跑完整检查。
@@ -62,18 +62,18 @@
 ## 快速使用
 
 1. 直接从 **GitHub Releases** 下载并安装最新版 APK。从 v1.5.x 升级到 v2.0 及以后版本时，需要先卸载旧版（新版本改用了新的签名密钥）。
-2. 首次打开时，HyperOS 会弹出权限确认列表（FCM Guard 有意使用 targetSdk 22，系统会要求确认旧式权限）。请保持 **修改系统设置**（必需）和 **读取已安装应用列表**（仅 FCM App 助手扫描时使用）开启；其余项目（桌面快捷方式、锁屏显示、后台弹出界面、剪贴板、媒体音量、动作传感器、动态壁纸等）均未使用，保持关闭即可。
-3. 打开 FCM Guard。若状态卡中 **修改系统设置** 仍显示 **未授权**，点击 **授予“修改系统设置”**。
+2. 首次打开时，HyperOS 会弹出权限确认列表（AloFCM 有意使用 targetSdk 22，系统会要求确认旧式权限）。请保持 **修改系统设置**（必需）和 **读取已安装应用列表**（仅 FCM App 助手扫描时使用）开启；其余项目（桌面快捷方式、锁屏显示、后台弹出界面、剪贴板、媒体音量、动作传感器、动态壁纸等）均未使用，保持关闭即可。
+3. 打开 AloFCM。若状态卡中 **修改系统设置** 仍显示 **未授权**，点击 **授予“修改系统设置”**。
 4. 点击一次状态右侧的 **立即守护**。
 5. 开启 **自动保护**。
-6. 在 HyperOS 中为 FCM Guard 开启 **自启动**，并将电池策略设为 **无限制**。FCM Guard 会自行检查：在它进入无限制白名单（HyperOS 会把电池策略为“无限制”的应用放在这里）且自启动未被关闭之前，状态卡中的 **本应用白名单** / **本应用自启动** 小块显示为红色，状态为 **需要处理**。点击红色小块即可跳转到对应设置。
-7. 如果最看重后台可靠性，建议保持 **常驻通知** 开启。如果 Android / HyperOS 禁用了 FCM Guard 通知，App 会引导进入系统通知设置，使前台通知真正可见。
-8. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App。若当前 HyperOS 允许读取自启动状态，列表会标记 已开启 / 部分开启 / 未开启 / 未知，并在你从 **在 HyperOS 中统一配置** 返回后自动重新检查；若 ROM 不允许读取，FCM Guard 会明确显示“未知 / 不可读取”，而不是猜测。
+6. 在 HyperOS 中为 AloFCM 开启 **自启动**，并将电池策略设为 **无限制**。AloFCM 会自行检查：在它进入无限制白名单（HyperOS 会把电池策略为“无限制”的应用放在这里）且自启动未被关闭之前，状态卡中的 **本应用白名单** / **本应用自启动** 小块显示为红色，状态为 **需要处理**。点击红色小块即可跳转到对应设置。
+7. 如果最看重后台可靠性，建议保持 **常驻通知** 开启。如果 Android / HyperOS 禁用了 AloFCM 通知，App 会引导进入系统通知设置，使前台通知真正可见。
+8. 可选：使用 **FCM App 助手** 扫描可能依赖 FCM 的 App。若当前 HyperOS 允许读取自启动状态，列表会标记 已开启 / 部分开启 / 未开启 / 未知，并在你从 **在 HyperOS 中统一配置** 返回后自动重新检查；若 ROM 不允许读取，AloFCM 会明确显示“未知 / 不可读取”，而不是猜测。
 9. 可选：点击 **打开 FCM 诊断**，进入 Google Play 服务诊断界面，检查 `mtalk.google.com:5228` 连接状态。
 10. 如果只有某个 App 仍出现通知延迟，而其他 FCM App 正常，请单独调整该 App 的后台策略。对于 **WhatsApp** 等即时通讯 App，建议设置为：**WhatsApp → 电池优化 / 省电策略 → 无限制（No restrictions）**；若系统提供自启动选项，也建议为该 App 开启 **自启动**。
 11. 为减少金融 App 的兼容风险，除非确有需要，建议保持开发者选项 / USB 调试 / 无线调试关闭。
 
-> FCM Guard 主要针对中国版 HyperOS 3 和 HyperOS 4：Google 服务本身可以正常使用，但 PowerKeeper / Greezer 仍可能在后台限制 GMS，造成 FCM 推送延迟或中断。
+> AloFCM 主要针对中国版 HyperOS 3 和 HyperOS 4：Google 服务本身可以正常使用，但 PowerKeeper / Greezer 仍可能在后台限制 GMS，造成 FCM 推送延迟或中断。
 
 ---
 
@@ -89,7 +89,7 @@ Settings.System.MILLET_NO_RESTRICT_APP
 
 如果其中缺少 `com.google.android.gms`，Google Play 服务可能被当作普通后台进程处理，从而导致长期保持的 FCM/MCS 连接被中断。
 
-FCM Guard 会读取当前逗号分隔列表，保留所有已有包名，仅在缺失时追加 `com.google.android.gms`。
+AloFCM 会读取当前逗号分隔列表，保留所有已有包名，仅在缺失时追加 `com.google.android.gms`。
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','lineColor':'#000000'}}}%%
@@ -107,7 +107,7 @@ flowchart TD
 
 ## 为什么使用 `targetSdk 22`
 
-FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让项目继续使用当前 Android 构建工具，而旧 target 保留对 Xiaomi 厂商私有 `Settings.System` key 的兼容写入路径，因此可以仅依靠用户授予的 **修改系统设置** 权限完成修复，而不需要 Root / Shizuku。
+AloFCM 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让项目继续使用当前 Android 构建工具，而旧 target 保留对 Xiaomi 厂商私有 `Settings.System` key 的兼容写入路径，因此可以仅依靠用户授予的 **修改系统设置** 权限完成修复，而不需要 Root / Shizuku。
 
 ## 低功耗设计
 
@@ -122,7 +122,7 @@ FCM Guard 有意保持 `compileSdk 35` + `targetSdk 22`。现代 compile SDK 让
 
 开启常驻通知后，`GuardService` 会作为前台服务运行。当前版本改为独立的 `IMPORTANCE_LOW` 静音通知渠道，因此通知会保持可见，但不会发声或振动。
 
-由于项目为了 Xiaomi 私有设置写入而刻意保持 `targetSdk 22`，Android 13+ 的通知权限弹窗时机由系统控制。如果通知已经被系统关闭，FCM Guard 会直接引导进入本 App 的系统通知设置页面。
+由于项目为了 Xiaomi 私有设置写入而刻意保持 `targetSdk 22`，Android 13+ 的通知权限弹窗时机由系统控制。如果通知已经被系统关闭，AloFCM 会直接引导进入本 App 的系统通知设置页面。
 
 ## FCM 诊断
 
@@ -145,20 +145,20 @@ com.google.android.c2dm.intent.RECEIVE
 
 匹配意味着该 App **很可能** 使用 FCM/GCM，但不代表它的每一条通知都一定来自 FCM。
 
-对于检测到的 App，FCM Guard 会尝试**只读**查询 Xiaomi 自启动相关的厂商 AppOps（`10008` 与 `10053`）。如果系统允许可靠读取，界面会显示：
+对于检测到的 App，AloFCM 会尝试**只读**查询 Xiaomi 自启动相关的厂商 AppOps（`10008` 与 `10053`）。如果系统允许可靠读取，界面会显示：
 
 - **已开启** — 两个自启动 AppOps 都是 allow。
 - **部分开启** — 一个 allow，另一个明确为 ignore。
 - **未开启** — 两个都明确为 ignore。
 - **未知** — HyperOS 阻止了查询、返回了无法安全解释的默认 / 厂商状态，或没有暴露可靠结果。
 
-FCM Guard **不会把“未知”当成“未开启”**。如果所有检测到的 App 都只能得到未知状态，逐 App 列表会自动隐藏，只保留检测数量和 **在 HyperOS 中统一配置** 入口，避免展示没有实际帮助的伪状态。用户从 HyperOS 设置页返回后，如果扫描结果仍展开，状态会自动重新读取。
+AloFCM **不会把“未知”当成“未开启”**。如果所有检测到的 App 都只能得到未知状态，逐 App 列表会自动隐藏，只保留检测数量和 **在 HyperOS 中统一配置** 入口，避免展示没有实际帮助的伪状态。用户从 HyperOS 设置页返回后，如果扫描结果仍展开，状态会自动重新读取。
 
 整个过程不会程序化修改任何其他 App 的自启动状态，也不会引入 Shizuku / Root / ADB 权限。
 
 ## 单 App 推送仍可能受后台策略影响
 
-FCM Guard 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 HyperOS 对每个接收 App 单独施加的后台限制。某些 App——尤其是 **WhatsApp** 这类即时通讯 App——可能把 FCM 用作唤醒 / tickle 信号，之后仍需要自己的进程获得后台执行时间、建立网络连接、同步消息并生成本地通知。
+AloFCM 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 HyperOS 对每个接收 App 单独施加的后台限制。某些 App——尤其是 **WhatsApp** 这类即时通讯 App——可能把 FCM 用作唤醒 / tickle 信号，之后仍需要自己的进程获得后台执行时间、建立网络连接、同步消息并生成本地通知。
 
 因此，如果 FCM 诊断连接正常、YouTube / X 等其他 App 推送也正常，但只有某个 App 持续延迟，请优先检查该 App 自身的后台策略。对于 WhatsApp，建议：
 
@@ -178,15 +178,15 @@ FCM Guard 保护的是 **Google Play 服务 / FCM 传输层**，但不会绕过 
 
 ## 权限与隐私
 
-FCM Guard 使用 `WRITE_SETTINGS`、`RECEIVE_BOOT_COMPLETED`、前台服务 / 通知支持，以及针对 FCM/GCM handler、Google Play 服务和小米安全中心的窄范围 package visibility。
+AloFCM 使用 `WRITE_SETTINGS`、`RECEIVE_BOOT_COMPLETED`、前台服务 / 通知支持，以及针对 FCM/GCM handler、Google Play 服务和小米安全中心的窄范围 package visibility。
 
-FCM Guard **不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮窗、设备管理员、账号读取或网络流量抓取。
+AloFCM **不需要** Root、Shizuku、持续 ADB、无障碍、VPN、悬浮窗、设备管理员、账号读取或网络流量抓取。
 
 ## 局限性
 
 本项目依赖 Xiaomi 当前 HyperOS 的具体实现。未来如果 PowerKeeper / Greezer、私有设置 key、App 管理页面或厂商 AppOps 行为发生变化，本方案可能需要同步调整。FCM 重连、FCM App 识别和自启动状态读取都属于 best-effort，因为 Android 没有向普通第三方 App 提供保证这些厂商私有行为的公开 API。
 
-FCM Guard 只能保护共享的 GMS / FCM 连接，不能保证 HyperOS 一定为每个接收 App 提供足够的后台执行时间和网络权限。对于 WhatsApp 等仍出现延迟的 App，可能仍需要单独设置 **电池优化 → 无限制**。
+AloFCM 只能保护共享的 GMS / FCM 连接，不能保证 HyperOS 一定为每个接收 App 提供足够的后台执行时间和网络权限。对于 WhatsApp 等仍出现延迟的 App，可能仍需要单独设置 **电池优化 → 无限制**。
 
 ## 参考与致谢
 
@@ -195,7 +195,7 @@ PowerKeeper / Greezer 行为与 `MILLET_NO_RESTRICT_APP` 修复思路最初由 *
 - HyperOS FCM Fix（`dingwen07`）：https://github.com/dingwen07/hyperos-fcm-fix
 - 技术调查文档：https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard 是独立实现，设计重点是无需 Shizuku / Root、权限尽量少、事件驱动和更低待机后台活动。本仓库没有复制 HyperOS FCM Fix 的源代码。
+AloFCM 是独立实现，设计重点是无需 Shizuku / Root、权限尽量少、事件驱动和更低待机后台活动。本仓库没有复制 HyperOS FCM Fix 的源代码。
 
 ## 构建
 
@@ -207,7 +207,7 @@ GitHub Actions 会自动检查响应式布局并构建经 R8 优化、已签名�
 
 手机用户建议直接使用固定最新版地址：
 
-**https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
+**https://github.com/minhdatstn/AloFCM/releases/latest/download/AloFCM-OriginOS.apk**
 
 ## License
 

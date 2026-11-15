@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">Protección FCM de bajo consumo para OriginOS</string>
     <string name="label_key">Clave de ajustes</string>
     <string name="label_item">Elemento requerido</string>
@@ -59,7 +59,7 @@
     <string name="write_rejected">El sistema rechazó la escritura</string>
     <string name="write_failed">Error de escritura: %1$s</string>
 
-    <string name="notification_channel_name">Protección FCM Guard</string>
+    <string name="notification_channel_name">Protección AloFCM</string>
     <string name="notification_channel_description">Notificación de baja prioridad para mantener fiable la protección FCM automática</string>
     <string name="notification_active">Protección activa · basada en eventos</string>
     <string name="notification_repaired">Lista reparada · FCM protegido</string>

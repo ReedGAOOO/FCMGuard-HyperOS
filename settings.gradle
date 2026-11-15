@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "FCMGuard"
+rootProject.name = "AloFCM"
 include(":app")

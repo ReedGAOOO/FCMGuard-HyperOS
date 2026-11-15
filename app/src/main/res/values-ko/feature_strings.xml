@@ -18,7 +18,7 @@
     <string name="autostart_unknown">알 수 없음</string>
     <string name="autostart_manager_unavailable">OriginOS 자동 시작 설정을 열 수 없습니다</string>
     <string name="app_settings_unavailable">앱 설정을 열 수 없습니다</string>
-    <string name="fcm_detection_note">자동 시작 상태는 읽기 전용의 최선형 확인입니다. ‘알 수 없음’은 OriginOS가 제조사 AppOps 조회를 차단했거나 공개하지 않았다는 뜻이며, FCM Guard는 이를 비활성으로 간주하지 않습니다.</string>
+    <string name="fcm_detection_note">자동 시작 상태는 읽기 전용의 최선형 확인입니다. ‘알 수 없음’은 OriginOS가 제조사 AppOps 조회를 차단했거나 공개하지 않았다는 뜻이며, AloFCM는 이를 비활성으로 간주하지 않습니다.</string>
     <string name="appearance_title">화면 모드</string>
     <string name="appearance_summary">기본값은 시스템 설정을 따릅니다. UI 테마만 변경하며 백그라운드 작업을 추가하지 않습니다.</string>
     <string name="theme_system">시스템</string>

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">Energiesparender FCM-Schutz für OriginOS</string>
     <string name="label_key">Einstellungsschlüssel</string>
     <string name="label_item">Erforderlicher Eintrag</string>

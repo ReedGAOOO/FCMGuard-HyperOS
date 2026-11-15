@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">OriginOS&#x5411;&#x3051;&#x4F4E;&#x6D88;&#x8CBB;&#x96FB;&#x529B;FCM&#x4FDD;&#x8B77;</string>
     <string name="label_key">&#x8A2D;&#x5B9A;&#x30AD;&#x30FC;</string>
     <string name="label_item">&#x5FC5;&#x9808;&#x9805;&#x76EE;</string>
@@ -54,7 +54,7 @@
     <string name="diagnostics_unavailable">FCM&#x8A3A;&#x65AD;&#x753B;&#x9762;&#x304C;&#x898B;&#x3064;&#x304B;&#x308A;&#x307E;&#x305B;&#x3093;</string>
     <string name="write_rejected">&#x30B7;&#x30B9;&#x30C6;&#x30E0;&#x304C;&#x66F8;&#x304D;&#x8FBC;&#x307F;&#x3092;&#x62D2;&#x5426;&#x3057;&#x307E;&#x3057;&#x305F;</string>
     <string name="write_failed">&#x66F8;&#x304D;&#x8FBC;&#x307F;&#x306B;&#x5931;&#x6557;&#x3057;&#x307E;&#x3057;&#x305F;&#xFF1A;%1$s</string>
-    <string name="notification_channel_name">FCM Guard &#x4FDD;&#x8B77;</string>
+    <string name="notification_channel_name">AloFCM &#x4FDD;&#x8B77;</string>
     <string name="notification_channel_description">&#x81EA;&#x52D5;FCM&#x4FDD;&#x8B77;&#x306E;&#x4FE1;&#x983C;&#x6027;&#x3092;&#x7DAD;&#x6301;&#x3059;&#x308B;&#x305F;&#x3081;&#x306E;&#x4F4E;&#x512A;&#x5148;&#x5EA6;&#x901A;&#x77E5;</string>
     <string name="notification_active">&#x4FDD;&#x8B77;&#x4E2D; &#xB7; &#x30A4;&#x30D9;&#x30F3;&#x30C8;&#x99C6;&#x52D5;</string>
     <string name="notification_repaired">&#x30DB;&#x30EF;&#x30A4;&#x30C8;&#x30EA;&#x30B9;&#x30C8;&#x4FEE;&#x5FA9;&#x6E08;&#x307F; &#xB7; FCM&#x4FDD;&#x8B77;&#x4E2D;</string>

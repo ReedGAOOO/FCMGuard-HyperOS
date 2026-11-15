@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">OriginOS 低功耗 FCM 保护</string>
     <string name="label_key">Settings 白名单键（可选）</string>
     <string name="label_item">必需项</string>
@@ -26,8 +26,8 @@
     <string name="actions_title">工具</string>
     <string name="advanced_title">高级配置</string>
 
-    <string name="helper_text">OriginOS 没有类似 HyperOS 无限制名单的公开开关。FCM Guard 通过周期性心跳保持 Google Play 服务的推送连接。如果你的系统版本存在 Settings.System 白名单键，可在高级配置中填写，FCM Guard 会同时把 Google Play 服务保持在其中。</string>
-    <string name="note_text">建议在 OriginOS 中为 FCM Guard 和 Google Play 服务开启“自启动”，将“电池 → 后台耗电管理”设为“允许”，并在最近任务中锁定 FCM Guard。不需要开发者选项或 USB 调试。</string>
+    <string name="helper_text">OriginOS 没有类似 HyperOS 无限制名单的公开开关。AloFCM 通过周期性心跳保持 Google Play 服务的推送连接。如果你的系统版本存在 Settings.System 白名单键，可在高级配置中填写，AloFCM 会同时把 Google Play 服务保持在其中。</string>
+    <string name="note_text">建议在 OriginOS 中为 AloFCM 和 Google Play 服务开启“自启动”，将“电池 → 后台耗电管理”设为“允许”，并在最近任务中锁定 AloFCM。不需要开发者选项或 USB 调试。</string>
 
     <string name="status_protected">保护正常</string>
     <string name="status_ready">已就绪</string>
@@ -44,7 +44,7 @@
     <string name="status_value_no">否</string>
     <string name="status_value_foreground">前台服务</string>
     <string name="status_value_quiet">静默纯后台</string>
-    <string name="status_label_self_whitelist">FCM Guard 后台运行</string>
+    <string name="status_label_self_whitelist">AloFCM 后台运行</string>
     <string name="status_label_self_autostart">本应用自启动</string>
 
     <string name="saved">配置已保存</string>
@@ -59,7 +59,7 @@
     <string name="write_rejected">系统拒绝写入</string>
     <string name="write_failed">写入失败：%1$s</string>
 
-    <string name="notification_channel_name">FCM Guard 保护</string>
+    <string name="notification_channel_name">AloFCM 保护</string>
     <string name="notification_channel_description">用于维持自动 FCM 保护可靠性的低优先级通知</string>
     <string name="notification_active">保护运行中 · FCM 心跳</string>
     <string name="notification_repaired">白名单已修复 · FCM 已保护</string>

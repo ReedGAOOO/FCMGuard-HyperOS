@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="fcm_apps_title">Trợ lý ứng dụng FCM</string>
+    <string name="fcm_apps_summary">Tìm các ứng dụng đã cài có khai báo thành phần nhận FCM/GCM chuẩn, rồi kiểm tra trạng thái Tự khởi động trên OriginOS nếu iManager cho phép đọc.</string>
+    <string name="scan_fcm_apps">Quét ứng dụng FCM</string>
+    <string name="collapse_fcm_apps">Thu gọn danh sách</string>
+    <string name="scanning_fcm_apps">Đang quét…</string>
+    <string name="open_autostart_manager">Cài đặt Tự khởi động trong iManager</string>
+    <string name="fcm_apps_not_scanned">Nhấn Quét ứng dụng FCM để tạo danh sách.</string>
+    <string name="fcm_apps_found">Phát hiện %1$d ứng dụng dùng FCM</string>
+    <string name="fcm_apps_status_summary">%1$d phát hiện · %2$d đang bật · %3$d cần xử lý · %4$d không rõ</string>
+    <string name="fcm_autostart_status_unavailable">Phát hiện %1$d ứng dụng FCM. Bản OriginOS này không cho đọc trạng thái Tự khởi động. Hãy dùng Cài đặt Tự khởi động trong iManager.</string>
+    <string name="no_fcm_apps">Không tìm thấy ứng dụng FCM nào.</string>
+    <string name="app_settings">Tự khởi động</string>
+    <string name="autostart_enabled">Đang bật</string>
+    <string name="autostart_partial">Một phần</string>
+    <string name="autostart_disabled">Đang tắt</string>
+    <string name="autostart_unknown">Không rõ</string>
+    <string name="autostart_manager_unavailable">Không mở được cài đặt Tự khởi động của OriginOS</string>
+    <string name="app_settings_unavailable">Không mở được cài đặt ứng dụng</string>
+    <string name="fcm_detection_note">Trạng thái Tự khởi động chỉ được đọc, không chỉnh sửa, và có thể không chính xác. "Không rõ" nghĩa là OriginOS chặn hoặc không cho truy vấn iManager; AloFCM không bao giờ coi "Không rõ" là đang tắt.</string>
+
+    <string name="appearance_title">Hiển thị</string>
+    <string name="appearance_summary">Mặc định theo hệ thống. Chỉ đổi giao diện, không thêm tác vụ nền.</string>
+    <string name="theme_system">Hệ thống</string>
+    <string name="theme_light">Sáng</string>
+    <string name="theme_dark">Tối</string>
+    <string name="glass_material">Hiệu ứng kính mờ</string>
+    <string name="glass_material_summary">Đầu trang và thẻ trạng thái dùng hiệu ứng làm mờ của hệ thống. Tự tạm dừng khi bật Tiết kiệm pin.</string>
+    <string name="glass_material_unavailable">Không khả dụng: máy không hỗ trợ làm mờ hệ thống (cần Android 12+ và không phải máy RAM thấp).</string>
+</resources>

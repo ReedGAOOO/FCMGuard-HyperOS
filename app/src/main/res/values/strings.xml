@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
+    <string name="app_name">AloFCM</string>
     <string name="subtitle">Quiet FCM protection for OriginOS</string>
     <string name="label_key">Settings whitelist key (optional)</string>
     <string name="label_item">Required item</string>
@@ -26,8 +26,8 @@
     <string name="actions_title">Tools</string>
     <string name="advanced_title">Advanced configuration</string>
 
-    <string name="helper_text">OriginOS has no public switch like the HyperOS no-restrict list. FCM Guard keeps the Google Play services push connection alive with a periodic heartbeat. If your build exposes a Settings.System whitelist key, enter it under Advanced configuration and FCM Guard will also keep Google Play services in it.</string>
-    <string name="note_text">Recommended on OriginOS: allow Autostart for FCM Guard and Google Play services, set Battery → Background power consumption to Allow, and lock FCM Guard in Recents. Developer options and USB debugging are not required.</string>
+    <string name="helper_text">OriginOS has no public switch like the HyperOS no-restrict list. AloFCM keeps the Google Play services push connection alive with a periodic heartbeat. If your build exposes a Settings.System whitelist key, enter it under Advanced configuration and AloFCM will also keep Google Play services in it.</string>
+    <string name="note_text">Recommended on OriginOS: allow Autostart for AloFCM and Google Play services, set Battery → Background power consumption to Allow, and lock AloFCM in Recents. Developer options and USB debugging are not required.</string>
 
     <string name="status_protected">Protected</string>
     <string name="status_ready">Ready</string>
@@ -44,8 +44,8 @@
     <string name="status_value_no">No</string>
     <string name="status_value_foreground">Foreground service</string>
     <string name="status_value_quiet">Background only</string>
-    <string name="status_label_self_whitelist">FCM Guard background</string>
-    <string name="status_label_self_autostart">FCM Guard autostart</string>
+    <string name="status_label_self_whitelist">AloFCM background</string>
+    <string name="status_label_self_autostart">AloFCM autostart</string>
 
     <string name="saved">Configuration saved</string>
     <string name="repaired">Repaired / protected</string>
@@ -59,7 +59,7 @@
     <string name="write_rejected">System rejected the write</string>
     <string name="write_failed">Write failed: %1$s</string>
 
-    <string name="notification_channel_name">FCM Guard protection</string>
+    <string name="notification_channel_name">AloFCM protection</string>
     <string name="notification_channel_description">Low-priority notification used to keep automatic FCM protection reliable</string>
     <string name="notification_active">Protection active · FCM heartbeat</string>
     <string name="notification_repaired">Whitelist repaired · FCM protected</string>

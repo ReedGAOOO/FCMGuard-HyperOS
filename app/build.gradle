@@ -4,14 +4,14 @@ plugins {
 
 // Release signing comes from the environment (CI writes the keystore from a repository
 // secret). Without it, assembleRelease still works locally and produces an unsigned APK.
-def releaseKeystore = System.getenv('FCMGUARD_KEYSTORE_FILE')
+def releaseKeystore = System.getenv('ALOFCM_KEYSTORE_FILE')
 
 android {
-    namespace 'com.reed.fcmguard'
+    namespace 'com.alofcm'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.reed.fcmguard.originos"
+        applicationId "com.alofcm.originos"
         minSdk 21
         targetSdk 22
         versionCode 33
@@ -22,9 +22,9 @@ android {
         if (releaseKeystore) {
             release {
                 storeFile file(releaseKeystore)
-                storePassword System.getenv('FCMGUARD_KEYSTORE_PASSWORD')
-                keyAlias System.getenv('FCMGUARD_KEY_ALIAS')
-                keyPassword System.getenv('FCMGUARD_KEY_PASSWORD') ?: System.getenv('FCMGUARD_KEYSTORE_PASSWORD')
+                storePassword System.getenv('ALOFCM_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('ALOFCM_KEY_ALIAS')
+                keyPassword System.getenv('ALOFCM_KEY_PASSWORD') ?: System.getenv('ALOFCM_KEYSTORE_PASSWORD')
             }
         }
     }
