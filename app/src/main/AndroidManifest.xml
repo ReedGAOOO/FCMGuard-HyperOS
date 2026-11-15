@@ -5,6 +5,9 @@
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- OriginOS build: network-change heartbeat and the Doze exemption request. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!--
       Narrow package visibility only for the signals FCM Guard needs. This avoids
@@ -19,8 +22,10 @@
             <action android:name="com.google.android.c2dm.intent.RECEIVE" />
         </intent>
         <package android:name="com.google.android.gms" />
-        <package android:name="com.miui.securitycenter" />
-        <package android:name="com.miui.powerkeeper" />
+        <package android:name="com.vivo.permissionmanager" />
+        <package android:name="com.iqoo.secure" />
+        <package android:name="com.vivo.abe" />
+        <package android:name="com.iqoo.powersaving" />
     </queries>
 
     <application
@@ -32,10 +37,11 @@
         android:supportsRtl="true">
 
         <!--
-          FCM Guard intentionally targets SDK 22 so WRITE_SETTINGS can modify Xiaomi's
-          private Settings.System whitelist. Old-target apps can otherwise be placed
+          FCM Guard intentionally targets SDK 22 so WRITE_SETTINGS can modify an optional
+          private Settings.System whitelist key, and so its heartbeat alarm and service
+          restarts are not subject to newer background-start limits. Old-target apps can otherwise be placed
           into legacy aspect-ratio compatibility mode on tall modern displays, which
-          HyperOS shows as a large black area below the app. Explicitly opt the main
+          the ROM shows as a large black area below the app. Explicitly opt the main
           activity into modern tall/resizable layouts while keeping targetSdk 22.
         -->
         <meta-data
@@ -58,6 +64,10 @@
             android:name=".GuardService"
             android:exported="false"
             android:stopWithTask="false" />
+
+        <receiver
+            android:name=".HeartbeatScheduler"
+            android:exported="false" />
 
         <receiver
             android:name=".BootReceiver"

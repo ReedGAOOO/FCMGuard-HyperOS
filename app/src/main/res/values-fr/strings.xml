@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Protection FCM discrète pour HyperOS</string>
+    <string name="subtitle">Protection FCM discrète pour OriginOS</string>
     <string name="label_key">Clé de paramètre</string>
     <string name="label_item">Élément requis</string>
     <string name="save_configuration">Enregistrer la configuration</string>
@@ -15,19 +15,19 @@
     <string name="follow_system">Suivre le système</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Protection</string>
     <string name="automatic_protection">Protection automatique</string>
     <string name="automatic_protection_summary">Surveillance événementielle uniquement de la clé FCM. Une vérification de secours toutes les 30 minutes ne réveille pas volontairement un téléphone en veille.</string>
     <string name="persistent_notification">Notification persistante</string>
-    <string name="persistent_notification_summary">Recommandé pour une fiabilité maximale. Désactivez-la pour supprimer la notification et utiliser le mode arrière-plan silencieux ; HyperOS pourra alors arrêter le service plus facilement.</string>
+    <string name="persistent_notification_summary">Recommandé pour une fiabilité maximale. Désactivez-la pour supprimer la notification et utiliser le mode arrière-plan silencieux ; OriginOS pourra alors arrêter le service plus facilement.</string>
     <string name="actions_title">Outils</string>
     <string name="advanced_title">Configuration avancée</string>
 
     <string name="helper_text">Conception basse consommation : plus de scrutation toutes les 30 secondes, aucune surveillance de paramètres système sans rapport, et une demande de reconnexion FCM uniquement après une réparation réelle de la liste.</string>
-    <string name="note_text">Sur HyperOS, gardez le démarrage automatique activé et le mode batterie sur Sans restrictions. Les options développeur, le débogage USB et le débogage sans fil ne sont pas nécessaires.</string>
+    <string name="note_text">Sur OriginOS, gardez le démarrage automatique activé et le mode batterie sur Sans restrictions. Les options développeur, le débogage USB et le débogage sans fil ne sont pas nécessaires.</string>
 
     <string name="status_protected">Protégé</string>
     <string name="status_ready">Prêt</string>
@@ -68,7 +68,7 @@
     <string name="theme_title">Thème</string>
     <string name="theme_preview_hint">Aperçus dans le mode clair ou sombre actuel</string>
     <string name="palette_classic">Classique</string>
-    <string name="palette_hyper_blue">Bleu HyperOS</string>
+    <string name="palette_hyper_blue">Bleu OriginOS</string>
     <string name="palette_guardian_teal">Sarcelle</string>
     <string name="palette_indigo_dusk">Indigo</string>
     <string name="palette_google">Google classique</string>

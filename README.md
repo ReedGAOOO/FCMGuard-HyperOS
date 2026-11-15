@@ -6,17 +6,30 @@
   <img src="docs/icon.svg" width="180" alt="FCM Guard icon" />
 </p>
 
-# FCM Guard for HyperOS
+# FCM Guard for OriginOS
 
-**A lightweight, no-root watchdog for HyperOS 3 and HyperOS 4 China ROMs that keeps Google Play services in Xiaomi's no-restrict background list so FCM push stays reliable.**
+**A lightweight, no-root keep-alive for vivo / iQOO phones running OriginOS (or Funtouch OS) with Google Play services, so FCM push arrives on time.**
 
-**Designed for:** China-market Xiaomi / Redmi / POCO phones running **HyperOS 3 or HyperOS 4 (China ROM)** with Google Play services already installed and working.
+This branch is the OriginOS build of FCM Guard for HyperOS. It installs side by side with it (package `com.reed.fcmguard.originos`).
 
-<p align="center">
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>Download latest APK</strong></a>
-  ·
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">Latest release</a>
-</p>
+### How it differs from the HyperOS build
+
+| | HyperOS build | OriginOS build |
+|---|---|---|
+| Core fix | Keeps `com.google.android.gms` in Xiaomi's `MILLET_NO_RESTRICT_APP` whitelist | Periodic FCM heartbeat (GTALK/MCS) on an allow-while-idle alarm, plus on network change and screen-on |
+| Whitelist key | Fixed default | **Off by default.** vivo has no documented equivalent; enter a key under Advanced configuration only if your build has one |
+| Modify system settings permission | Required | Only needed when a whitelist key is set |
+| Settings shortcuts | Security app Autostart / battery saver | iManager Autostart, Background power consumption, Android Doze exemption |
+| Self-check tiles | Whitelist + Autostart | Background power (Doze exemption) + Autostart (Unknown when iManager hides it) |
+
+### Recommended OriginOS setup
+
+1. Turn on **Automatic protection**. FCM Guard asks for the battery-optimisation exemption.
+2. iManager → App manager → **Autostart**: allow FCM Guard and Google Play services.
+3. Settings → Battery → **Background power consumption management**: set FCM Guard and Google Play services to **Allow**.
+4. Lock FCM Guard in Recents (pull the card down / tap the lock).
+
+> The vivo settings components are undocumented and change between OriginOS releases. Each button tries several known pages and falls back to Android's own settings page.
 
 ## What's new in 2.0
 

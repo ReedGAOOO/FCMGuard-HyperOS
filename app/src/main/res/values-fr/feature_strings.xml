@@ -1,30 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">Assistant d’apps FCM</string>
-    <string name="fcm_apps_summary">Détecte les apps installées qui déclarent les composants FCM/GCM standard et vérifie leur état de démarrage automatique lorsque HyperOS l’expose.</string>
+    <string name="fcm_apps_summary">Détecte les apps installées qui déclarent les composants FCM/GCM standard et vérifie leur état de démarrage automatique lorsque OriginOS l’expose.</string>
     <string name="scan_fcm_apps">Analyser les apps FCM</string>
     <string name="collapse_fcm_apps">Masquer la liste des apps</string>
     <string name="scanning_fcm_apps">Analyse…</string>
-    <string name="open_autostart_manager">Tout configurer dans HyperOS</string>
+    <string name="open_autostart_manager">Tout configurer dans OriginOS</string>
     <string name="fcm_apps_not_scanned">Touchez « Analyser les apps FCM » pour créer la liste locale.</string>
     <string name="fcm_apps_found">%1$d apps compatibles FCM détectées</string>
     <string name="fcm_apps_status_summary">%1$d détectées · %2$d activées · %3$d à vérifier · %4$d inconnues</string>
-    <string name="fcm_autostart_status_unavailable">%1$d apps FCM détectées. Cette version de HyperOS n’expose pas un état de démarrage automatique lisible. Utilisez « Tout configurer dans HyperOS ».</string>
+    <string name="fcm_autostart_status_unavailable">%1$d apps FCM détectées. Cette version de OriginOS n’expose pas un état de démarrage automatique lisible. Utilisez « Tout configurer dans OriginOS ».</string>
     <string name="no_fcm_apps">Aucune app FCM destinée à l’utilisateur n’a été détectée.</string>
     <string name="app_settings">Démarrage auto</string>
     <string name="autostart_enabled">Activé</string>
     <string name="autostart_partial">Partiel</string>
     <string name="autostart_disabled">Désactivé</string>
     <string name="autostart_unknown">Inconnu</string>
-    <string name="autostart_manager_unavailable">Impossible d’ouvrir les réglages de démarrage automatique HyperOS</string>
+    <string name="autostart_manager_unavailable">Impossible d’ouvrir les réglages de démarrage automatique OriginOS</string>
     <string name="app_settings_unavailable">Impossible d’ouvrir les réglages de l’app</string>
-    <string name="fcm_detection_note">L’état de démarrage automatique est lu en lecture seule et au mieux. « Inconnu » signifie que HyperOS bloque ou n’expose pas la requête AppOps du fabricant ; FCM Guard ne l’interprète jamais comme désactivé.</string>
+    <string name="fcm_detection_note">L’état de démarrage automatique est lu en lecture seule et au mieux. « Inconnu » signifie que OriginOS bloque ou n’expose pas la requête AppOps du fabricant ; FCM Guard ne l’interprète jamais comme désactivé.</string>
     <string name="appearance_title">Apparence</string>
     <string name="appearance_summary">Par défaut, suit le système. Cela ne change que le thème de l’interface et n’ajoute aucune tâche en arrière-plan.</string>
     <string name="theme_system">Système</string>
     <string name="theme_light">Clair</string>
     <string name="theme_dark">Sombre</string>
-    <string name="glass_material">Matière avancée HyperOS</string>
+    <string name="glass_material">Matière avancée OriginOS</string>
     <string name="glass_material_summary">En-tête et carte d’état en verre dépoli, rendus avec le flou natif du système. Suspendu automatiquement par l’économiseur de batterie.</string>
-    <string name="glass_material_unavailable">Indisponible : ce système n’expose pas la matière avancée HyperOS (flou système).</string>
+    <string name="glass_material_unavailable">Indisponible : ce système n’expose pas la matière avancée OriginOS (flou système).</string>
 </resources>

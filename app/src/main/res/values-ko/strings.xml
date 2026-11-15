@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">HyperOS&#xC6A9; &#xC800;&#xC804;&#xB825; FCM &#xBCF4;&#xD638;</string>
+    <string name="subtitle">OriginOS&#xC6A9; &#xC800;&#xC804;&#xB825; FCM &#xBCF4;&#xD638;</string>
     <string name="label_key">&#xC124;&#xC815; &#xD0A4;</string>
     <string name="label_item">&#xD544;&#xC218; &#xD56D;&#xBAA9;</string>
     <string name="save_configuration">&#xC124;&#xC815; &#xC800;&#xC7A5;</string>
@@ -15,17 +15,17 @@
     <string name="follow_system">&#xC2DC;&#xC2A4;&#xD15C; &#xC124;&#xC815; &#xB530;&#xB974;&#xAE30;</string>
     <string name="english">English</string>
     <string name="simplified_chinese">&#x7B80;&#x4F53;&#x4E2D;&#x6587;</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
     <string name="protection_title">&#xBCF4;&#xD638; &#xC124;&#xC815;</string>
     <string name="automatic_protection">&#xC790;&#xB3D9; &#xBCF4;&#xD638;</string>
     <string name="automatic_protection_summary">FCM &#xD5C8;&#xC6A9; &#xBAA9;&#xB85D; &#xD56D;&#xBAA9;&#xB9CC; &#xC774;&#xBCA4;&#xD2B8; &#xAE30;&#xBC18;&#xC73C;&#xB85C; &#xAC10;&#xC2DC;&#xD569;&#xB2C8;&#xB2E4;. 30&#xBD84; &#xAC04;&#xACA9;&#xC758; &#xBCF4;&#xC870; &#xD655;&#xC778;&#xC740; &#xC808;&#xC804; &#xC911;&#xC778; &#xD734;&#xB300;&#xC804;&#xD654;&#xB97C; &#xC758;&#xB3C4;&#xC801;&#xC73C;&#xB85C; &#xAE68;&#xC6B0;&#xC9C0; &#xC54A;&#xC2B5;&#xB2C8;&#xB2E4;.</string>
     <string name="persistent_notification">&#xC0C1;&#xC2DC; &#xC54C;&#xB9BC;</string>
-    <string name="persistent_notification_summary">&#xCD5C;&#xACE0;&#xC758; &#xC548;&#xC815;&#xC131;&#xC744; &#xC704;&#xD574; &#xCF1C;&#xB294; &#xAC83;&#xC744; &#xAD8C;&#xC7A5;&#xD569;&#xB2C8;&#xB2E4;. &#xB044;&#xBA74; &#xC54C;&#xB9BC;&#xC774; &#xC0AC;&#xB77C;&#xC9C0;&#xACE0; &#xBC31;&#xADF8;&#xB77C;&#xC6B4;&#xB4DC; &#xC804;&#xC6A9; &#xBAA8;&#xB4DC;&#xAC00; &#xB418;&#xC9C0;&#xB9CC; HyperOS&#xAC00; &#xC11C;&#xBE44;&#xC2A4;&#xB97C; &#xB354; &#xC27D;&#xAC8C; &#xC885;&#xB8CC;&#xD560; &#xC218; &#xC788;&#xC2B5;&#xB2C8;&#xB2E4;.</string>
+    <string name="persistent_notification_summary">&#xCD5C;&#xACE0;&#xC758; &#xC548;&#xC815;&#xC131;&#xC744; &#xC704;&#xD574; &#xCF1C;&#xB294; &#xAC83;&#xC744; &#xAD8C;&#xC7A5;&#xD569;&#xB2C8;&#xB2E4;. &#xB044;&#xBA74; &#xC54C;&#xB9BC;&#xC774; &#xC0AC;&#xB77C;&#xC9C0;&#xACE0; &#xBC31;&#xADF8;&#xB77C;&#xC6B4;&#xB4DC; &#xC804;&#xC6A9; &#xBAA8;&#xB4DC;&#xAC00; &#xB418;&#xC9C0;&#xB9CC; OriginOS&#xAC00; &#xC11C;&#xBE44;&#xC2A4;&#xB97C; &#xB354; &#xC27D;&#xAC8C; &#xC885;&#xB8CC;&#xD560; &#xC218; &#xC788;&#xC2B5;&#xB2C8;&#xB2E4;.</string>
     <string name="actions_title">&#xB3C4;&#xAD6C;</string>
     <string name="advanced_title">&#xACE0;&#xAE09; &#xC124;&#xC815;</string>
     <string name="helper_text">&#xC800;&#xC804;&#xB825; &#xC124;&#xACC4;: 30&#xCD08;&#xB9C8;&#xB2E4; &#xD3F4;&#xB9C1;&#xD558;&#xC9C0; &#xC54A;&#xACE0; &#xAD00;&#xB828; &#xC5C6;&#xB294; &#xC2DC;&#xC2A4;&#xD15C; &#xC124;&#xC815;&#xB3C4; &#xAC10;&#xC2DC;&#xD558;&#xC9C0; &#xC54A;&#xC73C;&#xBA70;, &#xC2E4;&#xC81C; &#xD5C8;&#xC6A9; &#xBAA9;&#xB85D; &#xBCF5;&#xAD6C;&#xAC00; &#xBC1C;&#xC0DD;&#xD55C; &#xB4A4;&#xC5D0;&#xB9CC; FCM &#xC7AC;&#xC5F0;&#xACB0;&#xC744; &#xC694;&#xCCAD;&#xD569;&#xB2C8;&#xB2E4;.</string>
-    <string name="note_text">HyperOS&#xC5D0;&#xC11C;&#xB294; &#xC790;&#xB3D9; &#xC2DC;&#xC791;&#xC744; &#xCF1C;&#xACE0; &#xBC30;&#xD130;&#xB9AC; &#xBAA8;&#xB4DC;&#xB97C; &#xC81C;&#xD55C; &#xC5C6;&#xC74C;&#xC73C;&#xB85C; &#xC124;&#xC815;&#xD558;&#xB294; &#xAC83;&#xC744; &#xAD8C;&#xC7A5;&#xD569;&#xB2C8;&#xB2E4;. &#xAC1C;&#xBC1C;&#xC790; &#xC635;&#xC158;, USB &#xB514;&#xBC84;&#xAE45;, &#xBB34;&#xC120; &#xB514;&#xBC84;&#xAE45;&#xC740; &#xD544;&#xC694;&#xD558;&#xC9C0; &#xC54A;&#xC2B5;&#xB2C8;&#xB2E4;.</string>
+    <string name="note_text">OriginOS&#xC5D0;&#xC11C;&#xB294; &#xC790;&#xB3D9; &#xC2DC;&#xC791;&#xC744; &#xCF1C;&#xACE0; &#xBC30;&#xD130;&#xB9AC; &#xBAA8;&#xB4DC;&#xB97C; &#xC81C;&#xD55C; &#xC5C6;&#xC74C;&#xC73C;&#xB85C; &#xC124;&#xC815;&#xD558;&#xB294; &#xAC83;&#xC744; &#xAD8C;&#xC7A5;&#xD569;&#xB2C8;&#xB2E4;. &#xAC1C;&#xBC1C;&#xC790; &#xC635;&#xC158;, USB &#xB514;&#xBC84;&#xAE45;, &#xBB34;&#xC120; &#xB514;&#xBC84;&#xAE45;&#xC740; &#xD544;&#xC694;&#xD558;&#xC9C0; &#xC54A;&#xC2B5;&#xB2C8;&#xB2E4;.</string>
     <string name="status_protected">&#xBCF4;&#xD638; &#xC911;</string>
     <string name="status_ready">&#xC900;&#xBE44;&#xB428;</string>
     <string name="status_attention">&#xD655;&#xC778; &#xD544;&#xC694;</string>
@@ -63,7 +63,7 @@
     <string name="theme_title">테마</string>
     <string name="theme_preview_hint">미리보기는 현재 라이트 / 다크 모드를 따릅니다</string>
     <string name="palette_classic">클래식</string>
-    <string name="palette_hyper_blue">HyperOS 블루</string>
+    <string name="palette_hyper_blue">OriginOS 블루</string>
     <string name="palette_guardian_teal">틸</string>
     <string name="palette_indigo_dusk">인디고</string>
     <string name="palette_google">Google 클래식</string>

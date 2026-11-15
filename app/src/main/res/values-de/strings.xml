@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Energiesparender FCM-Schutz für HyperOS</string>
+    <string name="subtitle">Energiesparender FCM-Schutz für OriginOS</string>
     <string name="label_key">Einstellungsschlüssel</string>
     <string name="label_item">Erforderlicher Eintrag</string>
     <string name="save_configuration">Konfiguration speichern</string>
@@ -15,7 +15,7 @@
     <string name="follow_system">Systemsprache verwenden</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Schutz</string>
@@ -27,7 +27,7 @@
     <string name="advanced_title">Erweiterte Konfiguration</string>
 
     <string name="helper_text">Energiesparendes Design: kein Polling alle 30 Sekunden, keine Beobachtung fremder Systemeinstellungen und FCM-Neuverbindung nur nach einer echten Reparatur.</string>
-    <string name="note_text">Unter HyperOS Autostart aktiviert lassen und den Akkumodus auf Keine Einschränkungen setzen. Entwickleroptionen sowie USB- oder WLAN-Debugging sind nicht erforderlich.</string>
+    <string name="note_text">Unter OriginOS Autostart aktiviert lassen und den Akkumodus auf Keine Einschränkungen setzen. Entwickleroptionen sowie USB- oder WLAN-Debugging sind nicht erforderlich.</string>
 
     <string name="status_protected">Geschützt</string>
     <string name="status_ready">Bereit</string>
@@ -68,7 +68,7 @@
     <string name="theme_title">Design</string>
     <string name="theme_preview_hint">Vorschau im aktuellen hellen oder dunklen Modus</string>
     <string name="palette_classic">Klassisch</string>
-    <string name="palette_hyper_blue">HyperOS-Blau</string>
+    <string name="palette_hyper_blue">OriginOS-Blau</string>
     <string name="palette_guardian_teal">Petrol</string>
     <string name="palette_indigo_dusk">Indigo</string>
     <string name="palette_google">Google klassisch</string>

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Quiet FCM protection for HyperOS</string>
-    <string name="label_key">Settings key</string>
+    <string name="subtitle">Quiet FCM protection for OriginOS</string>
+    <string name="label_key">Settings whitelist key (optional)</string>
     <string name="label_item">Required item</string>
     <string name="save_configuration">Save configuration</string>
     <string name="grant_modify">Grant Modify system settings</string>
@@ -10,24 +10,24 @@
     <string name="wake_fcm">Wake FCM now</string>
     <string name="open_fcm_diag">Open FCM diagnostics</string>
     <string name="status_title">Status</string>
-    <string name="current_value_title">Current whitelist value</string>
+    <string name="current_value_title">FCM heartbeat</string>
     <string name="language">Language</string>
     <string name="follow_system">Follow system</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Protection</string>
     <string name="automatic_protection">Automatic protection</string>
-    <string name="automatic_protection_summary">Event-driven monitoring of only the FCM whitelist key. A non-waking 30-minute fallback check is used only as insurance.</string>
+    <string name="automatic_protection_summary">Sends the FCM heartbeat on a short alarm (also in Doze), after network changes and when the screen turns on, so Google Play services reconnects instead of waiting up to half an hour.</string>
     <string name="persistent_notification">Persistent notification</string>
-    <string name="persistent_notification_summary">Recommended ON for maximum reliability. Turn it OFF to remove the ongoing notification and use background-only mode; HyperOS may then stop the service more easily.</string>
+    <string name="persistent_notification_summary">Recommended ON for maximum reliability. Turn it OFF to remove the ongoing notification and use background-only mode; OriginOS may then stop the service more easily.</string>
     <string name="actions_title">Tools</string>
     <string name="advanced_title">Advanced configuration</string>
 
-    <string name="helper_text">Low-power design: the service no longer polls every 30 seconds, no longer watches unrelated system settings, and only sends an FCM reconnect request after an actual whitelist repair.</string>
-    <string name="note_text">Recommended on HyperOS: keep Autostart enabled and battery mode set to No restrictions. Developer options, USB debugging and Wireless debugging are not required.</string>
+    <string name="helper_text">OriginOS has no public switch like the HyperOS no-restrict list. FCM Guard keeps the Google Play services push connection alive with a periodic heartbeat. If your build exposes a Settings.System whitelist key, enter it under Advanced configuration and FCM Guard will also keep Google Play services in it.</string>
+    <string name="note_text">Recommended on OriginOS: allow Autostart for FCM Guard and Google Play services, set Battery → Background power consumption to Allow, and lock FCM Guard in Recents. Developer options and USB debugging are not required.</string>
 
     <string name="status_protected">Protected</string>
     <string name="status_ready">Ready</string>
@@ -44,7 +44,7 @@
     <string name="status_value_no">No</string>
     <string name="status_value_foreground">Foreground service</string>
     <string name="status_value_quiet">Background only</string>
-    <string name="status_label_self_whitelist">FCM Guard whitelist</string>
+    <string name="status_label_self_whitelist">FCM Guard background</string>
     <string name="status_label_self_autostart">FCM Guard autostart</string>
 
     <string name="saved">Configuration saved</string>
@@ -61,14 +61,14 @@
 
     <string name="notification_channel_name">FCM Guard protection</string>
     <string name="notification_channel_description">Low-priority notification used to keep automatic FCM protection reliable</string>
-    <string name="notification_active">Protection active · event-driven</string>
+    <string name="notification_active">Protection active · FCM heartbeat</string>
     <string name="notification_repaired">Whitelist repaired · FCM protected</string>
 
     <!-- Themes (colour palettes; picker in the hero card). -->
     <string name="theme_title">Theme</string>
     <string name="theme_preview_hint">Previews follow the current light or dark mode</string>
     <string name="palette_classic">Classic</string>
-    <string name="palette_hyper_blue">HyperOS Blue</string>
+    <string name="palette_hyper_blue">Origin Blue</string>
     <string name="palette_guardian_teal">Guardian Teal</string>
     <string name="palette_indigo_dusk">Indigo Dusk</string>
     <string name="palette_google">Google Classic</string>
@@ -76,4 +76,15 @@
     <string name="palette_sunset_amber">Sunset Amber</string>
     <string name="palette_graphite">Graphite</string>
     <string name="palette_aurora">Aurora</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">No whitelist key configured · heartbeat only</string>
+    <string name="status_label_heartbeat">FCM heartbeat</string>
+    <string name="status_value_heartbeat_on">Running</string>
+    <string name="status_value_allowed">Allowed</string>
+    <string name="status_value_restricted">Restricted</string>
+    <string name="status_label_whitelist_key">Whitelist key</string>
+    <string name="status_value_not_used">Not used</string>
+    <string name="heartbeat_never">not sent yet</string>
+    <string name="heartbeat_summary">Every %1$d min · last sent %2$s</string>
 </resources>

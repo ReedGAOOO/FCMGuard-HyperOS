@@ -361,7 +361,7 @@ public class MainActivity extends Activity {
     }
 
     private void setupGlassMaterial() {
-        boolean supported = HyperOsMaterial.isDeviceSupported();
+        boolean supported = SystemMaterial.isDeviceSupported(this);
         suppressGlassCallbacks = true;
         glassSwitch.setChecked(supported && ThemeHelper.isGlassEnabled(this));
         suppressGlassCallbacks = false;
@@ -379,9 +379,9 @@ public class MainActivity extends Activity {
 
     private void updateGlassMaterial() {
         if (isFinishing() || isDestroyed()) return;
-        boolean wanted = HyperOsMaterial.isDeviceSupported() &&
+        boolean wanted = SystemMaterial.isDeviceSupported(this) &&
                 ThemeHelper.isGlassEnabled(this) &&
-                HyperOsMaterial.isAllowedNow(this);
+                SystemMaterial.isAllowedNow(this);
         dashboard.setGlassMaterial(wanted);
     }
 
@@ -396,7 +396,9 @@ public class MainActivity extends Activity {
 
             if (checked) {
                 SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
-                if (!Settings.System.canWrite(this)) {
+                // WRITE_SETTINGS is only needed for the optional whitelist key; the
+                // OriginOS heartbeat works without it.
+                if (SettingsGuard.isWhitelistConfigured(this) && !Settings.System.canWrite(this)) {
                     SettingsGuard.setProtectionEnabled(this, false);
                     suppressSwitchCallbacks = true;
                     protectionSwitch.setChecked(false);
@@ -412,12 +414,18 @@ public class MainActivity extends Activity {
                     ensurePersistentNotificationAccess();
                 }
                 startProtectionService();
-                SettingsGuard.Result result = SettingsGuard.repair(this);
-                if (result.changed) FcmReconnect.kick(this);
+                SettingsGuard.repair(this);
+                HeartbeatScheduler.kickNow(this);
+                HeartbeatScheduler.schedule(this);
+                if (!OriginOsSettings.isIgnoringBatteryOptimizations(this, getPackageName())) {
+                    openOwnBatterySettings();
+                }
                 toast(getString(R.string.service_started));
             } else {
-                stopService(new Intent(this, GuardService.class));
+                // Clear the flag first so the service's onDestroy also drops the alarm.
                 SettingsGuard.setProtectionEnabled(this, false);
+                HeartbeatScheduler.cancel(this);
+                stopService(new Intent(this, GuardService.class));
                 toast(getString(R.string.service_stopped));
             }
             refreshStatus(null);
@@ -451,12 +459,13 @@ public class MainActivity extends Activity {
         findViewById(R.id.protectNowBtn).setOnClickListener(v -> {
             SettingsGuard.saveConfig(this, keyEdit.getText().toString(), itemEdit.getText().toString());
             SettingsGuard.Result result = SettingsGuard.repair(this);
-            if (result.changed) FcmReconnect.kick(this);
-            refreshStatus(result.message);
+            HeartbeatScheduler.kickNow(this);
+            refreshStatus(SettingsGuard.isWhitelistConfigured(this)
+                    ? result.message : getString(R.string.wake_sent));
         });
 
         findViewById(R.id.wakeBtn).setOnClickListener(v -> {
-            FcmReconnect.kick(this);
+            HeartbeatScheduler.kickNow(this);
             toast(getString(R.string.wake_sent));
             refreshStatus(getString(R.string.wake_sent));
         });
@@ -464,7 +473,7 @@ public class MainActivity extends Activity {
         findViewById(R.id.diagBtn).setOnClickListener(v -> openFcmDiagnostics());
         scanFcmAppsBtn.setOnClickListener(v -> toggleFcmAppsList());
         findViewById(R.id.openAutostartBtn).setOnClickListener(v -> {
-            if (!HyperOsSettings.openAutoStartManager(this)) {
+            if (!OriginOsSettings.openAutoStartManager(this)) {
                 toast(getString(R.string.autostart_manager_unavailable));
             }
         });
@@ -650,7 +659,7 @@ public class MainActivity extends Activity {
         row.setClickable(true);
         row.setContentDescription(app.label + ", " + getString(autostartStatusText(autostartStatus)));
         row.setOnClickListener(v -> {
-            if (!HyperOsSettings.openAppPermissionEditor(this, app.packageName)) {
+            if (!OriginOsSettings.openAppPermissionEditor(this, app.packageName)) {
                 toast(getString(R.string.app_settings_unavailable));
             }
         });
@@ -847,28 +856,30 @@ public class MainActivity extends Activity {
         boolean canWrite = Settings.System.canWrite(this);
         boolean enabled = SettingsGuard.isProtectionEnabled(this);
         boolean notification = SettingsGuard.usePersistentNotification(this);
+        boolean whitelist = SettingsGuard.isWhitelistConfigured(this);
         String current = SettingsGuard.read(this);
-        boolean present = SettingsGuard.hasRequiredItem(this, current);
+        boolean present = !whitelist || SettingsGuard.hasRequiredItem(this, current);
 
         suppressSwitchCallbacks = true;
         protectionSwitch.setChecked(enabled);
         notificationSwitch.setChecked(notification);
         suppressSwitchCallbacks = false;
 
-        // FCM Guard itself must not be frozen by HyperOS, or nothing repairs the whitelist
-        // when GMS is removed: it should be on the no-restrict list (HyperOS keeps apps set
-        // to battery "No restrictions" there) and its Autostart must not be off. An
-        // unreadable Autostart state is not treated as off.
+        // On OriginOS, FCM Guard itself must be allowed to run in the background, or the
+        // heartbeat alarm and the service are frozen with everything else: it needs the
+        // Doze exemption / "Allow high background power use" and Autostart. An unreadable
+        // Autostart state is not treated as off.
         String self = getPackageName();
-        boolean selfWhitelisted = SettingsGuard.containsPackage(current, self);
+        boolean selfBattery = OriginOsSettings.isIgnoringBatteryOptimizations(this, self);
         AutostartStatusReader.Status selfAutostart = AutostartStatusReader.check(this, self);
         boolean selfAutostartOff = selfAutostart == AutostartStatusReader.Status.DISABLED ||
                 selfAutostart == AutostartStatusReader.Status.PARTIAL;
-        boolean selfOk = selfWhitelisted && !selfAutostartOff;
+        boolean writeOk = !whitelist || canWrite;
+        boolean selfOk = selfBattery && !selfAutostartOff;
 
-        if (enabled && canWrite && present && selfOk) {
+        if (enabled && writeOk && present && selfOk) {
             setHeadline(R.string.status_protected, R.attr.pal_green, R.drawable.ic_status_protected);
-        } else if (canWrite && present && selfOk) {
+        } else if (writeOk && present && selfOk) {
             setHeadline(R.string.status_ready, R.attr.pal_blue, R.drawable.ic_status_ready);
         } else {
             setHeadline(R.string.status_attention, R.attr.pal_red, R.drawable.ic_status_attention);
@@ -883,26 +894,31 @@ public class MainActivity extends Activity {
         boolean visibleForeground = notification && enabled && GuardService.canShowPersistentNotification(this);
 
         java.util.List<StatusItem> items = new java.util.ArrayList<>();
-        items.add(new StatusItem(R.string.status_label_permission,
-                canWrite ? R.string.status_value_granted : R.string.status_value_not_granted,
-                canWrite ? TONE_GOOD : TONE_BAD,
-                canWrite ? null : v -> openWriteSettings()));
         items.add(new StatusItem(R.string.status_label_protection,
                 enabled ? R.string.status_value_enabled : R.string.status_value_disabled,
                 enabled ? TONE_GOOD : TONE_WARN, null));
-        items.add(new StatusItem(R.string.status_label_required_item,
-                present ? R.string.status_value_yes : R.string.status_value_no,
-                present ? TONE_GOOD : TONE_BAD, null));
+        items.add(new StatusItem(R.string.status_label_heartbeat,
+                enabled ? R.string.status_value_heartbeat_on : R.string.status_value_disabled,
+                enabled ? TONE_GOOD : TONE_WARN, null));
         items.add(new StatusItem(R.string.status_label_background_mode,
                 visibleForeground ? R.string.status_value_foreground : R.string.status_value_quiet,
                 visibleForeground ? TONE_GOOD : TONE_WARN, null));
         items.add(new StatusItem(R.string.status_label_self_whitelist,
-                selfWhitelisted ? R.string.status_value_yes : R.string.status_value_no,
-                selfWhitelisted ? TONE_GOOD : TONE_BAD,
-                selfWhitelisted ? null : v -> openOwnBatterySettings()));
+                selfBattery ? R.string.status_value_allowed : R.string.status_value_restricted,
+                selfBattery ? TONE_GOOD : TONE_BAD,
+                selfBattery ? null : v -> openOwnBatterySettings()));
         items.add(new StatusItem(R.string.status_label_self_autostart,
                 autostartStatusText(selfAutostart), autostartTone,
                 autostartTone == TONE_GOOD ? null : v -> openOwnAutostartSettings()));
+        if (whitelist) {
+            items.add(new StatusItem(R.string.status_label_required_item,
+                    present ? R.string.status_value_yes : R.string.status_value_no,
+                    present ? TONE_GOOD : TONE_BAD,
+                    canWrite ? null : v -> openWriteSettings()));
+        } else {
+            items.add(new StatusItem(R.string.status_label_whitelist_key,
+                    R.string.status_value_not_used, TONE_NEUTRAL, null));
+        }
         // Most severe first (stable), so the row left on top of the collapsed stack is
         // the one that needs attention.
         java.util.Collections.sort(items, (x, y) -> Integer.compare(severity(x.tone), severity(y.tone)));
@@ -910,8 +926,18 @@ public class MainActivity extends Activity {
             StatusItem item = items.get(i);
             bindStatusRow(statusTiles[i], item.labelRes, item.valueRes, item.tone, item.action);
         }
-        currentValueText.setText(buildWhitelistValue(current));
-        permissionBtn.setVisibility(canWrite ? View.GONE : View.VISIBLE);
+        currentValueText.setText(whitelist ? buildWhitelistValue(current) : buildHeartbeatValue());
+        permissionBtn.setVisibility(writeOk ? View.GONE : View.VISIBLE);
+    }
+
+    /** Shown instead of the whitelist value when no key is configured (the OriginOS default). */
+    private CharSequence buildHeartbeatValue() {
+        long last = HeartbeatScheduler.lastKick(this);
+        String when = last <= 0L ? getString(R.string.heartbeat_never)
+                : android.text.format.DateUtils.getRelativeTimeSpanString(
+                        last, System.currentTimeMillis(),
+                        android.text.format.DateUtils.MINUTE_IN_MILLIS).toString();
+        return getString(R.string.heartbeat_summary, HeartbeatScheduler.intervalMinutes(this), when);
     }
 
     private void setHeadline(int textRes, int colorRes, int iconRes) {
@@ -996,14 +1022,14 @@ public class MainActivity extends Activity {
     }
 
     private void openOwnBatterySettings() {
-        if (!HyperOsSettings.openBatterySettings(this, getPackageName(), getString(R.string.app_name))) {
+        if (!OriginOsSettings.openBatterySettings(this, getPackageName(), getString(R.string.app_name))) {
             toast(getString(R.string.app_settings_unavailable));
         }
     }
 
     private void openOwnAutostartSettings() {
-        if (!HyperOsSettings.openAppPermissionEditor(this, getPackageName()) &&
-                !HyperOsSettings.openAutoStartManager(this)) {
+        if (!OriginOsSettings.openAppPermissionEditor(this, getPackageName()) &&
+                !OriginOsSettings.openAutoStartManager(this)) {
             toast(getString(R.string.autostart_manager_unavailable));
         }
     }

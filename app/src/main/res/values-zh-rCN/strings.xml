@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">HyperOS 低功耗 FCM 保护</string>
-    <string name="label_key">设置项 Key</string>
+    <string name="subtitle">OriginOS 低功耗 FCM 保护</string>
+    <string name="label_key">Settings 白名单键（可选）</string>
     <string name="label_item">必需项</string>
     <string name="save_configuration">保存配置</string>
     <string name="grant_modify">授予“修改系统设置”</string>
@@ -10,24 +10,24 @@
     <string name="wake_fcm">立即唤醒 FCM</string>
     <string name="open_fcm_diag">打开 FCM 诊断</string>
     <string name="status_title">状态</string>
-    <string name="current_value_title">当前白名单值</string>
+    <string name="current_value_title">FCM 心跳</string>
     <string name="language">语言</string>
     <string name="follow_system">跟随系统</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">保护设置</string>
     <string name="automatic_protection">自动保护</string>
-    <string name="automatic_protection_summary">仅监听 FCM 白名单这一项的变化，主要采用事件触发；30 分钟兜底检查不会主动唤醒休眠中的手机。</string>
+    <string name="automatic_protection_summary">以短间隔闹钟（Doze 中同样有效）、网络切换和亮屏时发送 FCM 心跳，让 Google Play 服务及时重连，而不是等待长达半小时。</string>
     <string name="persistent_notification">常驻通知</string>
-    <string name="persistent_notification_summary">建议开启以获得最高可靠性。关闭后会移除通知并切换为纯后台模式，但 HyperOS 更容易终止该服务。</string>
+    <string name="persistent_notification_summary">建议开启以获得最高可靠性。关闭后会移除通知并切换为纯后台模式，但 OriginOS 更容易终止该服务。</string>
     <string name="actions_title">工具</string>
     <string name="advanced_title">高级配置</string>
 
-    <string name="helper_text">低功耗优化：不再每 30 秒轮询，不再监听无关系统设置，仅在真正修复白名单后才发送一次 FCM 重连请求。</string>
-    <string name="note_text">建议在 HyperOS 中保持“自启动”开启，并将电池模式设为“无限制”。不需要开发者选项、USB 调试或无线调试。</string>
+    <string name="helper_text">OriginOS 没有类似 HyperOS 无限制名单的公开开关。FCM Guard 通过周期性心跳保持 Google Play 服务的推送连接。如果你的系统版本存在 Settings.System 白名单键，可在高级配置中填写，FCM Guard 会同时把 Google Play 服务保持在其中。</string>
+    <string name="note_text">建议在 OriginOS 中为 FCM Guard 和 Google Play 服务开启“自启动”，将“电池 → 后台耗电管理”设为“允许”，并在最近任务中锁定 FCM Guard。不需要开发者选项或 USB 调试。</string>
 
     <string name="status_protected">保护正常</string>
     <string name="status_ready">已就绪</string>
@@ -44,7 +44,7 @@
     <string name="status_value_no">否</string>
     <string name="status_value_foreground">前台服务</string>
     <string name="status_value_quiet">静默纯后台</string>
-    <string name="status_label_self_whitelist">本应用白名单</string>
+    <string name="status_label_self_whitelist">FCM Guard 后台运行</string>
     <string name="status_label_self_autostart">本应用自启动</string>
 
     <string name="saved">配置已保存</string>
@@ -61,14 +61,14 @@
 
     <string name="notification_channel_name">FCM Guard 保护</string>
     <string name="notification_channel_description">用于维持自动 FCM 保护可靠性的低优先级通知</string>
-    <string name="notification_active">保护已启动 · 事件驱动</string>
+    <string name="notification_active">保护运行中 · FCM 心跳</string>
     <string name="notification_repaired">白名单已修复 · FCM 已保护</string>
 
     <!-- Themes (colour palettes; picker in the hero card). -->
     <string name="theme_title">主题</string>
     <string name="theme_preview_hint">预览跟随当前的浅色 / 深色模式</string>
     <string name="palette_classic">经典</string>
-    <string name="palette_hyper_blue">澎湃蓝</string>
+    <string name="palette_hyper_blue">原子蓝</string>
     <string name="palette_guardian_teal">守护青</string>
     <string name="palette_indigo_dusk">暮光靛</string>
     <string name="palette_google">谷歌经典</string>
@@ -76,4 +76,15 @@
     <string name="palette_sunset_amber">琥珀橙</string>
     <string name="palette_graphite">石墨</string>
     <string name="palette_aurora">极光</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">未配置白名单键 · 仅心跳模式</string>
+    <string name="status_label_heartbeat">FCM 心跳</string>
+    <string name="status_value_heartbeat_on">运行中</string>
+    <string name="status_value_allowed">已允许</string>
+    <string name="status_value_restricted">受限制</string>
+    <string name="status_label_whitelist_key">白名单键</string>
+    <string name="status_value_not_used">未使用</string>
+    <string name="heartbeat_never">尚未发送</string>
+    <string name="heartbeat_summary">每 %1$d 分钟 · 上次发送 %2$s</string>
 </resources>

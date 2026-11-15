@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="fcm_apps_title">FCM 应用助手</string>
-    <string name="fcm_apps_summary">自动检测声明了标准 FCM/GCM 接收组件的已安装应用，并在 HyperOS 允许读取时验证它们的自启动状态。</string>
+    <string name="fcm_apps_summary">自动检测声明了标准 FCM/GCM 接收组件的已安装应用，并在 i管家允许读取时检查它们的自启动状态。</string>
     <string name="scan_fcm_apps">扫描 FCM 应用</string>
     <string name="collapse_fcm_apps">收起应用列表</string>
     <string name="scanning_fcm_apps">正在扫描…</string>
-    <string name="open_autostart_manager">在 HyperOS 中统一配置</string>
+    <string name="open_autostart_manager">在 i管家中配置自启动</string>
     <string name="fcm_apps_not_scanned">点击“扫描 FCM 应用”生成本机列表。</string>
     <string name="fcm_apps_found">检测到 %1$d 个支持 FCM 的应用</string>
     <string name="fcm_apps_status_summary">检测到 %1$d 个 · %2$d 个已开启 · %3$d 个需处理 · %4$d 个未知</string>
-    <string name="fcm_autostart_status_unavailable">检测到 %1$d 个 FCM 应用，但当前 HyperOS 未向普通应用开放可读取的自启动状态。请使用“在 HyperOS 中统一配置”。</string>
+    <string name="fcm_autostart_status_unavailable">检测到 %1$d 个 FCM 应用，但当前 OriginOS 未开放可读取的自启动状态。请使用“在 i管家中配置自启动”。</string>
     <string name="no_fcm_apps">未检测到面向用户的 FCM 应用。</string>
     <string name="app_settings">自启动</string>
     <string name="autostart_enabled">已开启</string>
     <string name="autostart_partial">部分开启</string>
     <string name="autostart_disabled">未开启</string>
     <string name="autostart_unknown">未知</string>
-    <string name="autostart_manager_unavailable">无法打开 HyperOS 自启动设置</string>
+    <string name="autostart_manager_unavailable">无法打开 OriginOS 自启动设置</string>
     <string name="app_settings_unavailable">无法打开该应用的设置</string>
-    <string name="fcm_detection_note">自启动状态仅做只读、尽力而为的检测。“未知”表示 HyperOS 阻止或未公开对应的厂商 AppOps 查询；FCM Guard 不会把未知误判为未开启。</string>
+    <string name="fcm_detection_note">自启动状态仅做只读、尽力而为的检测。“未知”表示 OriginOS 阻止或未公开 i管家查询；FCM Guard 不会把未知误判为未开启。</string>
 
     <string name="appearance_title">外观</string>
     <string name="appearance_summary">默认跟随系统；仅改变界面主题，不增加任何后台任务。</string>
     <string name="theme_system">跟随系统</string>
     <string name="theme_light">浅色</string>
     <string name="theme_dark">深色</string>
-    <string name="glass_material">HyperOS 高级材质</string>
+    <string name="glass_material">毛玻璃材质</string>
     <string name="glass_material_summary">使用系统自带的模糊能力绘制毛玻璃头部与状态卡；省电模式下自动暂停。</string>
-    <string name="glass_material_unavailable">不可用：当前系统未开放 HyperOS 高级材质（系统模糊）。</string>
+    <string name="glass_material_unavailable">不可用：此设备不支持系统模糊（需 Android 12+ 且非低内存设备）。</string>
 </resources>

@@ -6,9 +6,13 @@ import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.net.Uri;
@@ -32,6 +36,16 @@ public class GuardService extends Service {
     /** null until the first onStartCommand(); then the notification mode last applied. */
     private Boolean appliedPersistentMode;
     private boolean fallbackScheduled;
+    private BroadcastReceiver wakeReceiver;
+    /** Screen-on kicks are rate-limited so unlocking repeatedly does not spam GMS. */
+    private static final long SCREEN_ON_KICK_GAP_MS = 2L * 60L * 1000L;
+    private static final long NETWORK_KICK_DELAY_MS = 3000L;
+
+    private final Runnable networkKick = new Runnable() {
+        @Override public void run() {
+            HeartbeatScheduler.kickNow(GuardService.this);
+        }
+    };
 
     private final Runnable fallbackCheck = new Runnable() {
         @Override public void run() {
@@ -49,6 +63,7 @@ public class GuardService extends Service {
     @Override public void onCreate() {
         super.onCreate();
         SettingsGuard.rememberIfUseful(this);
+        registerWakeReceiver();
         // Observer, foreground state and the first check are set up in onStartCommand(),
         // which always follows onCreate() for this started-only service.
     }
@@ -62,6 +77,8 @@ public class GuardService extends Service {
         SettingsGuard.setProtectionEnabled(this, true);
         applyExecutionMode();
         boolean configChanged = registerObserverIfNeeded();
+        // OriginOS core: keep the periodic FCM heartbeat armed while protection is on.
+        HeartbeatScheduler.schedule(this);
         if (configChanged || !fallbackScheduled) {
             handler.removeCallbacks(fallbackCheck);
             handler.post(fallbackCheck);
@@ -88,7 +105,7 @@ public class GuardService extends Service {
     private boolean registerObserverIfNeeded() {
         String key = SettingsGuard.getConfiguredKey(this);
         String requiredItem = SettingsGuard.getConfiguredRequiredItem(this);
-        boolean keyChanged = observer == null || !key.equals(observedKey);
+        boolean keyChanged = !key.equals(observedKey) || (observer == null && !key.isEmpty());
         boolean changed = keyChanged || !requiredItem.equals(observedRequiredItem);
         observedRequiredItem = requiredItem;
         if (!keyChanged) return changed;
@@ -98,6 +115,10 @@ public class GuardService extends Service {
             if (observer != null) resolver.unregisterContentObserver(observer);
         } catch (Throwable ignored) {}
 
+        observer = null;
+        observedKey = key;
+        if (key.isEmpty()) return true; // No whitelist key on this build: heartbeat only.
+
         observer = new ContentObserver(handler) {
             @Override public void onChange(boolean selfChange, Uri uri) {
                 handler.removeCallbacks(repairDebounced);
@@ -105,7 +126,6 @@ public class GuardService extends Service {
             }
         };
         resolver.registerContentObserver(Settings.System.getUriFor(key), false, observer);
-        observedKey = key;
         return true;
     }
 
@@ -173,8 +193,68 @@ public class GuardService extends Service {
         return true;
     }
 
+    /**
+     * Network changes and screen-on are the moments vivo most often leaves the GMS socket
+     * dead; a heartbeat right then makes FCM reconnect without waiting for the next alarm.
+     */
+    private void registerWakeReceiver() {
+        wakeReceiver = new BroadcastReceiver() {
+            @Override public void onReceive(Context context, Intent intent) {
+                String action = intent.getAction();
+                if (Intent.ACTION_SCREEN_ON.equals(action) || Intent.ACTION_USER_PRESENT.equals(action)) {
+                    long since = System.currentTimeMillis() - HeartbeatScheduler.lastKick(context);
+                    if (since >= SCREEN_ON_KICK_GAP_MS) HeartbeatScheduler.kickNow(context);
+                } else if (ConnectivityManager.CONNECTIVITY_ACTION.equals(action) && isConnected(context)) {
+                    handler.removeCallbacks(networkKick);
+                    handler.postDelayed(networkKick, NETWORK_KICK_DELAY_MS);
+                }
+            }
+        };
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_SCREEN_ON);
+        filter.addAction(Intent.ACTION_USER_PRESENT);
+        filter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        try {
+            registerReceiver(wakeReceiver, filter);
+        } catch (Throwable ignored) {
+            wakeReceiver = null;
+        }
+    }
+
+    @SuppressWarnings("deprecation")
+    private static boolean isConnected(Context context) {
+        try {
+            ConnectivityManager cm = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+            NetworkInfo info = cm == null ? null : cm.getActiveNetworkInfo();
+            return info != null && info.isConnected();
+        } catch (Throwable ignored) {
+            return false;
+        }
+    }
+
+    /** Restarts the service when protection is on (used by the heartbeat alarm). */
+    public static void startIfNeeded(Context context) {
+        if (!SettingsGuard.isProtectionEnabled(context)) return;
+        Intent service = new Intent(context, GuardService.class);
+        try {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
+                    SettingsGuard.usePersistentNotification(context)) {
+                context.startForegroundService(service);
+            } else {
+                context.startService(service);
+            }
+        } catch (Throwable ignored) {}
+    }
+
     @Override public void onDestroy() {
         handler.removeCallbacksAndMessages(null);
+        try {
+            if (wakeReceiver != null) unregisterReceiver(wakeReceiver);
+        } catch (Throwable ignored) {}
+        wakeReceiver = null;
+        // Keep the alarm while protection is on: its receiver restarts this service if
+        // OriginOS killed it. Only a user-initiated stop cancels it.
+        if (!SettingsGuard.isProtectionEnabled(this)) HeartbeatScheduler.cancel(this);
         fallbackScheduled = false;
         try {
             if (observer != null) getContentResolver().unregisterContentObserver(observer);

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Энергоэффективная защита FCM для HyperOS</string>
+    <string name="subtitle">Энергоэффективная защита FCM для OriginOS</string>
     <string name="label_key">Ключ настройки</string>
     <string name="label_item">Обязательный элемент</string>
     <string name="save_configuration">Сохранить конфигурацию</string>
@@ -15,7 +15,7 @@
     <string name="follow_system">Как в системе</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Защита</string>
@@ -27,7 +27,7 @@
     <string name="advanced_title">Расширенные настройки</string>
 
     <string name="helper_text">Энергоэффективная схема: без опроса каждые 30 секунд, без слежения за посторонними настройками и с переподключением FCM только после реального исправления.</string>
-    <string name="note_text">В HyperOS оставьте автозапуск включённым и установите режим батареи Без ограничений. Параметры разработчика, USB- и беспроводная отладка не требуются.</string>
+    <string name="note_text">В OriginOS оставьте автозапуск включённым и установите режим батареи Без ограничений. Параметры разработчика, USB- и беспроводная отладка не требуются.</string>
 
     <string name="status_protected">Защищено</string>
     <string name="status_ready">Готово</string>
@@ -68,7 +68,7 @@
     <string name="theme_title">Тема</string>
     <string name="theme_preview_hint">Превью в текущем светлом или тёмном режиме</string>
     <string name="palette_classic">Классика</string>
-    <string name="palette_hyper_blue">Синий HyperOS</string>
+    <string name="palette_hyper_blue">Синий OriginOS</string>
     <string name="palette_guardian_teal">Бирюзовый</string>
     <string name="palette_indigo_dusk">Индиго</string>
     <string name="palette_google">Google классика</string>

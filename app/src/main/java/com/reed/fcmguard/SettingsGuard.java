@@ -14,9 +14,20 @@ public final class SettingsGuard {
 
     private SettingsGuard() {}
 
+    /**
+     * The optional Settings.System whitelist key. Empty by default on OriginOS: vivo has no
+     * documented equivalent of HyperOS's MILLET_NO_RESTRICT_APP, so the whitelist repair is
+     * off unless the user enters a key found on their own build (Advanced configuration).
+     */
     public static String getConfiguredKey(Context context) {
-        return context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
+        String key = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .getString("settings_key", context.getString(R.string.default_key));
+        return key == null ? "" : key.trim();
+    }
+
+    /** True when a whitelist key is configured, i.e. the HyperOS-style repair is in use. */
+    public static boolean isWhitelistConfigured(Context context) {
+        return !getConfiguredKey(context).isEmpty();
     }
 
     public static String getConfiguredRequiredItem(Context context) {
@@ -47,7 +58,8 @@ public final class SettingsGuard {
     public static void saveConfig(Context context, String key, String requiredItem) {
         context.getSharedPreferences(PREFS, Context.MODE_PRIVATE)
                 .edit()
-                .putString("settings_key", safe(key, context.getString(R.string.default_key)))
+                // An empty key is a valid choice here (whitelist repair off), so no fallback.
+                .putString("settings_key", key == null ? "" : key.trim())
                 .putString("required_item", safe(requiredItem, context.getString(R.string.default_required_item)))
                 .apply();
     }
@@ -59,7 +71,13 @@ public final class SettingsGuard {
     }
 
     public static String read(Context context) {
-        return Settings.System.getString(context.getContentResolver(), getConfiguredKey(context));
+        String key = getConfiguredKey(context);
+        if (key.isEmpty()) return null;
+        try {
+            return Settings.System.getString(context.getContentResolver(), key);
+        } catch (Throwable ignored) {
+            return null;
+        }
     }
 
     public static boolean hasRequiredItem(Context context, String value) {
@@ -84,6 +102,9 @@ public final class SettingsGuard {
      * important because the common background path should be practically idle.
      */
     public static synchronized Result repair(Context context) {
+        if (!isWhitelistConfigured(context)) {
+            return new Result(true, false, null, context.getString(R.string.whitelist_not_configured));
+        }
         if (!Settings.System.canWrite(context)) {
             return new Result(false, false, read(context), context.getString(R.string.permission_missing));
         }
@@ -101,10 +122,6 @@ public final class SettingsGuard {
         SharedPreferences prefs = context.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         if (packages.isEmpty()) {
             packages.addAll(parse(prefs.getString(LAST_GOOD_PREFIX + key, null)));
-        }
-        if (packages.isEmpty()) {
-            packages.add("com.tencent.mm");
-            packages.add("com.android.vending");
         }
         if (required != null && !required.trim().isEmpty()) {
             packages.add(required.trim());

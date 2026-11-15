@@ -61,7 +61,7 @@
         <item name="pal_segment_selected">@color/segment_selected</item>
     </style>
 
-    <!-- HyperOS-style pill switch used by every Switch in the app. -->
+    <!-- Pill switch used by every Switch in the app. -->
     <style name="FcmSwitch" parent="android:Widget.Material.CompoundButton.Switch">
         <item name="android:thumb">@drawable/switch_thumb</item>
         <item name="android:track">@drawable/switch_track</item>

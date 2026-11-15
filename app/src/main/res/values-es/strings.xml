@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Protección FCM de bajo consumo para HyperOS</string>
+    <string name="subtitle">Protección FCM de bajo consumo para OriginOS</string>
     <string name="label_key">Clave de ajustes</string>
     <string name="label_item">Elemento requerido</string>
     <string name="save_configuration">Guardar configuración</string>
@@ -15,7 +15,7 @@
     <string name="follow_system">Seguir el sistema</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Protección</string>
@@ -27,7 +27,7 @@
     <string name="advanced_title">Configuración avanzada</string>
 
     <string name="helper_text">Diseño de bajo consumo: sin sondeo cada 30 segundos, sin observar ajustes no relacionados y con reconexión FCM solo tras una reparación real.</string>
-    <string name="note_text">En HyperOS, mantén el inicio automático activado y la batería en Sin restricciones. No se requieren opciones de desarrollador ni depuración USB o inalámbrica.</string>
+    <string name="note_text">En OriginOS, mantén el inicio automático activado y la batería en Sin restricciones. No se requieren opciones de desarrollador ni depuración USB o inalámbrica.</string>
 
     <string name="status_protected">Protegido</string>
     <string name="status_ready">Listo</string>
@@ -68,7 +68,7 @@
     <string name="theme_title">Tema</string>
     <string name="theme_preview_hint">Las vistas previas siguen el modo claro u oscuro actual</string>
     <string name="palette_classic">Clásico</string>
-    <string name="palette_hyper_blue">Azul HyperOS</string>
+    <string name="palette_hyper_blue">Azul OriginOS</string>
     <string name="palette_guardian_teal">Verde azulado</string>
     <string name="palette_indigo_dusk">Índigo</string>
     <string name="palette_google">Google clásico</string>
