@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.reed.fcmguard.StickyDashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.alofcm.StickyDashboardLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -23,7 +23,7 @@
       cut off. It spans the dashboard; StickyDashboardLayout sets how far down it draws
       (bottom of the docked status card + fade).
     -->
-    <com.reed.fcmguard.GlassBackdropView
+    <com.alofcm.GlassBackdropView
         android:id="@+id/headerBackdrop"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
@@ -91,7 +91,7 @@
             </LinearLayout>
         </LinearLayout>
 
-        <com.reed.fcmguard.CollapsingStatusCard
+        <com.alofcm.CollapsingStatusCard
             android:id="@+id/statusCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -134,11 +134,10 @@
                 android:paddingBottom="2dp">
                 <TextView android:id="@+id/statusMessage" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?attr/pal_text_secondary" android:textSize="13sp" android:paddingBottom="2dp" android:visibility="gone" />
                 <!--
-                  Status tiles in two independent columns, filled most severe first row by row
-                  (1 2 / 3 4 / 5 6). While the card collapses, each column stacks behind its
-                  first tile; once stacked, each column is swiped and cycled on its own.
+                  Setup steps as full-width rows, in the order they should be done. While
+                  the card collapses, the rows stack behind the first one.
                 -->
-                <com.reed.fcmguard.StatusTileColumns
+                <com.alofcm.StatusTileColumns
                     android:id="@+id/statusTileColumns"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -147,18 +146,15 @@
                     android:baselineAligned="false"
                     android:clipChildren="false"
                     android:clipToPadding="false">
-                    <com.reed.fcmguard.StatusTileStack android:id="@+id/statusTileStackLeft" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:clipChildren="false" android:clipToPadding="false">
+                    <com.alofcm.StatusTileStack android:id="@+id/statusTileStackLeft" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:clipChildren="false" android:clipToPadding="false">
                         <include android:id="@+id/statusTile1" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" />
+                        <include android:id="@+id/statusTile2" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
                         <include android:id="@+id/statusTile3" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
-                        <include android:id="@+id/statusTile5" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
-                    </com.reed.fcmguard.StatusTileStack>
-                    <Space android:layout_width="6dp" android:layout_height="1dp" />
-                    <com.reed.fcmguard.StatusTileStack android:id="@+id/statusTileStackRight" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:clipChildren="false" android:clipToPadding="false">
-                        <include android:id="@+id/statusTile2" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" />
                         <include android:id="@+id/statusTile4" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
+                        <include android:id="@+id/statusTile5" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
                         <include android:id="@+id/statusTile6" layout="@layout/status_tile" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="5dp" />
-                    </com.reed.fcmguard.StatusTileStack>
-                </com.reed.fcmguard.StatusTileColumns>
+                    </com.alofcm.StatusTileStack>
+                </com.alofcm.StatusTileColumns>
             </LinearLayout>
 
             <LinearLayout
@@ -171,7 +167,7 @@
                 <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="@string/current_value_title" android:textColor="?attr/pal_text_secondary" android:textSize="10sp" android:textStyle="bold" />
                 <TextView android:id="@+id/currentValueText" android:layout_width="match_parent" android:layout_height="wrap_content" android:textColor="?attr/pal_text_primary" android:textSize="12.5sp" android:lineSpacingExtra="2dp" android:textIsSelectable="true" android:paddingTop="4dp" />
             </LinearLayout>
-        </com.reed.fcmguard.CollapsingStatusCard>
+        </com.alofcm.CollapsingStatusCard>
     </FrameLayout>
 
-</com.reed.fcmguard.StickyDashboardLayout>
+</com.alofcm.StickyDashboardLayout>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- HyperOS-style pill switch track; the thumb (28dp) sets the overall 56x28dp size. -->
+<!-- Pill switch track; the thumb (28dp) sets the overall 56x28dp size. -->
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_enabled="false">
         <shape>

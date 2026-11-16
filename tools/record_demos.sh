@@ -39,8 +39,8 @@ rec_stop() {
 
 # Prints "x y" centres for each argument: "id:<resource id>" or a text/description regex.
 ui_centres() {
-  adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1
-  adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1 || return 1
+  adb shell uiautomator dump /sdcard/alofcm-ui.xml >/dev/null 2>&1
+  adb pull /sdcard/alofcm-ui.xml "$UI_XML" >/dev/null 2>&1 || return 1
   python3 - "$UI_XML" "$@" <<'PY'
 import re, sys, xml.etree.ElementTree as ET
 nodes = list(ET.parse(sys.argv[1]).iter("node"))
@@ -66,7 +66,7 @@ adb shell settings put system show_touches 1
 adb shell settings put global animator_duration_scale "$SLOW"
 adb shell cmd uimode night no
 launch_fresh
-# A realistic state: protection on and the whitelist repaired (FCM Guard's own whitelist
+# A realistic state: protection on and the whitelist repaired (AloFCM's own whitelist
 # entry and Autostart stay red/unknown: that needs HyperOS).
 tap_text 'protect now' >/dev/null
 sleep 2
@@ -133,8 +133,8 @@ rec_stop themes2
 # Where the strip actually settled: prefer Sakura then Sunset Amber, else the two cards
 # that are most fully on screen.
 read -r PICK1 PICK2 < <(
-  adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1
-  adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1
+  adb shell uiautomator dump /sdcard/alofcm-ui.xml >/dev/null 2>&1
+  adb pull /sdcard/alofcm-ui.xml "$UI_XML" >/dev/null 2>&1
   python3 - "$UI_XML" <<'PY'
 import re, sys, xml.etree.ElementTree as ET
 names = ["classic", "hyperos blue", "guardian teal", "indigo dusk", "google classic",

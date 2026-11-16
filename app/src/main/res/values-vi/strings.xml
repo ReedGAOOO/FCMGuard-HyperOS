@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">AloFCM</string>
+    <string name="subtitle">Bảo vệ thông báo FCM nhẹ nhàng cho OriginOS</string>
+    <string name="label_key">Khoá danh sách trắng Settings (tuỳ chọn)</string>
+    <string name="label_item">Mục bắt buộc</string>
+    <string name="save_configuration">Lưu cấu hình</string>
+    <string name="grant_modify">Cấp quyền Sửa cài đặt hệ thống</string>
+    <string name="protect_now">Bảo vệ ngay</string>
+    <string name="wake_fcm">Đánh thức FCM</string>
+    <string name="open_fcm_diag">Mở chẩn đoán FCM</string>
+    <string name="status_title">Trạng thái</string>
+    <string name="current_value_title">Nhịp tim FCM</string>
+    <string name="language">Ngôn ngữ</string>
+    <string name="follow_system">Theo hệ thống</string>
+    <string name="english">English</string>
+    <string name="simplified_chinese">简体中文</string>
+    <string name="default_key"></string>
+    <string name="default_required_item">com.google.android.gms</string>
+
+    <string name="protection_title">Bảo vệ</string>
+    <string name="automatic_protection">Bảo vệ tự động</string>
+    <string name="automatic_protection_summary">Gửi nhịp tim FCM theo chu kỳ ngắn (kể cả khi máy ngủ sâu), khi đổi mạng và khi bật màn hình, để Google Play services kết nối lại ngay thay vì chờ đến nửa tiếng.</string>
+    <string name="persistent_notification">Thông báo thường trực</string>
+    <string name="persistent_notification_summary">Nên BẬT để ổn định nhất. TẮT sẽ ẩn thông báo và chỉ chạy nền; khi đó OriginOS dễ dừng dịch vụ hơn.</string>
+    <string name="actions_title">Công cụ</string>
+    <string name="advanced_title">Cấu hình nâng cao</string>
+
+    <string name="helper_text">OriginOS không có công tắc công khai giống danh sách không giới hạn của HyperOS. AloFCM giữ kết nối đẩy của Google Play services bằng nhịp tim định kỳ. Hãy cho phép AloFCM chạy nền để nhịp tim được gửi liên tục.</string>
+    <string name="note_text">Khuyến nghị trên OriginOS: bật Tự khởi động cho AloFCM và Google Play services, đặt Pin → Quản lý điện năng nền thành Cho phép, và khoá AloFCM trong Đa nhiệm. Không cần Tuỳ chọn nhà phát triển hay gỡ lỗi USB.</string>
+
+    <string name="status_protected">Đã bảo vệ</string>
+    <string name="status_ready">Sẵn sàng</string>
+    <string name="status_attention">Cần xử lý</string>
+    <string name="status_label_permission">Sửa cài đặt</string>
+    <string name="status_label_protection">Bảo vệ tự động</string>
+    <string name="status_label_required_item">Có mục bắt buộc</string>
+    <string name="status_label_background_mode">Chế độ nền</string>
+    <string name="status_value_granted">Đã cấp</string>
+    <string name="status_value_not_granted">Chưa cấp</string>
+    <string name="status_value_enabled">Đang bật</string>
+    <string name="status_value_disabled">Đang tắt</string>
+    <string name="status_value_yes">Có</string>
+    <string name="status_value_no">Không</string>
+    <string name="status_value_foreground">Dịch vụ tiền cảnh</string>
+    <string name="status_value_quiet">Chỉ chạy nền</string>
+    <string name="status_label_self_whitelist">AloFCM chạy nền</string>
+    <string name="status_label_self_autostart">AloFCM tự khởi động</string>
+
+    <string name="saved">Đã lưu cấu hình</string>
+    <string name="repaired">Đã sửa / đã bảo vệ</string>
+    <string name="already_protected">Đã được bảo vệ</string>
+    <string name="missing_current">(không có)</string>
+    <string name="permission_missing">Chưa cấp quyền Sửa cài đặt hệ thống</string>
+    <string name="service_started">Đã bật bảo vệ tự động</string>
+    <string name="service_stopped">Đã tắt bảo vệ tự động</string>
+    <string name="wake_sent">Đã gửi nhịp tim / yêu cầu kết nối lại</string>
+    <string name="diagnostics_unavailable">Không tìm thấy màn hình chẩn đoán FCM</string>
+    <string name="write_rejected">Hệ thống từ chối ghi</string>
+    <string name="write_failed">Ghi thất bại: %1$s</string>
+
+    <string name="notification_channel_name">Bảo vệ AloFCM</string>
+    <string name="notification_channel_description">Thông báo mức thấp giúp bảo vệ FCM tự động chạy ổn định</string>
+    <string name="notification_active">Đang bảo vệ · nhịp tim FCM</string>
+    <string name="notification_repaired">Đã sửa danh sách trắng · FCM được bảo vệ</string>
+
+    <string name="theme_title">Giao diện</string>
+    <string name="theme_preview_hint">Bản xem trước theo chế độ sáng hoặc tối hiện tại</string>
+    <string name="palette_classic">Cổ điển</string>
+    <string name="palette_hyper_blue">Xanh Origin</string>
+    <string name="palette_guardian_teal">Xanh mòng két</string>
+    <string name="palette_indigo_dusk">Chàm hoàng hôn</string>
+    <string name="palette_google">Google cổ điển</string>
+    <string name="palette_sakura">Hoa anh đào</string>
+    <string name="palette_sunset_amber">Hổ phách</string>
+    <string name="palette_graphite">Than chì</string>
+    <string name="palette_aurora">Cực quang</string>
+
+    <string name="whitelist_not_configured">Chưa đặt khoá danh sách trắng · chỉ dùng nhịp tim</string>
+    <string name="status_label_heartbeat">Nhịp tim FCM</string>
+    <string name="status_value_heartbeat_on">Đang chạy</string>
+    <string name="status_value_allowed">Cho phép</string>
+    <string name="status_value_restricted">Bị hạn chế</string>
+    <string name="status_label_whitelist_key">Khoá danh sách trắng</string>
+    <string name="status_value_not_used">Không dùng</string>
+    <string name="heartbeat_never">chưa gửi</string>
+    <string name="heartbeat_summary">Mỗi %1$d phút · lần gửi gần nhất: %2$s</string>
+    <string name="status_label_notifications">Quyền thông báo</string>
+    <string name="heartbeat_interval">Chu kỳ nhịp tim</string>
+    <string name="heartbeat_interval_summary">Tần suất gửi nhịp tim FCM. Càng ngắn thông báo càng nhanh nhưng tốn pin hơn một chút. Khi máy ngủ sâu, Android chỉ cho tối đa khoảng 9 phút một lần.</string>
+    <string name="heartbeat_every">%1$d phút</string>
+    <string name="tab_apps">Ứng dụng</string>
+    <string name="autostart_reason_denied">Lý do: OriginOS từ chối cho AloFCM đọc danh sách Tự khởi động của iManager.</string>
+    <string name="autostart_reason_missing">Lý do: bản ROM này không có danh sách Tự khởi động đọc được (không thấy provider của iManager).</string>
+    <string name="autostart_reason_no_row">Lý do: iManager không trả về mục Tự khởi động nào cho các ứng dụng này.</string>
+    <string name="autostart_diag">Chẩn đoán Tự khởi động</string>
+    <string name="copy_report">Sao chép</string>
+    <string name="report_copied">Đã sao chép báo cáo</string>
+    <string name="fcm_apps_on_off_summary">%1$d ứng dụng FCM · %2$d đang tự khởi chạy · %3$d chưa</string>
+    <string name="autostart_manual_note">OriginOS chỉ cho mỗi ứng dụng đọc trạng thái Tự khởi động của chính nó, nên trạng thái dưới đây do bạn tự đánh dấu. Chạm vào ứng dụng để mở cài đặt, nhấn giữ để đổi dấu.</string>
+    <string name="autostart_mark_question">Bạn đã bật Tự khởi động cho ứng dụng này trong iManager chưa?</string>
+    <string name="mark_on">Đã bật</string>
+    <string name="mark_off">Chưa bật</string>
+    <string name="autostart_marked_hint">tự đánh dấu</string>
+    <string name="fcm_apps_total">Tìm thấy %1$d ứng dụng FCM · đã đánh dấu %2$d</string>
+    <string name="fcm_pick_hint">Chạm vào ứng dụng, bật Tự khởi động trong iManager, rồi xác nhận để đánh dấu. Nhấn giữ để đánh dấu ngay.</string>
+    <string name="marked_title">Đã đánh dấu tự khởi chạy (%1$d)</string>
+    <string name="marked_remove">Bỏ</string>
+    <string name="app_marked_toast">Đã đánh dấu</string>
+</resources>

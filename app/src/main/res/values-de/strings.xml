@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Energiesparender FCM-Schutz für HyperOS</string>
+    <string name="app_name">AloFCM</string>
+    <string name="subtitle">Energiesparender FCM-Schutz für OriginOS</string>
     <string name="label_key">Einstellungsschlüssel</string>
     <string name="label_item">Erforderlicher Eintrag</string>
     <string name="save_configuration">Konfiguration speichern</string>
@@ -15,7 +15,7 @@
     <string name="follow_system">Systemsprache verwenden</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Schutz</string>
@@ -27,7 +27,7 @@
     <string name="advanced_title">Erweiterte Konfiguration</string>
 
     <string name="helper_text">Energiesparendes Design: kein Polling alle 30 Sekunden, keine Beobachtung fremder Systemeinstellungen und FCM-Neuverbindung nur nach einer echten Reparatur.</string>
-    <string name="note_text">Unter HyperOS Autostart aktiviert lassen und den Akkumodus auf Keine Einschränkungen setzen. Entwickleroptionen sowie USB- oder WLAN-Debugging sind nicht erforderlich.</string>
+    <string name="note_text">Unter OriginOS Autostart aktiviert lassen und den Akkumodus auf Keine Einschränkungen setzen. Entwickleroptionen sowie USB- oder WLAN-Debugging sind nicht erforderlich.</string>
 
     <string name="status_protected">Geschützt</string>
     <string name="status_ready">Bereit</string>
@@ -68,7 +68,7 @@
     <string name="theme_title">Design</string>
     <string name="theme_preview_hint">Vorschau im aktuellen hellen oder dunklen Modus</string>
     <string name="palette_classic">Klassisch</string>
-    <string name="palette_hyper_blue">HyperOS-Blau</string>
+    <string name="palette_hyper_blue">OriginOS-Blau</string>
     <string name="palette_guardian_teal">Petrol</string>
     <string name="palette_indigo_dusk">Indigo</string>
     <string name="palette_google">Google klassisch</string>
@@ -76,4 +76,37 @@
     <string name="palette_sunset_amber">Bernstein</string>
     <string name="palette_graphite">Graphit</string>
     <string name="palette_aurora">Polarlicht</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">Kein Whitelist-Schlüssel · nur Heartbeat</string>
+    <string name="status_label_heartbeat">FCM-Heartbeat</string>
+    <string name="status_value_heartbeat_on">Läuft</string>
+    <string name="status_value_allowed">Erlaubt</string>
+    <string name="status_value_restricted">Eingeschränkt</string>
+    <string name="status_label_whitelist_key">Whitelist-Schlüssel</string>
+    <string name="status_value_not_used">Nicht verwendet</string>
+    <string name="heartbeat_never">noch nicht gesendet</string>
+    <string name="heartbeat_summary">Alle %1$d Min. · zuletzt %2$s</string>
+    <string name="status_label_notifications">Benachrichtigungen</string>
+    <string name="heartbeat_interval">Heartbeat-Intervall</string>
+    <string name="heartbeat_interval_summary">Wie oft der FCM-Heartbeat gesendet wird. Kürzer ist schneller, braucht aber etwas mehr Akku. Im Tiefschlaf erlaubt Android höchstens etwa alle 9 Minuten einen.</string>
+    <string name="heartbeat_every">%1$d Min.</string>
+    <string name="tab_apps">FCM apps</string>
+    <string name="autostart_reason_denied">Reason: OriginOS refused AloFCM access to iManager’s Autostart list.</string>
+    <string name="autostart_reason_missing">Reason: this ROM has no readable Autostart list (iManager provider not found).</string>
+    <string name="autostart_reason_no_row">Reason: iManager returned no Autostart entry for these apps.</string>
+    <string name="autostart_diag">Autostart diagnostics</string>
+    <string name="copy_report">Copy</string>
+    <string name="report_copied">Report copied</string>
+    <string name="fcm_apps_on_off_summary">%1$d FCM apps · %2$d autostart on · %3$d off</string>
+    <string name="autostart_manual_note">OriginOS only lets an app read its own Autostart state, so these are marked by you. Tap an app to open its settings, long-press to flip the mark.</string>
+    <string name="autostart_mark_question">Is Autostart now switched on for this app in iManager?</string>
+    <string name="mark_on">Switched on</string>
+    <string name="mark_off">Still off</string>
+    <string name="autostart_marked_hint">marked by you</string>
+    <string name="fcm_apps_total">%1$d FCM apps found · %2$d marked</string>
+    <string name="fcm_pick_hint">Tap an app, switch Autostart on in iManager, then confirm to mark it. Long-press to mark it right away.</string>
+    <string name="marked_title">Marked for autostart (%1$d)</string>
+    <string name="marked_remove">Remove</string>
+    <string name="app_marked_toast">Marked</string>
 </resources>

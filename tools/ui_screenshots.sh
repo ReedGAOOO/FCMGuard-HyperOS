@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Drives FCM Guard on a running Android emulator and saves screenshots for UI review.
+# Drives AloFCM on a running Android emulator and saves screenshots for UI review.
 #
 #   tools/ui_screenshots.sh <apk> <output-dir>
 #
@@ -13,9 +13,9 @@ set -uo pipefail
 
 APK="$1"
 OUT="$2"
-PKG=com.reed.fcmguard
+PKG=com.alofcm
 ACTIVITY="$PKG/.MainActivity"
-UI_XML=/tmp/fcmguard-ui.xml
+UI_XML=/tmp/alofcm-ui.xml
 UI_PASSES="${UI_PASSES:-shots}"
 mkdir -p "$OUT"
 
@@ -31,8 +31,8 @@ shot() {
 # matches the regex (case-insensitive); prints nothing if absent. With a second
 # argument, nodes belonging to that package are ignored (used to find system dialogs).
 find_node() {
-  adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1 || return 0
-  adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1 || return 0
+  adb shell uiautomator dump /sdcard/alofcm-ui.xml >/dev/null 2>&1 || return 0
+  adb pull /sdcard/alofcm-ui.xml "$UI_XML" >/dev/null 2>&1 || return 0
   python3 - "$1" "$UI_XML" "${2:-}" <<'PY'
 import re, sys, xml.etree.ElementTree as ET
 pattern = re.compile(sys.argv[1], re.I)
@@ -150,7 +150,7 @@ drag_up 200;  shot 06-light-scroll-700
 drag_up 300;  shot 06b-light-scroll-1000
 # Fully stacked: throw the front row out with a fast swipe, then try a short slow drag
 # that should spring back. The most severe tile is in the front row.
-front=$(find_node 'fcm guard whitelist|modify settings')
+front=$(find_node 'alofcm background|fcm heartbeat')
 if [ -n "$front" ]; then
   # Stacked tiles all sit in the front slot, so this spot is reused for every gesture
   # below (looking a tile up by its text could match the page behind the docked card).
@@ -205,8 +205,8 @@ THEMES="classic|hyperos blue|guardian teal|indigo dusk|google classic|sakura|sun
 tap_theme() {
   local step plan
   for step in 1 2 3 4 5 6 7 8; do
-    adb shell uiautomator dump /sdcard/fcmguard-ui.xml >/dev/null 2>&1
-    adb pull /sdcard/fcmguard-ui.xml "$UI_XML" >/dev/null 2>&1 || return 1
+    adb shell uiautomator dump /sdcard/alofcm-ui.xml >/dev/null 2>&1
+    adb pull /sdcard/alofcm-ui.xml "$UI_XML" >/dev/null 2>&1 || return 1
     plan=$(python3 - "$1" "$UI_XML" "$THEMES" <<'PY'
 import re, sys, xml.etree.ElementTree as ET
 target, order = sys.argv[1].lower(), sys.argv[3].split("|")

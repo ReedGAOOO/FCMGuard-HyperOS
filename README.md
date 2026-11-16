@@ -3,20 +3,34 @@
 </p>
 
 <p align="center">
-  <img src="docs/icon.svg" width="180" alt="FCM Guard icon" />
+  <img src="docs/icon.png" width="180" alt="AloFCM icon" />
 </p>
 
-# FCM Guard for HyperOS
+# AloFCM for OriginOS
 
-**A lightweight, no-root watchdog for HyperOS 3 and HyperOS 4 China ROMs that keeps Google Play services in Xiaomi's no-restrict background list so FCM push stays reliable.**
+**A lightweight, no-root keep-alive for vivo / iQOO phones running OriginOS (or Funtouch OS) with Google Play services, so FCM push arrives on time.**
 
-**Designed for:** China-market Xiaomi / Redmi / POCO phones running **HyperOS 3 or HyperOS 4 (China ROM)** with Google Play services already installed and working.
+This branch is the OriginOS build of AloFCM for HyperOS. It installs side by side with it (package `com.alofcm.originos`).
 
-<p align="center">
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk"><strong>Download latest APK</strong></a>
-  ·
-  <a href="https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest">Latest release</a>
-</p>
+### How it differs from the HyperOS build
+
+| | HyperOS build | OriginOS build |
+|---|---|---|
+| Core fix | Keeps `com.google.android.gms` in Xiaomi's `MILLET_NO_RESTRICT_APP` whitelist | Periodic FCM heartbeat (GTALK/MCS) on an allow-while-idle alarm, plus on network change and screen-on |
+| Whitelist key | Fixed default | **Not used.** vivo has no documented equivalent, and apps targeting Android 6+ cannot write private settings keys |
+| Modify system settings permission | Required | Not needed |
+| targetSdk | 22 (needed for the private key) | 34, so Android no longer warns that the app was built for an older version |
+| Settings shortcuts | Security app Autostart / battery saver | iManager Autostart, Background power consumption, Android Doze exemption |
+| Self-check tiles | Whitelist + Autostart | Background power (Doze exemption) + Autostart (Unknown when iManager hides it) |
+
+### Recommended OriginOS setup
+
+1. Turn on **Automatic protection**. AloFCM asks for the battery-optimisation exemption.
+2. iManager → App manager → **Autostart**: allow AloFCM and Google Play services.
+3. Settings → Battery → **Background power consumption management**: set AloFCM and Google Play services to **Allow**.
+4. Lock AloFCM in Recents (pull the card down / tap the lock).
+
+> The vivo settings components are undocumented and change between OriginOS releases. Each button tries several known pages and falls back to Android's own settings page.
 
 ## What's new in 2.0
 
@@ -33,11 +47,11 @@
   </tr>
 </table>
 
-<sub>Screen recordings on a stock Android 15 emulator with "Show taps" on (<code>tools/record_demos.sh</code>). The status reads <b>Needs attention</b> because the emulator has no HyperOS whitelist for FCM Guard itself.</sub>
+<sub>Screen recordings on a stock Android 15 emulator with "Show taps" on (<code>tools/record_demos.sh</code>). The status reads <b>Needs attention</b> because the emulator has no HyperOS whitelist for AloFCM itself.</sub>
 
 Also new in 2.0:
 
-- **Self-check:** the status turns red when FCM Guard itself could be frozen, i.e. it is not on the no-restrict whitelist or its Autostart is off.
+- **Self-check:** the status turns red when AloFCM itself could be frozen, i.e. it is not on the no-restrict whitelist or its Autostart is off.
 - **Smooth switches:** theme, light/dark, language and glass changes crossfade instead of flashing.
 - **Under the hood:**
   - Opening the app no longer restarts the guard service's work: it no longer re-registers the observer or re-runs a full check.
@@ -62,17 +76,17 @@ Also new in 2.0:
 ## Quick setup
 
 1. Install the latest APK from **GitHub Releases**. Upgrading from v1.5.x to v2.0 or later: uninstall the old version first, because releases are now signed with a new key.
-2. On first launch HyperOS shows a permission list (FCM Guard deliberately targets SDK 22, so the system asks you to review legacy permissions). Keep **Modify system settings** (required) and **Access list of installed apps** (used only by the FCM app scanner) on. Everything else (shortcuts, lock screen, background windows, clipboard, media volume, motion sensors, wallpaper) is unused and can stay off.
-3. Open FCM Guard. If the status card still shows **Modify settings** as **Not granted**, tap **Grant Modify system settings**.
+2. On first launch HyperOS shows a permission list (AloFCM deliberately targets SDK 22, so the system asks you to review legacy permissions). Keep **Modify system settings** (required) and **Access list of installed apps** (used only by the FCM app scanner) on. Everything else (shortcuts, lock screen, background windows, clipboard, media volume, motion sensors, wallpaper) is unused and can stay off.
+3. Open AloFCM. If the status card still shows **Modify settings** as **Not granted**, tap **Grant Modify system settings**.
 4. Tap **Protect now** (to the right of the status) once.
 5. Enable **Automatic protection**.
-6. In HyperOS, enable **Autostart** for FCM Guard and set battery policy to **No restrictions**. FCM Guard checks this itself: until it is on the no-restrict whitelist (where HyperOS keeps apps set to No restrictions) and its Autostart is not off, the **FCM Guard whitelist** / **FCM Guard autostart** tiles in the status card are red and the status reads **Needs attention**. Tap a red tile to open the matching setting.
-7. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for FCM Guard, the app opens the system notification settings so the foreground notification can be enabled.
-8. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, FCM Guard shows a clear Unknown/unavailable fallback instead of guessing.
+6. In HyperOS, enable **Autostart** for AloFCM and set battery policy to **No restrictions**. AloFCM checks this itself: until it is on the no-restrict whitelist (where HyperOS keeps apps set to No restrictions) and its Autostart is not off, the **AloFCM whitelist** / **AloFCM autostart** tiles in the status card are red and the status reads **Needs attention**. Tap a red tile to open the matching setting.
+7. Keep **Persistent notification** enabled for maximum survival reliability. If Android/HyperOS blocks notifications for AloFCM, the app opens the system notification settings so the foreground notification can be enabled.
+8. Optional: scan **FCM apps**. If HyperOS exposes readable Autostart state, the list marks apps as Enabled / Partial / Disabled / Unknown and refreshes after you return from **Configure all in HyperOS**. If the ROM blocks the query, AloFCM shows a clear Unknown/unavailable fallback instead of guessing.
 9. Optional: tap **Open FCM diagnostics** to open Google Play services diagnostics and inspect the `mtalk.google.com:5228` connection.
 10. If one app still receives notifications late while other FCM apps are normal, configure that app separately. For apps such as **WhatsApp**, set **Battery saver / Battery optimization → No restrictions** in HyperOS; enabling **Autostart** is also recommended when available.
 
-> FCM Guard is mainly for China-ROM HyperOS 3 and HyperOS 4 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
+> AloFCM is mainly for China-ROM HyperOS 3 and HyperOS 4 devices where Google services work normally but PowerKeeper / Greezer can still interrupt the background FCM connection.
 
 ---
 
@@ -88,7 +102,7 @@ Settings.System.MILLET_NO_RESTRICT_APP
 
 If `com.google.android.gms` is removed, Google Play services can be treated like a normal background process and its long-lived FCM/MCS connection may be interrupted.
 
-FCM Guard reads the current comma-separated value, preserves all existing packages, and appends `com.google.android.gms` only when it is missing.
+AloFCM reads the current comma-separated value, preserves all existing packages, and appends `com.google.android.gms` only when it is missing.
 
 ```mermaid
 %%{init: {'theme':'base','themeVariables': {'background':'#ffffff','primaryColor':'#ffffff','primaryTextColor':'#000000','primaryBorderColor':'#000000','lineColor':'#000000'}}}%%
@@ -106,7 +120,7 @@ flowchart TD
 
 ## Why `targetSdk 22`?
 
-FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission and without root/Shizuku.
+AloFCM intentionally uses `compileSdk 35` with `targetSdk 22`. The modern compile SDK keeps current tooling, while the legacy target preserves the compatibility path needed to write Xiaomi's vendor-private `Settings.System` key with the user-grantable **Modify system settings** permission and without root/Shizuku.
 
 ## Low-power design
 
@@ -119,7 +133,7 @@ FCM Guard intentionally uses `compileSdk 35` with `targetSdk 22`. The modern com
 
 ## Persistent notification
 
-Persistent mode runs `GuardService` as a foreground service. The current implementation uses a dedicated `IMPORTANCE_LOW`, silent notification channel so the notification remains visible without sound or vibration. Because FCM Guard deliberately targets SDK 22, Android 13+ controls the notification-permission prompt timing; if notifications are already blocked, FCM Guard links directly to the app's system notification settings.
+Persistent mode runs `GuardService` as a foreground service. The current implementation uses a dedicated `IMPORTANCE_LOW`, silent notification channel so the notification remains visible without sound or vibration. Because AloFCM deliberately targets SDK 22, Android 13+ controls the notification-permission prompt timing; if notifications are already blocked, AloFCM links directly to the app's system notification settings.
 
 ## FCM diagnostics
 
@@ -142,20 +156,20 @@ com.google.android.c2dm.intent.RECEIVE
 
 A match means the app is a likely FCM/GCM client, not proof that every notification from that app uses FCM.
 
-For detected apps, FCM Guard performs a **read-only, best-effort** check of Xiaomi's vendor Autostart AppOps (`10008` and `10053`). When both are readable, the UI reports:
+For detected apps, AloFCM performs a **read-only, best-effort** check of Xiaomi's vendor Autostart AppOps (`10008` and `10053`). When both are readable, the UI reports:
 
 - **Enabled** — both Autostart AppOps are allowed.
 - **Partial** — one is allowed and the other is explicitly ignored.
 - **Disabled** — both are explicitly ignored.
 - **Unknown** — HyperOS blocked the query, returned a vendor/default state that cannot be interpreted safely, or otherwise did not expose a reliable result.
 
-FCM Guard never treats **Unknown** as **Disabled**. If every detected app is Unknown, the per-app list is hidden and the assistant falls back to the detected count plus the single **Configure all in HyperOS** action. After returning from HyperOS settings, an expanded result is checked again automatically.
+AloFCM never treats **Unknown** as **Disabled**. If every detected app is Unknown, the per-app list is hidden and the assistant falls back to the detected count plus the single **Configure all in HyperOS** action. After returning from HyperOS settings, an expanded result is checked again automatically.
 
 No Autostart state is modified programmatically, and no Shizuku/root/ADB privilege is introduced.
 
 ## Per-app delivery caveat
 
-FCM Guard protects the Google Play services / FCM transport layer, but it does **not** override HyperOS battery rules for every receiving app. Some apps — including messaging apps such as **WhatsApp** — may use FCM as a wake-up/tickle path and still need their own process to run, open a background network connection, synchronize data, and generate the local notification.
+AloFCM protects the Google Play services / FCM transport layer, but it does **not** override HyperOS battery rules for every receiving app. Some apps — including messaging apps such as **WhatsApp** — may use FCM as a wake-up/tickle path and still need their own process to run, open a background network connection, synchronize data, and generate the local notification.
 
 Therefore, if FCM diagnostics are healthy and other apps receive pushes normally but one app is still delayed, configure that app separately. For WhatsApp, the recommended HyperOS setting is:
 
@@ -175,7 +189,7 @@ Also enable **Autostart** for the affected app when the ROM exposes that option.
 
 ## Permissions and privacy
 
-FCM Guard uses `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, foreground-service/notification support, and narrow package visibility for FCM/GCM handlers, Google Play services, and Xiaomi Security Center.
+AloFCM uses `WRITE_SETTINGS`, `RECEIVE_BOOT_COMPLETED`, foreground-service/notification support, and narrow package visibility for FCM/GCM handlers, Google Play services, and Xiaomi Security Center.
 
 It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overlay, device-admin, account access, or traffic inspection.
 
@@ -183,7 +197,7 @@ It does **not** require root, Shizuku, persistent ADB, Accessibility, VPN, overl
 
 This project depends on Xiaomi's current HyperOS implementation. Xiaomi can change PowerKeeper / Greezer behavior, the private setting, app-management pages, or vendor AppOps behavior in future releases. FCM reconnect, FCM-client detection, and Autostart-status reading are all best-effort because Android does not expose public APIs that guarantee these vendor-specific operations.
 
-FCM Guard protects the shared GMS/FCM connection; it cannot guarantee that HyperOS will allow every individual app enough background execution or network time to process a delivered FCM wake-up. Per-app battery settings may still be required for apps such as WhatsApp.
+AloFCM protects the shared GMS/FCM connection; it cannot guarantee that HyperOS will allow every individual app enough background execution or network time to process a delivered FCM wake-up. Per-app battery settings may still be required for apps such as WhatsApp.
 
 ## References & Acknowledgements
 
@@ -192,7 +206,7 @@ The PowerKeeper / Greezer investigation and the `MILLET_NO_RESTRICT_APP` repair 
 - HyperOS FCM Fix by `dingwen07`: https://github.com/dingwen07/hyperos-fcm-fix
 - Technical investigation: https://github.com/dingwen07/hyperos-fcm-fix/blob/main/docs/xiaomi-hyperos-gms-fcm-greezer-investigation.md
 
-FCM Guard is an independent implementation focused on no Shizuku/root dependency, minimal privileges, event-driven monitoring, and low idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
+AloFCM is an independent implementation focused on no Shizuku/root dependency, minimal privileges, event-driven monitoring, and low idle background activity. No source code from HyperOS FCM Fix is copied into this repository.
 
 ## Build
 
@@ -214,15 +228,15 @@ Android only installs an update over an existing install when both are signed wi
 Create a key once and keep a private backup of it:
 
 ```bash
-keytool -genkeypair -v -keystore fcmguard-release.jks -alias fcmguard -keyalg RSA -keysize 4096 -validity 10000
-base64 -w0 fcmguard-release.jks
+keytool -genkeypair -v -keystore alofcm-release.jks -alias alofcm -keyalg RSA -keysize 4096 -validity 10000
+base64 -w0 alofcm-release.jks
 ```
 
 Without these secrets, `main` refuses to publish (a release signed with a throwaway key could not be installed over the previous version), and other branches build with a temporary key for testing only.
 
 For normal phone installation, use:
 
-**https://github.com/ReedGAOOO/FCMGuard-HyperOS/releases/latest/download/FCMGuard-HyperOS.apk**
+**https://github.com/minhdatstn/AloFCM/releases/latest/download/AloFCM-OriginOS.apk**
 
 ## License
 

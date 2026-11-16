@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Static geometry checks for the responsive FCM Guard dashboard.
+"""Static geometry checks for the responsive AloFCM dashboard.
 
 Android still performs the real resource/layout compilation in assembleDebug. These
 checks guard the dimensions that are easiest to regress on compact HyperOS phones.
@@ -76,7 +76,7 @@ for required in (
     assert required in ids, f"missing required dashboard id: {required}"
 
 status_card = next(node for node in layout.iter() if node.attrib.get(android_id) == "@+id/statusCard")
-assert status_card.tag == "com.reed.fcmguard.CollapsingStatusCard", (
+assert status_card.tag == "com.alofcm.CollapsingStatusCard", (
     "statusCard must keep its custom visual-bottom implementation"
 )
 

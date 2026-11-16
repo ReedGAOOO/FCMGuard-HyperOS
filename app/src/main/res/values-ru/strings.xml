@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">FCM Guard</string>
-    <string name="subtitle">Энергоэффективная защита FCM для HyperOS</string>
+    <string name="app_name">AloFCM</string>
+    <string name="subtitle">Энергоэффективная защита FCM для OriginOS</string>
     <string name="label_key">Ключ настройки</string>
     <string name="label_item">Обязательный элемент</string>
     <string name="save_configuration">Сохранить конфигурацию</string>
@@ -15,7 +15,7 @@
     <string name="follow_system">Как в системе</string>
     <string name="english">English</string>
     <string name="simplified_chinese">简体中文</string>
-    <string name="default_key">MILLET_NO_RESTRICT_APP</string>
+    <string name="default_key"></string>
     <string name="default_required_item">com.google.android.gms</string>
 
     <string name="protection_title">Защита</string>
@@ -27,7 +27,7 @@
     <string name="advanced_title">Расширенные настройки</string>
 
     <string name="helper_text">Энергоэффективная схема: без опроса каждые 30 секунд, без слежения за посторонними настройками и с переподключением FCM только после реального исправления.</string>
-    <string name="note_text">В HyperOS оставьте автозапуск включённым и установите режим батареи Без ограничений. Параметры разработчика, USB- и беспроводная отладка не требуются.</string>
+    <string name="note_text">В OriginOS оставьте автозапуск включённым и установите режим батареи Без ограничений. Параметры разработчика, USB- и беспроводная отладка не требуются.</string>
 
     <string name="status_protected">Защищено</string>
     <string name="status_ready">Готово</string>
@@ -59,7 +59,7 @@
     <string name="write_rejected">Система отклонила запись</string>
     <string name="write_failed">Ошибка записи: %1$s</string>
 
-    <string name="notification_channel_name">Защита FCM Guard</string>
+    <string name="notification_channel_name">Защита AloFCM</string>
     <string name="notification_channel_description">Низкоприоритетное уведомление для надёжной автоматической защиты FCM</string>
     <string name="notification_active">Защита активна · по событиям</string>
     <string name="notification_repaired">Список исправлен · FCM защищён</string>
@@ -68,7 +68,7 @@
     <string name="theme_title">Тема</string>
     <string name="theme_preview_hint">Превью в текущем светлом или тёмном режиме</string>
     <string name="palette_classic">Классика</string>
-    <string name="palette_hyper_blue">Синий HyperOS</string>
+    <string name="palette_hyper_blue">Синий OriginOS</string>
     <string name="palette_guardian_teal">Бирюзовый</string>
     <string name="palette_indigo_dusk">Индиго</string>
     <string name="palette_google">Google классика</string>
@@ -76,4 +76,37 @@
     <string name="palette_sunset_amber">Янтарь</string>
     <string name="palette_graphite">Графит</string>
     <string name="palette_aurora">Аврора</string>
+
+    <!-- OriginOS build -->
+    <string name="whitelist_not_configured">Ключ белого списка не задан · только heartbeat</string>
+    <string name="status_label_heartbeat">FCM heartbeat</string>
+    <string name="status_value_heartbeat_on">Работает</string>
+    <string name="status_value_allowed">Разрешено</string>
+    <string name="status_value_restricted">Ограничено</string>
+    <string name="status_label_whitelist_key">Ключ белого списка</string>
+    <string name="status_value_not_used">Не используется</string>
+    <string name="heartbeat_never">ещё не отправлен</string>
+    <string name="heartbeat_summary">Каждые %1$d мин · последний %2$s</string>
+    <string name="status_label_notifications">Разрешение на уведомления</string>
+    <string name="heartbeat_interval">Интервал heartbeat</string>
+    <string name="heartbeat_interval_summary">Как часто отправляется FCM heartbeat. Чаще — быстрее, но чуть больше расход батареи. В глубоком сне Android разрешает не чаще раза примерно в 9 минут.</string>
+    <string name="heartbeat_every">%1$d мин</string>
+    <string name="tab_apps">FCM apps</string>
+    <string name="autostart_reason_denied">Reason: OriginOS refused AloFCM access to iManager’s Autostart list.</string>
+    <string name="autostart_reason_missing">Reason: this ROM has no readable Autostart list (iManager provider not found).</string>
+    <string name="autostart_reason_no_row">Reason: iManager returned no Autostart entry for these apps.</string>
+    <string name="autostart_diag">Autostart diagnostics</string>
+    <string name="copy_report">Copy</string>
+    <string name="report_copied">Report copied</string>
+    <string name="fcm_apps_on_off_summary">%1$d FCM apps · %2$d autostart on · %3$d off</string>
+    <string name="autostart_manual_note">OriginOS only lets an app read its own Autostart state, so these are marked by you. Tap an app to open its settings, long-press to flip the mark.</string>
+    <string name="autostart_mark_question">Is Autostart now switched on for this app in iManager?</string>
+    <string name="mark_on">Switched on</string>
+    <string name="mark_off">Still off</string>
+    <string name="autostart_marked_hint">marked by you</string>
+    <string name="fcm_apps_total">%1$d FCM apps found · %2$d marked</string>
+    <string name="fcm_pick_hint">Tap an app, switch Autostart on in iManager, then confirm to mark it. Long-press to mark it right away.</string>
+    <string name="marked_title">Marked for autostart (%1$d)</string>
+    <string name="marked_remove">Remove</string>
+    <string name="app_marked_toast">Marked</string>
 </resources>

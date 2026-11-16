@@ -1,17 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <!--
+      Exact heartbeat alarm. USE_EXACT_ALARM is granted at install on Android 13+ (the app
+      is not on Google Play, whose policy limits it to alarm apps); SCHEDULE_EXACT_ALARM
+      covers Android 12. Without either, HeartbeatScheduler falls back to inexact alarms.
+    -->
+    <uses-permission android:name="android.permission.USE_EXACT_ALARM" />
+    <uses-permission
+        android:name="android.permission.SCHEDULE_EXACT_ALARM"
+        android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- OriginOS build: network-change heartbeat and the Doze exemption request. -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.REQUEST_IGNORE_BATTERY_OPTIMIZATIONS" />
 
     <!--
-      Narrow package visibility only for the signals FCM Guard needs. This avoids
-      QUERY_ALL_PACKAGES while allowing best-effort discovery of FCM/GCM receivers
-      and the Google Play services diagnostics activity.
+      Package visibility (Android 11+). vivo moves iManager's Autostart provider between
+      OriginOS releases and packages, so AloFCM needs to see all installed packages to
+      find it; the app is distributed outside Google Play.
     -->
+    <uses-permission
+        android:name="android.permission.QUERY_ALL_PACKAGES"
+        tools:ignore="QueryAllPackagesPermission" />
     <queries>
+        <provider android:authorities="com.vivo.permissionmanager.provider.permission" />
         <intent>
             <action android:name="com.google.firebase.MESSAGING_EVENT" />
         </intent>
@@ -19,25 +36,21 @@
             <action android:name="com.google.android.c2dm.intent.RECEIVE" />
         </intent>
         <package android:name="com.google.android.gms" />
-        <package android:name="com.miui.securitycenter" />
-        <package android:name="com.miui.powerkeeper" />
+        <package android:name="com.vivo.permissionmanager" />
+        <package android:name="com.iqoo.secure" />
+        <package android:name="com.vivo.abe" />
+        <package android:name="com.iqoo.powersaving" />
     </queries>
 
     <application
         android:allowBackup="false"
-        android:icon="@drawable/app_icon"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme"
         android:localeConfig="@xml/locales_config"
         android:supportsRtl="true">
 
-        <!--
-          FCM Guard intentionally targets SDK 22 so WRITE_SETTINGS can modify Xiaomi's
-          private Settings.System whitelist. Old-target apps can otherwise be placed
-          into legacy aspect-ratio compatibility mode on tall modern displays, which
-          HyperOS shows as a large black area below the app. Explicitly opt the main
-          activity into modern tall/resizable layouts while keeping targetSdk 22.
-        -->
+        <!-- Allow tall modern displays without letterboxing. -->
         <meta-data
             android:name="android.max_aspect"
             android:value="3.0" />
@@ -57,7 +70,16 @@
         <service
             android:name=".GuardService"
             android:exported="false"
-            android:stopWithTask="false" />
+            android:foregroundServiceType="specialUse"
+            android:stopWithTask="false">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="Keeps the Google Play services push (FCM) connection alive with a periodic heartbeat on ROMs that drop it." />
+        </service>
+
+        <receiver
+            android:name=".HeartbeatScheduler"
+            android:exported="false" />
 
         <receiver
             android:name=".BootReceiver"
